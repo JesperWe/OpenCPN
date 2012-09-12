@@ -2080,10 +2080,7 @@ void RouteManagerDialog::OnLayToggleVisibility( wxMouseEvent &event )
 
 void RouteManagerDialog::OnLayNewClick( wxCommandEvent &event )
 {
-    bool show_flag = g_bShowLayers;
-    g_bShowLayers = true;
     pConfig->ImportGPX( this, true, _T(""), false );
-    g_bShowLayers = show_flag;
 
     UpdateRouteListCtrl();
     UpdateTrkListCtrl();

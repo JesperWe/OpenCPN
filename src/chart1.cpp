@@ -253,7 +253,6 @@ int                       g_nAWDefault;
 int                       g_nAWMax;
 bool                      g_bPlayShipsBells;
 bool                      g_bFullscreenToolbar;
-bool                      g_bShowLayers;
 bool                      g_bTransparentToolbar;
 bool                      g_bPermanentMOBIcon;
 

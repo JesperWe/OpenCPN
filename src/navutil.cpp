@@ -2644,7 +2644,6 @@ double Track::GetXTE( RoutePoint *fm1, RoutePoint *fm2, RoutePoint *to )
 
 Layer::Layer( void )
 {
-    m_bIsVisibleOnChart = g_bShowLayers;
     m_bIsVisibleOnListing = false;
     m_bHasVisibleNames = true;
     m_NoOfItems = 0;
@@ -2853,7 +2852,6 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "FullscreenToolbar" ), &g_bFullscreenToolbar, 1 );
     Read( _T ( "TransparentToolbar" ), &g_bTransparentToolbar, 1 );
     Read( _T ( "PermanentMOBIcon" ), &g_bPermanentMOBIcon, 0 );
-    Read( _T ( "ShowLayers" ), &g_bShowLayers, 1 );
     Read( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits, 1 );
     Read( _T ( "AutoAnchorDrop" ), &g_bAutoAnchorMark, 0 );
     Read( _T ( "ShowChartOutlines" ), &g_bShowOutlines, 0 );
@@ -4054,7 +4052,6 @@ void MyConfig::UpdateSettings()
     Write( _T ( "FullscreenToolbar" ), g_bFullscreenToolbar );
     Write( _T ( "TransparentToolbar" ), g_bTransparentToolbar );
     Write( _T ( "PermanentMOBIcon" ), g_bPermanentMOBIcon );
-    Write( _T ( "ShowLayers" ), g_bShowLayers );
     Write( _T ( "ShowDepthUnits" ), g_bShowDepthUnits );
     Write( _T ( "AutoAnchorDrop" ), g_bAutoAnchorMark );
     Write( _T ( "ShowChartOutlines" ), g_bShowOutlines );
@@ -4727,7 +4724,6 @@ void MyConfig::ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, bool
                 else
                     wxFileName::SplitPath( dirpath, NULL, NULL, &( l->m_LayerName ), NULL, NULL );
             }
-            g_bLayerViz = g_bShowLayers;
             if( g_VisibleLayers.Contains( l->m_LayerName ) ) g_bLayerViz = true;
             if( g_InvisibleLayers.Contains( l->m_LayerName ) ) g_bLayerViz = false;
             l->m_bIsVisibleOnChart = g_bLayerViz;
