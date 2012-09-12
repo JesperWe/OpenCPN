@@ -205,7 +205,6 @@ class MyFrame: public wxFrame
     void OnMemFootTimer(wxTimerEvent& event);
 
     void UpdateAllFonts(void);
-    void PositionConsole(void);
     void OnToolLeftClick(wxCommandEvent& event);
     void ClearRouteTool();
     void DoStackUp(void);

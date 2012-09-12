@@ -28,6 +28,7 @@
 #ifndef __concanv_H__
 #define __concanv_H__
 
+#include <wx/aui/aui.h>
 
 //----------------------------------------------------------------------------
 //   constants
@@ -51,7 +52,7 @@ public:
       CDI(wxWindow* parent, wxWindowID id, long style, const wxString& name);
 
       void OnPaint(wxPaintEvent& event);
-      void SetColorScheme(ColorScheme cs);
+      void SetColorScheme();
 
       wxBrush *m_pbackBrush;
       wxBrush *m_proadBrush;
@@ -67,78 +68,75 @@ DECLARE_EVENT_TABLE()
 class AnnunText : public wxWindow
 {
 public:
-      AnnunText(wxWindow *parent, wxWindowID id, const wxString& LegendElement, const wxString& ValueElement);
+    AnnunText( wxWindow *parent, wxWindowID id, const wxString& LegendElement,
+            const wxString& ValueElement );
 
-      ~AnnunText();
+    ~AnnunText();
 
-      void SetALabel(const wxString &l);
-      void SetAValue(const wxString &v);
-      void OnPaint(wxPaintEvent& event);
-      void RefreshFonts(void);
-      void SetLegendElement(const wxString &element);
-      void SetValueElement(const wxString &element);
-      void SetColorScheme(ColorScheme cs);
+    void SetALabel( const wxString &l );
+    void SetAValue( const wxString &v );
+    void OnPaint( wxPaintEvent& event );
+    void RefreshFonts( void );
+    void SetLegendElement( const wxString &element );
+    void SetValueElement( const wxString &element );
+    void SetColorScheme( ColorScheme cs );
 
 private:
-      void CalculateMinSize(void);
+    void CalculateMinSize(void);
 
-      wxBrush     *m_pbackBrush;
-      wxColour    m_text_color;
+    wxBrush     *m_pbackBrush;
+    wxColour    m_text_color;
 
-      wxString    m_label;
-      wxString    m_value;
-      wxFont      *m_plabelFont;
-      wxFont      *m_pvalueFont;
+    wxString    m_label;
+    wxString    m_value;
+    wxFont      *m_plabelFont;
+    wxFont      *m_pvalueFont;
 
-      wxString    m_LegendTextElement;
-      wxString    m_ValueTextElement;
+    wxString    m_LegendTextElement;
+    wxString    m_ValueTextElement;
 
 DECLARE_EVENT_TABLE()
 
 };
 
-
-
-
 //----------------------------------------------------------------------------
 // ConsoleCanvas
 //----------------------------------------------------------------------------
-class ConsoleCanvas: public wxDialog
+class ConsoleCanvas: public wxWindow
 {
 public:
-      ConsoleCanvas(wxWindow *frame);
-      ~ConsoleCanvas();
-      void UpdateRouteData();
-      void ShowWithFreshFonts(void);
-      void UpdateFonts(void);
-      void SetColorScheme(ColorScheme cs);
-      void OnLegRouteButton(wxCommandEvent& event);
-      void MouseEvent(wxMouseEvent& event);
-      void MouseLostCaptureEvent(wxMouseCaptureLostEvent& event);
-      void RefreshConsoleData(void);
+    ConsoleCanvas( wxWindow *pparent );
+    ~ConsoleCanvas();
+    void UpdateRouteData();
+    void ShowWithFreshFonts( void );
+    void UpdateFonts( void );
+    void SetColorScheme( ColorScheme cs );
+    void LegRoute();
+    void OnContextMenu( wxContextMenuEvent& event );
+    void OnContextMenuSelection( wxCommandEvent& event );
+    void RefreshConsoleData( void );
 
-      wxWindow          *m_pParent;
-      wxStaticText       *pThisLegText;
-      wxBoxSizer        *m_pitemBoxSizerLeg;
+    wxWindow          *m_pParent;
+    wxStaticText       *pThisLegText;
+    wxBoxSizer        *m_pitemBoxSizerLeg;
 
-      AnnunText         *pXTE;
-      AnnunText         *pBRG;
-      AnnunText         *pRNG;
-      AnnunText         *pTTG;
-      AnnunText         *pVMG;
-      CDI               *pCDI;
-      wxButton          *m_pLegRouteButton;
+    wxAuiPaneInfo     paneAnnun;
+    wxAuiPaneInfo     paneHighway;
 
-      wxFont            *pThisLegFont;
+    AnnunText         *pXTE;
+    AnnunText         *pBRG;
+    AnnunText         *pRNG;
+    AnnunText         *pTTG;
+    AnnunText         *pVMG;
+    CDI               *pCDI;
 
-      bool              m_bNeedClear;
-      bool              m_bShowRouteTotal;
-
-      wxBrush           *pbackBrush;
+    wxFont            *pThisLegFont;
+    bool              m_bShowRouteTotal;
+    bool              m_bShowHighway;
+    wxBrush           *pbackBrush;
 
 private:
-      void OnPaint(wxPaintEvent& event);
-
+    void OnPaint( wxPaintEvent& event );
 
 DECLARE_EVENT_TABLE()
 };

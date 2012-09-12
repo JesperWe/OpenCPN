@@ -5,7 +5,7 @@
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  *
  */
@@ -52,28 +52,10 @@
 #include "routemanagerdialog.h"
 #include "pluginmanager.h"
 
-/*
-//    Include wxJSON headers
-//    We undefine MIN/MAX so avoid warning of redefinition coming from
-//    json_defs.h
-//    Definitions checked manually, and are identical
-#ifdef MIN
-#undef MIN
-#endif
-
-#ifdef MAX
-#undef MAX
-#endif
-
-#include "json_defs.h"
-#include "jsonwriter.h"
-*/
-
-#include <wx/dir.h>                             // 09.10.07; toh
-#include <wx/filename.h>                        // 09.10.07; toh
-#include "wx/stdpaths.h"                        // 09.10.07; toh
-#include "wx/apptrait.h"                        // 09.10.07; toh
-
+#include <wx/dir.h>
+#include <wx/filename.h>
+#include <wx/stdpaths.h>
+#include <wx/apptrait.h>
 
 extern ConsoleCanvas    *console;
 
@@ -86,14 +68,14 @@ extern WayPointman      *pWayPointMan;
 extern Routeman         *g_pRouteMan;
 
 extern wxRect           g_blink_rect;
-extern wxString         g_SData_Locn;     // 09.10.07; toh
+extern wxString         g_SData_Locn;
 extern wxString         g_PrivateDataDir;
 
 extern double           gLat, gLon, gSog, gCog;
 extern double           gVar;
 
-extern RoutePoint       *pAnchorWatchPoint1;   // pjotrc 2010.02.15
-extern RoutePoint       *pAnchorWatchPoint2;   // pjotrc 2010.02.15
+extern RoutePoint       *pAnchorWatchPoint1;
+extern RoutePoint       *pAnchorWatchPoint2;
 
 extern Track            *g_pActiveTrack;
 extern RouteProp        *pRoutePropDialog;
@@ -102,6 +84,7 @@ extern RoutePoint      *pAnchorWatchPoint1;
 extern RoutePoint      *pAnchorWatchPoint2;
 extern int              g_route_line_width;
 
+extern wxAuiManager     *g_pauimgr;
 extern PlugInManager    *g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;
 
@@ -115,8 +98,6 @@ WX_DECLARE_LIST(wxString, markicon_description_list_type);
 WX_DEFINE_LIST(markicon_bitmap_list_type);
 WX_DEFINE_LIST(markicon_key_list_type);
 WX_DEFINE_LIST(markicon_description_list_type);
-
-
 
 //--------------------------------------------------------------------------------
 //      Routeman   "Route Manager"
@@ -155,15 +136,11 @@ Route *Routeman::FindRouteContainingWaypoint( RoutePoint *pWP )
         wxRoutePointListNode *pnode = ( proute->pRoutePointList )->GetFirst();
         while( pnode ) {
             RoutePoint *prp = pnode->GetData();
-            if( prp == pWP )                // success
-            return proute;
-
+            if( prp == pWP )  return proute;
             pnode = pnode->GetNext();
         }
-
         node = node->GetNext();
     }
-
     return NULL;                              // not found
 }
 
@@ -525,10 +502,9 @@ bool Routeman::DeactivateRoute( bool b_arrival )
 
     console->pCDI->ClearBackground();
 
-    console->Show( false );
-
+    g_pauimgr->GetPane( console ).Hide();
+    g_pauimgr->Update();
     m_bDataValid = false;
-
     return true;
 }
 

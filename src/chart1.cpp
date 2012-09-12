@@ -1574,7 +1574,13 @@ if( 0 == g_memCacheLimit )
 
     cc1->SetFocus();
 
-    console = new ConsoleCanvas( gFrame );                    // the console
+    console = new ConsoleCanvas( gFrame );                    // the navigate window
+    console->paneAnnun.Name( _("Navigate") );
+    console->paneAnnun.Caption( _("Navigate") );
+    console->paneAnnun.TopDockable(false).BottomDockable(false).LeftDockable(true).RightDockable(true);
+    console->paneAnnun.Row(1);
+    g_pauimgr->AddPane( console, console->paneAnnun );
+    console->paneAnnun.Hide();
 
     g_FloatingCompassDialog = new ocpnFloatingCompassWindow( cc1 );
 
@@ -2937,8 +2943,6 @@ void MyFrame::OnMove( wxMoveEvent& event )
 
     UpdateGPSCompassStatusBox( true );
 
-    if( console && console->IsShown() ) PositionConsole();
-
 //    Somehow, this method does not work right on Windows....
 //      g_nframewin_posx = event.GetPosition().x;
 //      g_nframewin_posy = event.GetPosition().y;
@@ -2963,9 +2967,6 @@ void MyFrame::ProcessCanvasResize( void )
     }
 
     UpdateGPSCompassStatusBox( true );
-
-    if( console->IsShown() ) PositionConsole();
-
 }
 
 void MyFrame::OnSize( wxSizeEvent& event )
@@ -3037,8 +3038,6 @@ void MyFrame::DoSetSize( void )
 
     UpdateGPSCompassStatusBox( true );
 
-    if( console ) PositionConsole();
-
     if( stats ) {
         stats->ReSize();
         stats->FormatStat();
@@ -3063,28 +3062,10 @@ void MyFrame::DoSetSize( void )
     if( pthumbwin ) pthumbwin->SetMaxSize( cc1->GetParent()->GetSize() );
 }
 
-void MyFrame::PositionConsole( void )
-{
-    if( NULL == cc1 ) return;
-    //    Reposition console based on its size and chartcanvas size
-    int ccx, ccy, ccsx, ccsy, consx, consy;
-    cc1->GetSize( &ccsx, &ccsy );
-    cc1->GetPosition( &ccx, &ccy );
-
-    console->GetSize( &consx, &consy );
-//      console->SetSize(ccx + ccsx - consx, ccy + 40, -1, -1);
-
-    wxPoint screen_pos = ClientToScreen( wxPoint( ccx + ccsx - consx - 2, ccy + 40 ) );
-    console->Move( screen_pos );
-
-}
-
 void MyFrame::UpdateAllFonts()
 {
     if( console ) {
         console->UpdateFonts();
-        //    Reposition console
-        PositionConsole();
     }
 
     if( g_pais_query_dialog_active ) {
