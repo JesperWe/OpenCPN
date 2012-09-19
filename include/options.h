@@ -103,6 +103,7 @@ enum {
     ID_METACHECKBOX,
     ID_NOTEBOOK,
     ID_OPENGLBOX,
+    ID_OSREALSIZE,
     ID_OUTLINECHECKBOX1,
     ID_PANEL,
     ID_PANEL2,
@@ -114,7 +115,7 @@ enum {
     ID_PRESERVECHECKBOX,
     ID_PRINTCHECKBOX1,
     ID_QUILTCHECKBOX1,
-    ID_RADIOBOX,
+    ID_RADARDISTUNIT,
     ID_RASTERCHECKBOX1,
     ID_SCAMINCHECKBOX,
     ID_SCANCHECKBOX,
@@ -240,6 +241,7 @@ public:
     void OnButtonTestSound( wxCommandEvent& event );
     void OnShowGpsWindowCheckboxClick( wxCommandEvent& event );
     void OnZTCCheckboxClick( wxCommandEvent& event );
+    void OnRealSizeClick( wxCommandEvent& event );
     void OnButtonGroups( wxCommandEvent& event );
     void OnInsertTideDataLocation( wxCommandEvent &event );
     void OnRemoveTideDataLocation( wxCommandEvent &event );
@@ -362,6 +364,12 @@ public:
     wxCheckBox                *m_pCheck_Draw_Target_Size;
 
 //    For Ship page
+    wxCheckBox              *m_pOSShowRealSize;
+    wxTextCtrl              *m_pOSLength;
+    wxTextCtrl              *m_pOSWidth;
+    wxTextCtrl              *m_pOSGPSOffsetX;
+    wxTextCtrl              *m_pOSGPSOffsetY;
+    wxTextCtrl              *m_pOSMinSize;
 
 //    For Fonts page
     wxBoxSizer              *m_itemBoxSizerFontPanel;
@@ -381,7 +389,7 @@ public:
     wxCheckBox              *pNavAidShowRadarRings;
     wxTextCtrl              *pNavAidRadarRingsNumberVisible;
     wxTextCtrl              *pNavAidRadarRingsStep;
-    wxRadioBox              *m_itemNavAidRadarRingsStepUnitsRadioBox;
+    wxChoice                *m_itemRadarRingsUnits;
     wxCheckBox              *pWayPointPreventDragging;
     wxCheckBox              *pEnableZoomToCursor;
     wxCheckBox              *pPreserveScale;
