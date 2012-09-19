@@ -8993,7 +8993,6 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
             pMarkPropDialog->ValidateMark();
             pMarkPropDialog->UpdateProperties();
         }
-
         break;
 
     case ID_RT_MENU_ACTIVATE: {
@@ -9004,14 +9003,12 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
 
         g_pRouteMan->ActivateRoute( m_pSelectedRoute, best_point );
         m_pSelectedRoute->m_bRtIsSelected = false;
-
         break;
     }
 
     case ID_RT_MENU_DEACTIVATE:
         g_pRouteMan->DeactivateRoute();
         m_pSelectedRoute->m_bRtIsSelected = false;
-
         break;
 
     case ID_RT_MENU_INSERT:
@@ -9044,7 +9041,6 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
             pRoutePropDialog->SetRouteAndUpdate( m_pSelectedRoute );
             pRoutePropDialog->UpdateProperties();
         }
-
         break;
 
     case ID_RT_MENU_APPEND:

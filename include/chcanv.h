@@ -189,7 +189,7 @@ public:
       void WarpPointerDeferred(int x, int y);
       void UpdateShips();
       void UpdateAIS();
-      void UpdateAlerts();                          // pjotrc 2010.02.22
+      void UpdateAlerts();
 
       void SetQuiltMode(bool b_quilt);
       bool GetQuiltMode(void);
@@ -226,6 +226,7 @@ public:
       void  SetbShowTide(bool f){ m_bShowTide = f;}
       bool  GetbShowTide(){ return m_bShowTide;}
       double GetPixPerMM(){ return m_pix_per_mm;}
+      Route* GetSelectedRoute() { return m_pSelectedRoute; }
 
       void SetOwnShipState(ownship_state_t state){ m_ownship_state = state;}
       void GetCursorLatLon(double *lat, double *lon);
@@ -258,7 +259,6 @@ public:
       int GetCanvasChartNativeScale();
       int FindClosestCanvasChartdbIndex(int scale);
       void UpdateCanvasOnGroupChange(void);
-
 
       void ShowChartInfoWindow(int x, int y, int dbIndex);
       void HideChartInfoWindow(void);

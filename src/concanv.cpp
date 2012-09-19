@@ -59,7 +59,8 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 enum eMenuItems {
     ID_NAVLEG,
     ID_NAVROUTE,
-    ID_NAVHIGHWAY
+    ID_NAVHIGHWAY,
+    ID_NAVDEACTIVATE
 } menuItems;
 
 //------------------------------------------------------------------------------
@@ -72,6 +73,7 @@ BEGIN_EVENT_TABLE(ConsoleCanvas, wxWindow)
     EVT_MENU(ID_NAVLEG, ConsoleCanvas::OnContextMenuSelection)
     EVT_MENU(ID_NAVROUTE, ConsoleCanvas::OnContextMenuSelection)
     EVT_MENU(ID_NAVHIGHWAY, ConsoleCanvas::OnContextMenuSelection)
+    EVT_MENU(ID_NAVDEACTIVATE, ConsoleCanvas::OnContextMenuSelection)
 END_EVENT_TABLE()
 
 // Define a constructor for my canvas
@@ -199,10 +201,13 @@ void ConsoleCanvas::OnContextMenu( wxContextMenuEvent& event ) {
     wxMenuItem* btnLeg = new wxMenuItem(contextMenu, ID_NAVLEG, _("This Leg"), _T(""), wxITEM_RADIO );
     wxMenuItem* btnRoute = new wxMenuItem(contextMenu, ID_NAVROUTE, _("Full Route"), _T(""), wxITEM_RADIO );
     wxMenuItem* btnHighw = new wxMenuItem(contextMenu, ID_NAVHIGHWAY, _("Show Highway"), _T(""), wxITEM_CHECK );
+    wxMenuItem* btnDeactivate = new wxMenuItem(contextMenu, ID_NAVDEACTIVATE, _("Deactivate") );
     contextMenu->Append( btnLeg );
     contextMenu->Append( btnRoute );
     contextMenu->AppendSeparator();
     contextMenu->Append( btnHighw );
+    contextMenu->AppendSeparator();
+    contextMenu->Append( btnDeactivate );
 
     btnLeg->Check( ! m_bShowRouteTotal );
     btnRoute->Check( m_bShowRouteTotal );
@@ -233,6 +238,12 @@ void ConsoleCanvas::OnContextMenuSelection( wxCommandEvent& event ) {
                 pCDI->Hide();
             }
             m_pitemBoxSizerLeg->SetSizeHints( this );
+            break;
+        }
+        case ID_NAVDEACTIVATE: {
+            g_pRouteMan->DeactivateRoute();
+            gFrame->GetCanvasWindow()->GetSelectedRoute()->m_bRtIsSelected = false;
+            gFrame->Refresh( false );
             break;
         }
     }
