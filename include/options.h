@@ -29,11 +29,13 @@
 #define _OPTIONS_H_
 
 
-#include "wx/listbook.h"
-#include "wx/dirctrl.h"
-#include "wx/spinctrl.h"
+#include <wx/listbook.h>
+#include <wx/dirctrl.h>
+#include <wx/spinctrl.h>
 #include <wx/listctrl.h>
 #include <wx/choice.h>
+#include <wx/collpane.h>
+
 #include "pluginmanager.h"
 
 #if wxCHECK_VERSION(2, 9, 0)
@@ -241,7 +243,7 @@ public:
     void OnButtonTestSound( wxCommandEvent& event );
     void OnShowGpsWindowCheckboxClick( wxCommandEvent& event );
     void OnZTCCheckboxClick( wxCommandEvent& event );
-    void OnRealSizeClick( wxCommandEvent& event );
+    void OnCollapsibleClick( wxCollapsiblePaneEvent& event );
     void OnButtonGroups( wxCommandEvent& event );
     void OnInsertTideDataLocation( wxCommandEvent &event );
     void OnRemoveTideDataLocation( wxCommandEvent &event );
@@ -364,12 +366,15 @@ public:
     wxCheckBox                *m_pCheck_Draw_Target_Size;
 
 //    For Ship page
-    wxCheckBox              *m_pOSShowRealSize;
+    wxCollapsiblePane       *m_pOSShowRealSize;
     wxTextCtrl              *m_pOSLength;
     wxTextCtrl              *m_pOSWidth;
     wxTextCtrl              *m_pOSGPSOffsetX;
     wxTextCtrl              *m_pOSGPSOffsetY;
     wxTextCtrl              *m_pOSMinSize;
+    wxStaticBoxSizer        *dispOptions;
+    wxScrolledWindow        *itemPanelShip;
+    wxBoxSizer              *ownShip;
 
 //    For Fonts page
     wxBoxSizer              *m_itemBoxSizerFontPanel;
@@ -386,7 +391,7 @@ public:
     int                     k_plugins;
 
 //    For "Etc." Page
-    wxCheckBox              *pNavAidShowRadarRings;
+    wxCollapsiblePane       *pNavAidShowRadarRings;
     wxTextCtrl              *pNavAidRadarRingsNumberVisible;
     wxTextCtrl              *pNavAidRadarRingsStep;
     wxChoice                *m_itemRadarRingsUnits;

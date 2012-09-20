@@ -5288,7 +5288,7 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
                 scale_factor = wxMax(scale_factor, scale_factor_min);
                 scale_factor = wxMin(scale_factor, 10);
 
-                if( g_n_ownship_min_mm == -1 ) scale_factor = 1.0;
+                if( (g_n_ownship_min_mm == -1) || !g_bOwnShipRealSize ) scale_factor = 1.0;
 
                 //      Make a new member image under some conditions
                 if( ( m_cur_ship_pix != ship_scale_pix )
