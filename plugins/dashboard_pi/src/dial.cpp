@@ -235,7 +235,7 @@ void DashboardInstrument_Dial::DrawLabels(wxGCDC* dc)
       dc->SetFont(*g_pFontSmall);
 
       wxColor cl;
-      GetGlobalColor(_T("DASHL"), &cl);
+      GetGlobalColor(_T("DASHF"), &cl);
       dc->SetTextForeground(cl);
 
       int diff_angle = m_AngleStart + m_AngleRange - ANGLE_OFFSET;
@@ -293,7 +293,7 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value,
 
       dc->SetFont(*g_pFontLabel);
       wxColour cl;
-      GetGlobalColor(_T("DASHL"), &cl);
+      GetGlobalColor(_T("DASHF"), &cl);
       dc->SetTextForeground(cl);
 
       wxRect rect = GetClientRect();
@@ -319,9 +319,9 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value,
                   TextPoint.y = (rect.height * .75) - height;
                   wxPen pen;
                   pen.SetStyle(wxSOLID);
-                  GetGlobalColor(_T("DASHF"), &cl);
+                  GetGlobalColor(_T("DASHL"), &cl);
                   pen.SetColour(cl);
-                  pen.SetWidth(2);
+                  pen.SetWidth(1);
                   dc->SetPen(pen);
                   GetGlobalColor(_T("DASHB"), &cl);
                   dc->SetBrush(cl);
@@ -409,7 +409,7 @@ void DrawCompassRose(wxGCDC* dc, int cx, int cy, int radius, int startangle, boo
       wxColour cl;
       wxPen pen;
       pen.SetStyle(wxSOLID);
-      GetGlobalColor(_T("DASHL"), &cl);
+      GetGlobalColor(_T("DASHFL"), &cl);
       pen.SetColour(cl);
       dc->SetPen(pen);
       dc->SetTextForeground(cl);

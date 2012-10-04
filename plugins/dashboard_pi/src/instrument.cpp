@@ -135,7 +135,7 @@ void DashboardInstrument_Single::Draw(wxGCDC* dc)
       wxColour cl;
 
       dc->SetFont(*g_pFontData);
-      GetGlobalColor(_T("DASHL"), &cl);
+      GetGlobalColor(_T("DASHF"), &cl);
       dc->SetTextForeground(cl);
 
       dc->DrawText(m_data, 10, m_TitleHeight);
@@ -209,7 +209,7 @@ void DashboardInstrument_Position::Draw(wxGCDC* dc)
       wxColour cl;
 
       dc->SetFont(*g_pFontData);
-      GetGlobalColor(_T("DASHL"), &cl);
+      GetGlobalColor(_T("DASHF"), &cl);
       dc->SetTextForeground(cl);
 
       dc->DrawText(m_data1, 10, m_TitleHeight);
