@@ -55,8 +55,8 @@ class DashboardInstrument_RudderAngle: public DashboardInstrument_Dial
       private:
 
       protected:
-            void DrawFrame(wxBufferedDC* dc);
-            void DrawBackground(wxBufferedDC* dc);
+            void DrawFrame(wxGCDC* dc);
+            void DrawBackground(wxGCDC* dc);
 };
 
 #endif // __RudderAngle_H__

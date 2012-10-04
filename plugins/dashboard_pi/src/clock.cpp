@@ -65,8 +65,6 @@ void DashboardInstrument_Clock::SetUtcTime(int st, wxDateTime data)
             {
                   m_data = data.FormatISOTime().Append(_T(" UTC"));
             }
-
-            Refresh(false);
       }
 }
 
@@ -92,8 +90,6 @@ void DashboardInstrument_Moon::SetUtcTime(int st, wxDateTime data)
                   }
                   m_data = wxString::Format(m_format, phase, sign);
             }
-
-            Refresh(false);
       }
 }
 

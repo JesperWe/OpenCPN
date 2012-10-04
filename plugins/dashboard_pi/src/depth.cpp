@@ -76,8 +76,6 @@ void DashboardInstrument_Depth::SetData(int st, double data, wxString unit)
                   m_ArrayDepth[idx-1] = m_ArrayDepth[idx];
             }
             m_ArrayDepth[DEPTH_RECORD_COUNT-1] = data;
-
-            Refresh(false);
       }
       else if (st == OCPN_DBP_STC_TMP)
       {
@@ -86,22 +84,23 @@ void DashboardInstrument_Depth::SetData(int st, double data, wxString unit)
       }
 }
 
-void DashboardInstrument_Depth::Draw(wxBufferedDC* dc)
+void DashboardInstrument_Depth::Draw(wxGCDC* dc)
 {
       DrawBackground(dc);
       DrawForeground(dc);
 }
 
-void DashboardInstrument_Depth::DrawBackground(wxBufferedDC* dc)
+void DashboardInstrument_Depth::DrawBackground(wxGCDC* dc)
 {
       wxRect rect = GetClientRect();
       wxColour cl;
 
-      GetGlobalColor(_T("BLUE2"), &cl);
+      GetGlobalColor(_T("DASHL"), &cl);
       dc->SetTextForeground(cl);
 
       wxPen pen;
       pen.SetStyle(wxSOLID);
+      GetGlobalColor(_T("DASHF"), &cl);
       pen.SetColour(cl);
       dc->SetPen(pen);
 
@@ -129,14 +128,14 @@ void DashboardInstrument_Depth::DrawBackground(wxBufferedDC* dc)
       label.Printf(_T("%5.0f m"), 0.0);
       int width, height;
       dc->GetTextExtent(label, &width, &height, 0, 0, g_pFontSmall);
-      dc->DrawText(label, rect.width-width, 40-height);
+      dc->DrawText(label, rect.width-width-1, 40-height);
 
       label.Printf(_T("%5.0f m"), m_MaxDepth);
       dc->GetTextExtent(label, &width, &height, 0, 0, g_pFontSmall);
-      dc->DrawText(label, rect.width-width, rect.height-height);
+      dc->DrawText(label, rect.width-width-1, rect.height-height);
 }
 
-void DashboardInstrument_Depth::DrawForeground(wxBufferedDC* dc)
+void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc)
 {
       wxRect rect = GetClientRect();
       dc->SetFont(*g_pFontData);
@@ -148,7 +147,7 @@ void DashboardInstrument_Depth::DrawForeground(wxBufferedDC* dc)
       dc->DrawText(m_Temp, 0, rect.height-height);
 
       wxColour cl;
-      GetGlobalColor(_T("BLUE1"), &cl);
+      GetGlobalColor(_T("DASHL"), &cl);
       wxBrush brush;
       brush.SetStyle(wxSOLID);
       brush.SetColour(cl);

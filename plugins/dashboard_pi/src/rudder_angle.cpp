@@ -84,11 +84,9 @@ void DashboardInstrument_RudderAngle::SetData(int st, double data, wxString unit
             m_ExtraValue = data;
       }
       else return;
-
-      Refresh(false);
 }
 
-void DashboardInstrument_RudderAngle::DrawFrame(wxBufferedDC* dc)
+void DashboardInstrument_RudderAngle::DrawFrame(wxGCDC* dc)
 {
       // We don't need the upper part
       // Move center up
@@ -103,7 +101,8 @@ void DashboardInstrument_RudderAngle::DrawFrame(wxBufferedDC* dc)
 
       wxPen pen;
       pen.SetStyle(wxSOLID);
-      GetGlobalColor(_T("BLUE2"), &cl);
+      pen.SetWidth(2);
+      GetGlobalColor(_T("DASHF"), &cl);
       pen.SetColour(cl);
       dc->SetPen(pen);
 
@@ -117,7 +116,7 @@ void DashboardInstrument_RudderAngle::DrawFrame(wxBufferedDC* dc)
       dc->DrawLine(x1, y1, x2, y2);
 }
 
-void DashboardInstrument_RudderAngle::DrawBackground(wxBufferedDC* dc)
+void DashboardInstrument_RudderAngle::DrawBackground(wxGCDC* dc)
 {
       wxCoord x = m_cx - (m_radius * 0.3);
       wxCoord y = m_cy - (m_radius * 0.5);

@@ -109,7 +109,7 @@ protected:
       int               m_TitleHeight, m_width, m_height;
       wxString          m_title;
 
-      virtual void Draw(wxBufferedDC* dc) = 0;
+      virtual void Draw(wxGCDC* dc) = 0;
 
 };
 
@@ -127,7 +127,7 @@ protected:
       wxString          m_format;
       int               m_DataHeight;
 
-      void Draw(wxBufferedDC* dc);
+      void Draw(wxGCDC* dc);
 
 };
 
@@ -147,7 +147,7 @@ protected:
       int               m_cap_flag2;
       int               m_DataHeight;
 
-      void Draw(wxBufferedDC* dc);
+      void Draw(wxGCDC* dc);
 
 };
 

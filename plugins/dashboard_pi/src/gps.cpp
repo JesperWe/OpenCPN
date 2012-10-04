@@ -89,32 +89,30 @@ void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, SAT_INFO sats[4])
             m_SatInfo[lidx+idx].AzimuthDegreesTrue = sats[idx].AzimuthDegreesTrue;
             m_SatInfo[lidx+idx].SignalToNoiseRatio = sats[idx].SignalToNoiseRatio;
       }
-
-      Refresh(false);
 }
 
-void DashboardInstrument_GPS::Draw(wxBufferedDC* dc)
+void DashboardInstrument_GPS::Draw(wxGCDC* dc)
 {
       DrawFrame(dc);
       DrawBackground(dc);
       DrawForeground(dc);
 }
 
-void DashboardInstrument_GPS::DrawFrame(wxBufferedDC* dc)
+void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc)
 {
       wxRect rect = GetClientRect();
       wxColour cl;
 
-      GetGlobalColor(_T("DILG1"), &cl);
+      GetGlobalColor(_T("DASHB"), &cl);
       dc->SetTextBackground(cl);
       dc->SetBackgroundMode(wxSOLID);
-      GetGlobalColor(_T("BLUE2"), &cl);
+      GetGlobalColor(_T("DASHL"), &cl);
       dc->SetTextForeground(cl);
       dc->SetBrush(*wxTRANSPARENT_BRUSH);
 
       wxPen pen;
       pen.SetStyle(wxSOLID);
-      GetGlobalColor(_T("BLUE2"), &cl);
+      GetGlobalColor(_T("DASHF"), &cl);
       pen.SetColour(cl);
       dc->SetPen(pen);
 
@@ -143,7 +141,7 @@ void DashboardInstrument_GPS::DrawFrame(wxBufferedDC* dc)
       dc->DrawLine(3, 130, rect.width-3, 130);
 }
 
-void DashboardInstrument_GPS::DrawBackground(wxBufferedDC* dc)
+void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc)
 {
       dc->SetFont(*g_pFontSmall);
       // Draw SatID
@@ -155,17 +153,17 @@ void DashboardInstrument_GPS::DrawBackground(wxBufferedDC* dc)
       }
 }
 
-void DashboardInstrument_GPS::DrawForeground(wxBufferedDC* dc)
+void DashboardInstrument_GPS::DrawForeground(wxGCDC* dc)
 {
       wxColour cl;
-      GetGlobalColor(_T("BLUE1"), &cl);
+      GetGlobalColor(_T("DASHL"), &cl);
       wxBrush brush;
       brush.SetStyle(wxSOLID);
       brush.SetColour(cl);
       dc->SetBrush(brush);
       dc->SetPen(*wxTRANSPARENT_PEN);
       dc->SetTextBackground(cl);
-      GetGlobalColor(_T("BLUE2"), &cl);
+      GetGlobalColor(_T("DASHF"), &cl);
       dc->SetTextForeground(cl);
       dc->SetBackgroundMode(wxSOLID);
 

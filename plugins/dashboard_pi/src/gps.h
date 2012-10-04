@@ -64,10 +64,10 @@ class DashboardInstrument_GPS: public DashboardInstrument
             int m_SatCount;
             SAT_INFO m_SatInfo[12];
 
-            void Draw(wxBufferedDC* dc);
-            void DrawFrame(wxBufferedDC* dc);
-            void DrawBackground(wxBufferedDC* dc);
-            void DrawForeground(wxBufferedDC* dc);
+            void Draw(wxGCDC* dc);
+            void DrawFrame(wxGCDC* dc);
+            void DrawBackground(wxGCDC* dc);
+            void DrawForeground(wxGCDC* dc);
 };
 
 #endif // __GPS_H__

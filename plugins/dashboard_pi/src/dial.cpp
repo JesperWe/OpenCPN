@@ -91,22 +91,20 @@ void DashboardInstrument_Dial::SetData(int st, double data, wxString unit)
             m_MainValue = data;
       else if (st == m_ExtraValueCap)
             m_ExtraValue = data;
-
-      Refresh(false);
 }
 
-void DashboardInstrument_Dial::Draw(wxBufferedDC* dc)
+void DashboardInstrument_Dial::Draw(wxGCDC* bdc)
 {
-      DrawFrame(dc);
-      DrawMarkers(dc);
-      DrawLabels(dc);
-      DrawBackground(dc);
-      DrawData(dc, m_MainValue, m_MainValueFormat, m_MainValueOption);
-      DrawData(dc, m_ExtraValue, m_ExtraValueFormat, m_ExtraValueOption);
-      DrawForeground(dc);
+    DrawFrame(bdc);
+    DrawMarkers(bdc);
+    DrawLabels(bdc);
+    DrawBackground(bdc);
+    DrawData(bdc, m_MainValue, m_MainValueFormat, m_MainValueOption);
+    DrawData(bdc, m_ExtraValue, m_ExtraValueFormat, m_ExtraValueOption);
+    DrawForeground(bdc);
 }
 
-void DashboardInstrument_Dial::DrawFrame(wxBufferedDC* dc)
+void DashboardInstrument_Dial::DrawFrame(wxGCDC* dc)
 {
       wxRect rect = GetClientRect();
       wxColour cl;
@@ -128,39 +126,40 @@ void DashboardInstrument_Dial::DrawFrame(wxBufferedDC* dc)
       m_cy += availableHeight / 2;
       m_radius = availableHeight / 2;
 
-      GetGlobalColor(_T("BLUE2"), &cl);
+      GetGlobalColor(_T("DASHL"), &cl);
       dc->SetTextForeground(cl);
       dc->SetBrush(*wxTRANSPARENT_BRUSH);
 
       wxPen pen;
-      // This is a special case: wee need to draw the bar below
-      // to ensure correct visibility
+      pen.SetWidth(2);
+
       if (m_MarkerOption == DIAL_MARKER_REDGREENBAR)
       {
-            pen.SetWidth(2);
-            cl = *wxRED;
+            pen.SetWidth(4);
+            GetGlobalColor(_T("DASHR"), &cl);
             pen.SetColour(cl);
             dc->SetPen(pen);
             double angle1 = deg2rad(270); // 305-ANGLE_OFFSET
             double angle2 = deg2rad(90); // 55-ANGLE_OFFSET
-            wxCoord x1 = m_cx + ((m_radius-1) * cos(angle1));
-            wxCoord y1 = m_cy + ((m_radius-1) * sin(angle1));
-            wxCoord x2 = m_cx + ((m_radius-1) * cos(angle2));
-            wxCoord y2 = m_cy + ((m_radius-1) * sin(angle2));
+            wxCoord x1 = m_cx + ((m_radius-3) * cos(angle1));
+            wxCoord y1 = m_cy + ((m_radius-3) * sin(angle1));
+            wxCoord x2 = m_cx + ((m_radius-3) * cos(angle2));
+            wxCoord y2 = m_cy + ((m_radius-3) * sin(angle2));
             dc->DrawArc(x1, y1, x2, y2, m_cx, m_cy);
-            cl = *wxGREEN;
+            GetGlobalColor(_T("DASHG"), &cl);
             pen.SetColour(cl);
             dc->SetPen(pen);
             angle1 = deg2rad(90); // 305-ANGLE_OFFSET
             angle2 = deg2rad(270); // 55-ANGLE_OFFSET
-            x1 = m_cx + ((m_radius-1) * cos(angle1));
-            y1 = m_cy + ((m_radius-1) * sin(angle1));
-            x2 = m_cx + ((m_radius-1) * cos(angle2));
-            y2 = m_cy + ((m_radius-1) * sin(angle2));
+            x1 = m_cx + ((m_radius-3) * cos(angle1));
+            y1 = m_cy + ((m_radius-3) * sin(angle1));
+            x2 = m_cx + ((m_radius-3) * cos(angle2));
+            y2 = m_cy + ((m_radius-3) * sin(angle2));
             dc->DrawArc(x1, y1, x2, y2, m_cx, m_cy);
-            GetGlobalColor(_T("BLUE2"), &cl);
-            pen.SetWidth(1);
+            GetGlobalColor(_T("DASHF"), &cl);
+            pen.SetWidth(2);
       }
+      GetGlobalColor(_T("DASHF"), &cl);
       pen.SetStyle(wxSOLID);
       pen.SetColour(cl);
       dc->SetPen(pen);
@@ -168,13 +167,13 @@ void DashboardInstrument_Dial::DrawFrame(wxBufferedDC* dc)
       dc->DrawCircle(m_cx, m_cy, m_radius);
 }
 
-void DashboardInstrument_Dial::DrawMarkers(wxBufferedDC* dc)
+void DashboardInstrument_Dial::DrawMarkers(wxGCDC* dc)
 {
       if (m_MarkerOption == DIAL_MARKER_NONE)
             return;
 
       wxColour cl;
-      GetGlobalColor(_T("BLUE2"), &cl);
+      GetGlobalColor(_T("DASHF"), &cl);
       wxPen pen;
       pen.SetStyle(wxSOLID);
       pen.SetColour(cl);
@@ -193,11 +192,11 @@ void DashboardInstrument_Dial::DrawMarkers(wxBufferedDC* dc)
             {
                   int a = int(angle + ANGLE_OFFSET) % 360;
                   if (a > 180)
-                        cl = *wxRED;
+                        GetGlobalColor(_T("DASHR"), &cl);
                   else if ((a > 0) && (a < 180))
-                        cl = *wxGREEN;
+                        GetGlobalColor(_T("DASHG"), &cl);
                   else
-                        GetGlobalColor(_T("BLUE2"), &cl);
+                        GetGlobalColor(_T("DASHF"), &cl);
 
                   pen.SetColour(cl);
                   dc->SetPen(pen);
@@ -218,14 +217,14 @@ void DashboardInstrument_Dial::DrawMarkers(wxBufferedDC* dc)
       // We must reset pen color so following drawings are fine
       if (m_MarkerOption == DIAL_MARKER_REDGREEN)
       {
-            GetGlobalColor(_T("BLUE2"), &cl);
+            GetGlobalColor(_T("DASHF"), &cl);
             pen.SetStyle(wxSOLID);
             pen.SetColour(cl);
             dc->SetPen(pen);
       }
 }
 
-void DashboardInstrument_Dial::DrawLabels(wxBufferedDC* dc)
+void DashboardInstrument_Dial::DrawLabels(wxGCDC* dc)
 {
       if (m_LabelOption == DIAL_LABEL_NONE)
             return;
@@ -236,7 +235,7 @@ void DashboardInstrument_Dial::DrawLabels(wxBufferedDC* dc)
       dc->SetFont(*g_pFontSmall);
 
       wxColor cl;
-      GetGlobalColor(_T("BLUE2"), &cl);
+      GetGlobalColor(_T("DASHL"), &cl);
       dc->SetTextForeground(cl);
 
       int diff_angle = m_AngleStart + m_AngleRange - ANGLE_OFFSET;
@@ -280,22 +279,21 @@ void DashboardInstrument_Dial::DrawLabels(wxBufferedDC* dc)
       }
 }
 
-void DashboardInstrument_Dial::DrawBackground(wxBufferedDC* dc)
+void DashboardInstrument_Dial::DrawBackground(wxGCDC* dc)
 {
       // Nothing to do here right now, will be overwritten
       // by child classes if required
 }
 
-void DashboardInstrument_Dial::DrawData(wxBufferedDC* dc, double value,
+void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value,
             wxString format, DialPositionOption position)
 {
       if (position == DIAL_POSITION_NONE)
             return;
 
       dc->SetFont(*g_pFontLabel);
-//      dc->SetTextForeground(pFontMgr->GetFontColor(_T("Dashboard Label")));
       wxColour cl;
-      GetGlobalColor(_T("BLUE2"), &cl);
+      GetGlobalColor(_T("DASHL"), &cl);
       dc->SetTextForeground(cl);
 
       wxRect rect = GetClientRect();
@@ -305,7 +303,6 @@ void DashboardInstrument_Dial::DrawData(wxBufferedDC* dc, double value,
            text = wxString::Format(format, value);
       else
            text = _T("---");
-//      wxString text = wxString::Format(format, value);
 
       int width, height;
       dc->GetTextExtent(text, &width, &height, 0, 0, g_pFontLabel);
@@ -317,20 +314,28 @@ void DashboardInstrument_Dial::DrawData(wxBufferedDC* dc, double value,
                   // to avoid compiler warning.
                   return;
             case DIAL_POSITION_INSIDE:
-                  TextPoint.x = m_cx - (width / 2);
+            {
+                  TextPoint.x = m_cx - (width / 2) - 1;
                   TextPoint.y = (rect.height * .75) - height;
-                  GetGlobalColor(_T("DILG1"), &cl);
+                  wxPen pen;
+                  pen.SetStyle(wxSOLID);
+                  GetGlobalColor(_T("DASHF"), &cl);
+                  pen.SetColour(cl);
+                  pen.SetWidth(2);
+                  dc->SetPen(pen);
+                  GetGlobalColor(_T("DASHB"), &cl);
                   dc->SetBrush(cl);
                   // There might be a background drawn below
                   // so we must clear it first.
-                  dc->DrawRectangle(TextPoint.x-2, TextPoint.y-2, width+4, height+4);
+                  dc->DrawRoundedRectangle(TextPoint.x-2, TextPoint.y-2, width+4, height+4, 3);
                   break;
+            }
             case DIAL_POSITION_TOPLEFT:
                   TextPoint.x = 0;
                   TextPoint.y = m_TitleHeight;
                   break;
             case DIAL_POSITION_TOPRIGHT:
-                  TextPoint.x = rect.width-width;
+                  TextPoint.x = rect.width-width-1;
                   TextPoint.y = m_TitleHeight;
                   break;
             case DIAL_POSITION_BOTTOMLEFT:
@@ -338,7 +343,7 @@ void DashboardInstrument_Dial::DrawData(wxBufferedDC* dc, double value,
                   TextPoint.y = rect.height-height;
                   break;
             case DIAL_POSITION_BOTTOMRIGHT:
-                  TextPoint.x = rect.width-width;
+                  TextPoint.x = rect.width-width-1;
                   TextPoint.y = rect.height-height;
                   break;
       }
@@ -346,7 +351,7 @@ void DashboardInstrument_Dial::DrawData(wxBufferedDC* dc, double value,
       dc->DrawText(text, TextPoint);
 }
 
-void DashboardInstrument_Dial::DrawForeground(wxBufferedDC* dc)
+void DashboardInstrument_Dial::DrawForeground(wxGCDC* dc)
 {
       // The default foreground is the arrow used in most dials
       wxColour cl;
@@ -365,10 +370,10 @@ void DashboardInstrument_Dial::DrawForeground(wxBufferedDC* dc)
 
       dc->SetPen(*wxTRANSPARENT_PEN);
 
-      //GetGlobalColor(_T("BLUE1"), &cl);
+      GetGlobalColor(_T("DASHN"), &cl);
       wxBrush brush;
       brush.SetStyle(wxSOLID);
-      brush.SetColour(wxColour(255,145,0));
+      brush.SetColour(cl);
       dc->SetBrush(brush);
 
       // The arrow should stay inside fixed limits
@@ -379,13 +384,111 @@ void DashboardInstrument_Dial::DrawForeground(wxBufferedDC* dc)
 
       double value = deg2rad((val - m_MainValueMin) * m_AngleRange / (m_MainValueMax - m_MainValueMin)) + deg2rad(m_AngleStart - ANGLE_OFFSET);
 
-      wxPoint points[3];
-      points[0].x = m_cx + (m_radius * 0.95 * cos(value));
-      points[0].y = m_cy + (m_radius * 0.95 * sin(value));
-      points[1].x = m_cx + (m_radius * 0.22 * cos(value + 160));
-      points[1].y = m_cy + (m_radius * 0.22 * sin(value + 160));
-      points[2].x = m_cx + (m_radius * 0.22 * cos(value - 160));
-      points[2].y = m_cy + (m_radius * 0.22 * sin(value - 160));
-      dc->DrawPolygon(3, points, 0, 0);
+      wxPoint points[4];
+      points[0].x = m_cx + (m_radius * 0.95 * cos(value - .010));
+      points[0].y = m_cy + (m_radius * 0.95 * sin(value - .010));
+      points[1].x = m_cx + (m_radius * 0.95 * cos(value + .015));
+      points[1].y = m_cy + (m_radius * 0.95 * sin(value + .015));
+      points[2].x = m_cx + (m_radius * 0.22 * cos(value + 2.8));
+      points[2].y = m_cy + (m_radius * 0.22 * sin(value + 2.8));
+      points[3].x = m_cx + (m_radius * 0.22 * cos(value - 2.8));
+      points[3].y = m_cy + (m_radius * 0.22 * sin(value - 2.8));
+      dc->DrawPolygon(4, points, 0, 0);
+}
+
+/* Shared functions */
+void DrawCompassRose(wxGCDC* dc, int cx, int cy, int radius, int startangle, bool showlabels)
+{
+      wxPoint TextPoint, points[3];
+      wxString Value;
+      int width, height;
+      wxString CompassArray[] = {_("N"),_("NE"),_("E"),_("SE"),_("S"),_("SW"),_("W"),_("NW"),_("N")};
+
+      dc->SetFont(*g_pFontSmall);
+
+      wxColour cl;
+      wxPen pen;
+      pen.SetStyle(wxSOLID);
+      GetGlobalColor(_T("DASHL"), &cl);
+      pen.SetColour(cl);
+      dc->SetPen(pen);
+      dc->SetTextForeground(cl);
+
+      int offset = 0;
+      for(double tmpangle = startangle - ANGLE_OFFSET;
+                        tmpangle <= startangle + 360 - ANGLE_OFFSET; tmpangle+=45)
+      {
+            if (showlabels)
+            {
+                Value = CompassArray[offset];
+                dc->GetTextExtent(Value, &width, &height, 0, 0, g_pFontSmall);
+                double x = width/2;
+                long double anglefortext = asin((x/radius));
+                anglefortext = tmpangle - rad2deg(anglefortext);
+                TextPoint.x = cx + radius * cos(deg2rad(anglefortext));
+                TextPoint.y = cy + radius * sin(deg2rad(anglefortext));
+                dc->DrawRotatedText(Value, TextPoint.x,
+                                                    TextPoint.y, -90 - tmpangle);
+            }
+            dc->SetBrush(*wxTRANSPARENT_BRUSH);
+            points[0].x = cx;
+            points[0].y = cy;
+            points[1].x = cx + radius * 0.1 * cos(deg2rad(tmpangle-45));
+            points[1].y = cy + radius * 0.1 * sin(deg2rad(tmpangle-45));
+            double size = (offset % 2 ? 0.50 : 0.80);
+            points[2].x = cx + radius * size * cos(deg2rad(tmpangle));
+            points[2].y = cy + radius * size * sin(deg2rad(tmpangle));
+            dc->DrawPolygon(3, points, 0, 0);
+
+            points[1].x = cx + radius * 0.1 * cos(deg2rad(tmpangle+45));
+            points[1].y = cy + radius * 0.1 * sin(deg2rad(tmpangle+45));
+            dc->SetBrush(cl);
+            dc->DrawPolygon(3, points, 0, 0);
+            offset++;
+      }
+}
+
+void DrawBoat( wxGCDC* dc, int cx, int cy, int radius )
+{
+    // Now draw the boat
+    wxColour cl;
+    wxPen pen;
+    GetGlobalColor(_T("GREY1"), &cl);
+    pen.SetStyle(wxSOLID);
+    pen.SetColour(cl);
+    dc->SetPen(pen);
+    GetGlobalColor(_T("GREY2"), &cl);
+    dc->SetBrush(cl);
+    wxPoint points[7];
+
+/*
+ *           0
+ *          /\
+ *         /  \
+ *        /    \
+ *     6 /      \ 1
+ *      |        |
+ *      |    X   |
+ *    5 |        | 2
+ *       \      /
+ *        \__ _/
+ *        4    3
+ */
+    points[0].x = cx;
+    points[0].y = cy - radius * .60; // a little bit longer than compass rose
+    points[1].x = cx + radius * .15;
+    points[1].y = cy - radius * .08;
+    points[2].x = cx + radius * .15;
+    points[2].y = cy + radius * .12;
+    points[3].x = cx + radius * .10;
+    points[3].y = cy + radius * .40;
+    points[4].x = cx - radius * .10;
+    points[4].y = cy + radius * .40;
+    points[5].x = cx - radius * .15;
+    points[5].y = cy + radius * .12;
+    points[6].x = cx - radius * .15;
+    points[6].y = cy - radius * .08;
+
+    dc->DrawPolygon(7, points, 0, 0);
 }
 

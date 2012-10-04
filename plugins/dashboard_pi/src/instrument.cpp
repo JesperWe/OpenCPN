@@ -65,47 +65,41 @@ int DashboardInstrument::GetCapacity()
 
 void DashboardInstrument::OnPaint(wxPaintEvent& WXUNUSED(event))
 {
-      wxPaintDC dc(this);
+      wxPaintDC pdc(this);
 
-      if(!dc.IsOk())
+      if(!pdc.IsOk())
             return;
-
-      wxBitmap bmp;
-
-      // Create a double buffer to draw the plot
-      // on screen to prevent flicker from occuring.
-      wxBufferedDC buff_dc;
-      buff_dc.Init(&dc, bmp);
 
       wxRect rect = GetClientRect();
-
       if(rect.width == 0 || rect.height == 0)
-      {
             return;
-      }
 
+    wxBitmap bm( pdc.GetSize().x, pdc.GetSize().y, 32 );
+    bm.UseAlpha();
+    wxMemoryDC mdc( bm );
+    wxGCDC dc( mdc );
       wxColour cl;
+      GetGlobalColor(_T("DASHB"), &cl);
+    dc.SetBackground( cl );
+    dc.Clear();
 
-      GetGlobalColor(_T("DILG1"), &cl);
-      buff_dc.SetBackground(cl);
-      buff_dc.Clear();
+    Draw( &dc );
 
-      GetGlobalColor(_T("UIBDR"), &cl);
       // With wxTRANSPARENT_PEN the borders are ugly so lets use the same color for both
       wxPen pen;
       pen.SetStyle(wxSOLID);
+      GetGlobalColor(_T("DASHL"), &cl);
       pen.SetColour(cl);
-      buff_dc.SetPen(pen);
-      buff_dc.SetBrush(cl);
-      buff_dc.DrawRoundedRectangle(0, 0, rect.width, m_TitleHeight, 3);
+      dc.SetPen(pen);
+      dc.SetBrush(cl);
+      dc.DrawRoundedRectangle(0, 0, rect.width, m_TitleHeight, 3);
 
-      buff_dc.SetFont(*g_pFontTitle);
-      //      dc->SetTextForeground(pFontMgr->GetFontColor(_T("Dashboard Label")));
-      GetGlobalColor(_T("DILG3"), &cl);
-      buff_dc.SetTextForeground(cl);
-      buff_dc.DrawText(m_title, 5, 0);
-
-      Draw(&buff_dc);
+      dc.SetFont(*g_pFontTitle);
+      GetGlobalColor(_T("DASHF"), &cl);
+      dc.SetTextForeground(cl);
+      dc.DrawText(m_title, 5, 0);
+    mdc.SelectObject( wxNullBitmap );
+    pdc.DrawBitmap( bm, 0, 0, false );
 }
 
 //----------------------------------------------------------------
@@ -136,13 +130,12 @@ void DashboardInstrument_Single::SetInstrumentWidth(int width)
       Refresh(false);
 }
 
-void DashboardInstrument_Single::Draw(wxBufferedDC* dc)
+void DashboardInstrument_Single::Draw(wxGCDC* dc)
 {
       wxColour cl;
 
       dc->SetFont(*g_pFontData);
-      //dc.SetTextForeground(pFontMgr->GetFontColor(_T("Dashboard Data")));
-      GetGlobalColor(_T("BLUE2"), &cl);
+      GetGlobalColor(_T("DASHL"), &cl);
       dc->SetTextForeground(cl);
 
       dc->DrawText(m_data, 10, m_TitleHeight);
@@ -178,8 +171,6 @@ void DashboardInstrument_Single::SetData(int st, double data, wxString unit)
             }
             else
                 m_data = _T("---");
-
-            Refresh(false);
       }
 }
 
@@ -213,13 +204,12 @@ void DashboardInstrument_Position::SetInstrumentWidth(int width)
       Refresh(false);
 }
 
-void DashboardInstrument_Position::Draw(wxBufferedDC* dc)
+void DashboardInstrument_Position::Draw(wxGCDC* dc)
 {
       wxColour cl;
 
       dc->SetFont(*g_pFontData);
-      //dc.SetTextForeground(pFontMgr->GetFontColor(_T("Dashboard Data")));
-      GetGlobalColor(_T("BLUE2"), &cl);
+      GetGlobalColor(_T("DASHL"), &cl);
       dc->SetTextForeground(cl);
 
       dc->DrawText(m_data1, 10, m_TitleHeight);
@@ -237,8 +227,6 @@ void DashboardInstrument_Position::SetData(int st, double data, wxString unit)
             m_data2 = toSDMM(2, data);
       }
       else return;
-
-      Refresh(false);
 }
 
 void DashboardInstrument_Sun::SetData(int st, double data, wxString unit)
@@ -255,19 +243,17 @@ void DashboardInstrument_Sun::SetData(int st, double data, wxString unit)
 
       if (m_lat == 999.9 || m_lon == 999.9)
             return;
-      
+
       wxDateTime sunset, sunrise;
       calculateSun(m_lat, m_lon, sunrise, sunset);
-      if (sunrise.GetYear() != 999) 
+      if (sunrise.GetYear() != 999)
             m_data1 = sunrise.FormatISOTime().Append(_T(" UTC"));
-      else 
+      else
             m_data1 = _T("---");
       if (sunset.GetYear() != 999)
             m_data2 = sunset.FormatISOTime().Append(_T(" UTC"));
       else
             m_data2 = _T("---");
-
-      Refresh(false);
 }
 
 /**************************************************************************/
@@ -355,7 +341,7 @@ Inputs:
 	  civil        = 96 degrees
 	  nautical     = 102 degrees
 	  astronomical = 108 degrees
-	
+
 	NOTE: longitude is positive for East and negative for West
         NOTE: the algorithm assumes the use of a calculator with the
         trig functions in "degree" (rather than "radian") mode. Most
@@ -377,7 +363,7 @@ Inputs:
 2. convert the longitude to hour value and calculate an approximate time
 
 	lngHour = longitude / 15
-	
+
 	if rising time is desired:
 	  t = N + ((6 - lngHour) / 24)
 	if setting time is desired:
@@ -389,14 +375,14 @@ Inputs:
 /*
 
 3. calculate the Sun's mean anomaly
-	
+
 	M = (0.9856 * t) - 3.289
 */
       double mris = (0.9856 * tris) - 3.289;
       double mset = (0.9856 * tset) - 3.289;
 /*
 4. calculate the Sun's true longitude
-	
+
 	L = M + (1.916 * sin(M)) + (0.020 * sin(2 * M)) + 282.634
 	NOTE: L potentially needs to be adjusted into the range [0,360) by adding/subtracting 360
 */
@@ -408,7 +394,7 @@ Inputs:
       if (lset < 0) lset += 360;
 /*
 5a. calculate the Sun's right ascension
-	
+
 	RA = atan(0.91764 * tan(L))
 	NOTE: RA potentially needs to be adjusted into the range [0,360) by adding/subtracting 360
 */
@@ -450,10 +436,10 @@ Inputs:
       double cosDecset = cos(asin(sinDecset));
 /*
 7a. calculate the Sun's local hour angle
-	
+
 	cosH = (cos(zenith) - (sinDec * sin(latitude))) / (cosDec * cos(latitude))
-	
-	if (cosH >  1) 
+
+	if (cosH >  1)
 	  the sun never rises on this location (on the specified date)
 	if (cosH < -1)
 	  the sun never sets on this location (on the specified date)
@@ -469,12 +455,12 @@ Inputs:
       if (coshset > 1) neversets = true; //nohal - it's cosine - even value greater than 1 is ilegal... correct me if i'm wrong
 /*
 7b. finish calculating H and convert into hours
-	
+
 	if if rising time is desired:
 	  H = 360 - acos(cosH)
 	if setting time is desired:
 	  H = acos(cosH)
-	
+
 	H = H / 15
 */
       double hris = 360 - RADIAN * acos(coshris);
@@ -483,14 +469,14 @@ Inputs:
       hset = hset/15;
 /*
 8. calculate local mean time of rising/setting
-	
+
 	T = H + RA - (0.06571 * t) - 6.622
 */
       tris = hris + raris - (0.06571 * tris) - 6.622;
       tset = hset + raset - (0.06571 * tset) - 6.622;
 /*
 9. adjust back to UTC
-	
+
 	UT = T - lngHour
 	NOTE: UT potentially needs to be adjusted into the range [0,24) by adding/subtracting 24
 */
@@ -508,7 +494,7 @@ Inputs:
 /*
 Optional:
 10. convert UT value to local time zone of latitude/longitude
-	
+
 	localT = UT + localOffset
 */
 }
@@ -522,15 +508,14 @@ void DashboardInstrument_Sun::SetUtcTime(int st, wxDateTime data)
                   m_dt = data;
                   wxDateTime sunrise, sunset;
                   calculateSun(m_lat, m_lon, sunrise, sunset);
-                  if (sunrise.GetYear() != 999) 
+                  if (sunrise.GetYear() != 999)
                         m_data1 = sunrise.FormatISOTime().Append(_T(" UTC"));
-                  else 
+                  else
                         m_data1 = _T("---");
                   if (sunset.GetYear() != 999)
                         m_data2 = sunset.FormatISOTime().Append(_T(" UTC"));
                   else
                         m_data2 = _T("---");
             }
-            Refresh(false);
       }
 }

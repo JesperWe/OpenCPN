@@ -62,7 +62,7 @@ class DashboardInstrument_Wind: public DashboardInstrument_Dial
       private:
 
       protected:
-            void DrawBackground(wxBufferedDC* dc);
+            void DrawBackground(wxGCDC* dc);
 };
 
 class DashboardInstrument_WindCompass: public DashboardInstrument_Dial
@@ -75,7 +75,7 @@ class DashboardInstrument_WindCompass: public DashboardInstrument_Dial
       private:
 
       protected:
-            void DrawBackground(wxBufferedDC* dc);
+            void DrawBackground(wxGCDC* dc);
 };
 
 class DashboardInstrument_TrueWindAngle: public DashboardInstrument_Dial
@@ -90,9 +90,9 @@ class DashboardInstrument_TrueWindAngle: public DashboardInstrument_Dial
       private:
 
       protected:
-            
-            void DrawBackground(wxBufferedDC* dc);
-            void DrawForeground(wxBufferedDC* dc);
+
+            void DrawBackground(wxGCDC* dc);
+            void DrawForeground(wxGCDC* dc);
 };
 
 #endif // __Wind_H__

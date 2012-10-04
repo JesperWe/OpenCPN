@@ -120,14 +120,18 @@ class DashboardInstrument_Dial: public DashboardInstrument
             DialLabelOption m_LabelOption;
             wxArrayString m_LabelArray;
 
-            virtual void Draw(wxBufferedDC* dc);
-            virtual void DrawFrame(wxBufferedDC* dc);
-            virtual void DrawMarkers(wxBufferedDC* dc);
-            virtual void DrawLabels(wxBufferedDC* dc);
-            virtual void DrawBackground(wxBufferedDC* dc);
-            virtual void DrawData(wxBufferedDC* dc, double value, wxString format, DialPositionOption position);
-            virtual void DrawForeground(wxBufferedDC* dc);
+            virtual void Draw(wxGCDC* dc);
+            virtual void DrawFrame(wxGCDC* dc);
+            virtual void DrawMarkers(wxGCDC* dc);
+            virtual void DrawLabels(wxGCDC* dc);
+            virtual void DrawBackground(wxGCDC* dc);
+            virtual void DrawData(wxGCDC* dc, double value, wxString format, DialPositionOption position);
+            virtual void DrawForeground(wxGCDC* dc);
 };
+
+/* Shared functions */
+void DrawCompassRose( wxGCDC* dc, int cx, int cy, int radius, int startangle, bool showlabels );
+void DrawBoat( wxGCDC* dc, int cx, int cy, int radius );
 
 #endif // __Dial_H__
 

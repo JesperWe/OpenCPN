@@ -64,9 +64,9 @@ class DashboardInstrument_Depth: public DashboardInstrument
             double m_Depth;
             wxString m_Temp;
 
-            void Draw(wxBufferedDC* dc);
-            void DrawBackground(wxBufferedDC* dc);
-            void DrawForeground(wxBufferedDC* dc);
+            void Draw(wxGCDC* dc);
+            void DrawBackground(wxGCDC* dc);
+            void DrawForeground(wxGCDC* dc);
 };
 
 #endif // __DEPTH_H__

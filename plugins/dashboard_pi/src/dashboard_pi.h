@@ -35,7 +35,7 @@
 #endif //precompiled headers
 
 #define     PLUGIN_VERSION_MAJOR    1
-#define     PLUGIN_VERSION_MINOR    1
+#define     PLUGIN_VERSION_MINOR    2
 
 #define     MY_API_VERSION_MAJOR    1
 #define     MY_API_VERSION_MINOR    6
@@ -108,7 +108,7 @@ WX_DEFINE_ARRAY(DashboardInstrumentContainer *, wxArrayOfInstrument);
 //----------------------------------------------------------------------------------------------------------
 
 
-class dashboard_pi : public wxEvtHandler, opencpn_plugin_16
+class dashboard_pi : public opencpn_plugin_16, wxTimer
 {
 public:
       dashboard_pi(void *ppimgr);
@@ -117,6 +117,8 @@ public:
 //    The required PlugIn Methods
       int Init(void);
       bool DeInit(void);
+
+      void Notify();
 
       int GetAPIVersionMajor();
       int GetAPIVersionMinor();
