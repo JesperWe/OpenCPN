@@ -153,34 +153,34 @@ void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc)
       }
 }
 
-void DashboardInstrument_GPS::DrawForeground(wxGCDC* dc)
+void DashboardInstrument_GPS::DrawForeground( wxGCDC* dc )
 {
-      wxColour cl;
-      GetGlobalColor(_T("DASHL"), &cl);
-      wxBrush brush;
-      brush.SetStyle(wxSOLID);
-      brush.SetColour(cl);
-      dc->SetBrush(brush);
-      dc->SetPen(*wxTRANSPARENT_PEN);
-      dc->SetTextBackground(cl);
-      GetGlobalColor(_T("DASHF"), &cl);
-      dc->SetTextForeground(cl);
-      dc->SetBackgroundMode(wxSOLID);
+    wxColour cl;
+    GetGlobalColor( _T("DASHL"), &cl );
+    wxBrush* brush = wxTheBrushList->FindOrCreateBrush( cl );
+    dc->SetBrush( *brush );
+    dc->SetPen( *wxTRANSPARENT_PEN);
+    dc->SetTextBackground( cl );
 
-      wxString label;
-      wxFont font = dc->GetFont();
-      for (int idx = 0; idx < 12; idx++)
-      {
-            if (m_SatInfo[idx].SignalToNoiseRatio)
-            {
-                  dc->DrawRectangle(idx*16+5, 140, 14, m_SatInfo[idx].SignalToNoiseRatio * -0.4);
-                  label.Printf(_T("%02d"), m_SatInfo[idx].SatNumber);
-                  int width, height;
-                  dc->GetTextExtent(label, &width, &height, 0, 0, &font);
-                  int posx = m_cx + m_radius * cos(deg2rad(m_SatInfo[idx].AzimuthDegreesTrue-ANGLE_OFFSET)) * sin(deg2rad(ANGLE_OFFSET-m_SatInfo[idx].ElevationDegrees)) - width/2;
-                  int posy = m_cy + m_radius * sin(deg2rad(m_SatInfo[idx].AzimuthDegreesTrue-ANGLE_OFFSET)) * sin(deg2rad(ANGLE_OFFSET-m_SatInfo[idx].ElevationDegrees)) - height/2;
-                  dc->DrawText(label, posx, posy);
-            }
-      }
+    GetGlobalColor( _T("DASHF"), &cl );
+    dc->SetTextForeground( cl );
+    dc->SetBackgroundMode( wxSOLID );
+
+    wxString label;
+    wxFont font = dc->GetFont();
+    for( int idx = 0; idx < 12; idx++ ) {
+        if( m_SatInfo[idx].SignalToNoiseRatio ) {
+            int h = m_SatInfo[idx].SignalToNoiseRatio * 0.4;
+            dc->DrawRectangle( idx * 16 + 5, 140 - h, 13, h );
+            label.Printf( _T("%02d"), m_SatInfo[idx].SatNumber );
+            int width, height;
+            dc->GetTextExtent( label, &width, &height, 0, 0, &font );
+            int posx = m_cx + m_radius * cos( deg2rad( m_SatInfo[idx].AzimuthDegreesTrue - ANGLE_OFFSET ) )
+                            * sin( deg2rad( ANGLE_OFFSET - m_SatInfo[idx].ElevationDegrees ) ) - width / 2;
+            int posy = m_cy + m_radius * sin( deg2rad( m_SatInfo[idx].AzimuthDegreesTrue - ANGLE_OFFSET ) )
+                            * sin( deg2rad( ANGLE_OFFSET - m_SatInfo[idx].ElevationDegrees ) ) - height / 2;
+            dc->DrawText( label, posx, posy );
+        }
+    }
 }
 

@@ -117,19 +117,19 @@ wxString getInstrumentCaption(unsigned int id)
       case ID_DBP_I_STW:
             return _("STW");
       case ID_DBP_I_HDG:
-            return _("true HDG");
+            return _("True HDG");
       case ID_DBP_I_HDM:
-            return _("mag HDG");
+            return _("Mag HDG");
       case ID_DBP_D_AW:
-            return _("Apparent wind");
+            return _("Apparent Wind");
       case ID_DBP_D_AWA:
-            return _("Wind angle");
+            return _("Wind Angle");
       case ID_DBP_I_AWS:
-            return _("Wind speed");
+            return _("Wind Speed");
       case ID_DBP_D_AWS:
-            return _("Wind speed");
+            return _("Wind Speed");
       case ID_DBP_D_TW:
-            return _("True wind");
+            return _("True Wind");
       case ID_DBP_I_DPT:
             return _("Depth");
       case ID_DBP_D_DPT:
@@ -139,27 +139,27 @@ wxString getInstrumentCaption(unsigned int id)
       case ID_DBP_I_ATMP:
             return _("Airtemp");
 	  case ID_DBP_I_AWA:
-            return _("App. Wind angle");
+            return _("App. Wind Angle");
 	  case ID_DBP_I_TWA:
-            return _("True Wind angle");
+            return _("True Wind Angle");
 	  case ID_DBP_I_TWD:
-            return _("True Wind direction");
+            return _("True Wind Direction");
 	  case ID_DBP_I_TWS:
-            return _("True Wind speed");
+            return _("True Wind Speed");
 	  case ID_DBP_D_TWA:
-            return _("True Wind angle & speed");
+            return _("True Wind Angle & Speed");
       case ID_DBP_I_VMG:
             return _("VMG");
       case ID_DBP_D_VMG:
             return _("VMG");
       case ID_DBP_I_RSA:
-            return _("Rudder angle");
+            return _("Rudder Angle");
       case ID_DBP_D_RSA:
-            return _("Rudder angle");
+            return _("Rudder Angle");
       case ID_DBP_I_SAT:
-            return _("GPS in view");
+            return _("GPS in View");
       case ID_DBP_D_GPS:
-            return _("GPS status");
+            return _("GPS Status");
       case ID_DBP_I_PTR:
             return _("Cursor");
       case ID_DBP_I_CLK:
@@ -1615,7 +1615,7 @@ AddInstrumentDlg::AddInstrumentDlg(wxWindow *pparent, wxWindowID id)
       imglist->Add(*_img_instrument);
       imglist->Add(*_img_dial);
 
-      m_pListCtrlInstruments = new wxListCtrl( this, wxID_ANY, wxDefaultPosition, wxSize(250, 80), wxLC_REPORT|wxLC_NO_HEADER|wxLC_SINGLE_SEL );
+      m_pListCtrlInstruments = new wxListCtrl( this, wxID_ANY, wxDefaultPosition, wxSize(250, 180), wxLC_REPORT|wxLC_NO_HEADER|wxLC_SINGLE_SEL );
       itemBoxSizer01->Add(m_pListCtrlInstruments, 0, wxEXPAND|wxALL, 5);
       m_pListCtrlInstruments->AssignImageList(imglist, wxIMAGE_LIST_SMALL);
       m_pListCtrlInstruments->InsertColumn(0, _("Instruments"));
@@ -1741,7 +1741,7 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list)
                   instrument = new DashboardInstrument_Compass(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_COG);
                   ((DashboardInstrument_Dial *)instrument)->SetOptionMarker(5, DIAL_MARKER_SIMPLE, 2);
                   ((DashboardInstrument_Dial *)instrument)->SetOptionLabel(30, DIAL_LABEL_ROTATED);
-                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_SOG, _T("SOG:\n%.2f Kts"), DIAL_POSITION_BOTTOMLEFT);
+                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_SOG, _T("SOG\n%.2f Kts"), DIAL_POSITION_BOTTOMLEFT);
                   break;
             case ID_DBP_I_STW:
                   instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_STW, _T("%.2f Kts"));
@@ -1771,15 +1771,14 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list)
                   ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_TWS, _T("T %.1f Kts"), DIAL_POSITION_BOTTOMRIGHT);
                   break;
             case ID_DBP_D_TW:  //True Wind direction
-//                  instrument = new DashboardInstrument_WindCompass( this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_TWA );
                   instrument = new DashboardInstrument_WindCompass( this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_MWD );
-                  ((DashboardInstrument_Dial *)instrument)->SetOptionMainValue( _T("%.0f")+DEGREE_SIGN, DIAL_POSITION_TOPRIGHT);
-                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_TWS, _T("%.1f Kts"), DIAL_POSITION_TOPLEFT);
+                  ((DashboardInstrument_Dial *)instrument)->SetOptionMainValue( _T("%.0f")+DEGREE_SIGN, DIAL_POSITION_BOTTOMLEFT);
+                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_TWS, _T("%.1f Kts"), DIAL_POSITION_INSIDE);
                   break;
             case ID_DBP_D_TWA:	//True 	Wind angle +-180° on boat axis
                   instrument = new DashboardInstrument_TrueWindAngle( this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_VWT );
-                  ((DashboardInstrument_Dial *)instrument)->SetOptionMainValue( _T("%.0f")+DEGREE_SIGN, DIAL_POSITION_TOPRIGHT);
-                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_TWS, _T("%.1f Kts"), DIAL_POSITION_TOPLEFT);
+                  ((DashboardInstrument_Dial *)instrument)->SetOptionMainValue( _T("%.0f")+DEGREE_SIGN, DIAL_POSITION_BOTTOMLEFT);
+                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_TWS, _T("%.1f Kts"), DIAL_POSITION_INSIDE);
                   break;
             case ID_DBP_I_DPT:
                   instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_DPT, _T("%5.1fm"));
@@ -1812,7 +1811,7 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list)
                   instrument = new DashboardInstrument_Speedometer(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_VMG, 0, 12);
                   ((DashboardInstrument_Dial *)instrument)->SetOptionLabel(1, DIAL_LABEL_HORIZONTAL);
                   ((DashboardInstrument_Dial *)instrument)->SetOptionMarker(0.5, DIAL_MARKER_SIMPLE, 2);
-                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_SOG, _T("SOG:\n%.2f Kts"), DIAL_POSITION_BOTTOMLEFT);
+                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_SOG, _T("SOG\n%.2f Kts"), DIAL_POSITION_BOTTOMLEFT);
                   break;
             case ID_DBP_I_RSA:
                   instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_RSA, _T("%5.0f"));

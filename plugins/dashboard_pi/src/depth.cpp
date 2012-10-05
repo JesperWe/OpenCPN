@@ -79,7 +79,7 @@ void DashboardInstrument_Depth::SetData(int st, double data, wxString unit)
       }
       else if (st == OCPN_DBP_STC_TMP)
       {
-            m_Temp.Printf(_T("%2.1f°"), data);
+            m_Temp.Printf(_T("%.1f")+DEGREE_SIGN, data);
             m_Temp.Append(unit);
       }
 }
@@ -138,6 +138,9 @@ void DashboardInstrument_Depth::DrawBackground(wxGCDC* dc)
 void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc)
 {
       wxRect rect = GetClientRect();
+      wxColour cl;
+      GetGlobalColor(_T("DASHF"), &cl);
+      dc->SetTextForeground( cl );
       dc->SetFont(*g_pFontData);
       dc->DrawText(wxString::Format(_T("%5.1f m"), m_Depth), 10, m_TitleHeight);
 
@@ -146,7 +149,6 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc)
       dc->GetTextExtent(m_Temp, &width, &height, 0, 0, g_pFontLabel);
       dc->DrawText(m_Temp, 0, rect.height-height);
 
-      wxColour cl;
       GetGlobalColor(_T("DASHL"), &cl);
       wxBrush brush;
       brush.SetStyle(wxSOLID);

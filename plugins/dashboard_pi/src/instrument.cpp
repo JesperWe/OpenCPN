@@ -63,41 +63,39 @@ int DashboardInstrument::GetCapacity()
       return m_cap_flag;
 }
 
-void DashboardInstrument::OnPaint(wxPaintEvent& WXUNUSED(event))
+void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
 {
-      wxPaintDC pdc(this);
+    wxPaintDC pdc( this );
 
-      if(!pdc.IsOk())
-            return;
+    if( !pdc.IsOk() ) return;
 
-      wxRect rect = GetClientRect();
-      if(rect.width == 0 || rect.height == 0)
-            return;
+    wxRect rect = GetClientRect();
+    if( rect.width == 0 || rect.height == 0 ) return;
 
     wxBitmap bm( pdc.GetSize().x, pdc.GetSize().y, 32 );
     bm.UseAlpha();
     wxMemoryDC mdc( bm );
     wxGCDC dc( mdc );
-      wxColour cl;
-      GetGlobalColor(_T("DASHB"), &cl);
+    wxColour cl;
+    GetGlobalColor( _T("DASHB"), &cl );
     dc.SetBackground( cl );
     dc.Clear();
 
     Draw( &dc );
 
-      // With wxTRANSPARENT_PEN the borders are ugly so lets use the same color for both
-      wxPen pen;
-      pen.SetStyle(wxSOLID);
-      GetGlobalColor(_T("DASHL"), &cl);
-      pen.SetColour(cl);
-      dc.SetPen(pen);
-      dc.SetBrush(cl);
-      dc.DrawRoundedRectangle(0, 0, rect.width, m_TitleHeight, 3);
+    // With wxTRANSPARENT_PEN the borders are ugly so lets use the same color for both
+    wxPen pen;
+    pen.SetStyle( wxSOLID );
+    GetGlobalColor( _T("DASHL"), &cl );
+    pen.SetColour( cl );
+    dc.SetPen( pen );
+    dc.SetBrush( cl );
+    dc.DrawRoundedRectangle( 0, 0, rect.width, m_TitleHeight, 3 );
 
-      dc.SetFont(*g_pFontTitle);
-      GetGlobalColor(_T("DASHF"), &cl);
-      dc.SetTextForeground(cl);
-      dc.DrawText(m_title, 5, 0);
+    dc.SetFont( *g_pFontTitle );
+    GetGlobalColor( _T("DASHF"), &cl );
+    dc.SetTextForeground( cl );
+    dc.DrawText( m_title, 5, 0 );
     mdc.SelectObject( wxNullBitmap );
     pdc.DrawBitmap( bm, 0, 0, false );
 }
