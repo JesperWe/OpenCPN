@@ -117,12 +117,12 @@ void DashboardInstrument_Dial::DrawFrame(wxGCDC* dc)
       if (m_MainValueOption == DIAL_POSITION_TOPLEFT || m_MainValueOption == DIAL_POSITION_TOPRIGHT ||
                 m_ExtraValueOption == DIAL_POSITION_TOPLEFT || m_ExtraValueOption == DIAL_POSITION_TOPRIGHT)
       {
-            availableHeight -= height;
-            m_cy += height;
+            //availableHeight -= height;
+            //m_cy += height;
       }
       if (m_MainValueOption == DIAL_POSITION_BOTTOMLEFT || m_MainValueOption == DIAL_POSITION_BOTTOMRIGHT ||
                 m_ExtraValueOption == DIAL_POSITION_BOTTOMLEFT || m_ExtraValueOption == DIAL_POSITION_BOTTOMRIGHT)
-            availableHeight -= height;
+            ;//availableHeight -= height;
       m_cy += availableHeight / 2;
       m_radius = availableHeight / 2;
 
@@ -305,8 +305,10 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value,
            text = _T("---");
 
       int width, height;
-      dc->GetTextExtent(text, &width, &height, 0, 0, g_pFontLabel);
-      wxPoint TextPoint;
+      dc->GetMultiLineTextExtent(text, &width, &height, NULL, g_pFontLabel);
+      wxRect TextPoint;
+      TextPoint.width = width;
+      TextPoint.height = height;
       switch (position)
       {
             case DIAL_POSITION_NONE:
@@ -348,7 +350,7 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value,
                   break;
       }
 
-      dc->DrawText(text, TextPoint);
+      dc->DrawLabel(text, TextPoint);
 }
 
 void DashboardInstrument_Dial::DrawForeground(wxGCDC* dc)

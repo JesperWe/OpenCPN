@@ -1732,7 +1732,7 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list)
                   ((DashboardInstrument_Dial *)instrument)->SetOptionLabel(1, DIAL_LABEL_HORIZONTAL);
                   //(DashboardInstrument_Dial *)instrument->SetOptionMarker(0.1, DIAL_MARKER_SIMPLE, 5);
                   ((DashboardInstrument_Dial *)instrument)->SetOptionMarker(0.5, DIAL_MARKER_SIMPLE, 2);
-                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_STW, _T("STW: %.2f Kts"), DIAL_POSITION_BOTTOMLEFT);
+                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_STW, _T("STW:\n%.2f Kts"), DIAL_POSITION_BOTTOMLEFT);
                   break;
             case ID_DBP_I_COG:
                   instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_COG, _T("%.0f"));
@@ -1741,7 +1741,7 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list)
                   instrument = new DashboardInstrument_Compass(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_COG);
                   ((DashboardInstrument_Dial *)instrument)->SetOptionMarker(5, DIAL_MARKER_SIMPLE, 2);
                   ((DashboardInstrument_Dial *)instrument)->SetOptionLabel(30, DIAL_LABEL_ROTATED);
-                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_SOG, _T("SOG: %.2f Kts"), DIAL_POSITION_BOTTOMLEFT);
+                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_SOG, _T("SOG:\n%.2f Kts"), DIAL_POSITION_BOTTOMLEFT);
                   break;
             case ID_DBP_I_STW:
                   instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_STW, _T("%.2f Kts"));
@@ -1812,7 +1812,7 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list)
                   instrument = new DashboardInstrument_Speedometer(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_VMG, 0, 12);
                   ((DashboardInstrument_Dial *)instrument)->SetOptionLabel(1, DIAL_LABEL_HORIZONTAL);
                   ((DashboardInstrument_Dial *)instrument)->SetOptionMarker(0.5, DIAL_MARKER_SIMPLE, 2);
-                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_SOG, _T("SOG: %.2f Kts"), DIAL_POSITION_BOTTOMLEFT);
+                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_SOG, _T("SOG:\n%.2f Kts"), DIAL_POSITION_BOTTOMLEFT);
                   break;
             case ID_DBP_I_RSA:
                   instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_RSA, _T("%5.0f"));
