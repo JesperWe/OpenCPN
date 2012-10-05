@@ -108,7 +108,7 @@ WX_DEFINE_ARRAY(DashboardInstrumentContainer *, wxArrayOfInstrument);
 //----------------------------------------------------------------------------------------------------------
 
 
-class dashboard_pi : public opencpn_plugin_16, wxTimer
+class dashboard_pi : public wxTimer, opencpn_plugin_16
 {
 public:
       dashboard_pi(void *ppimgr);

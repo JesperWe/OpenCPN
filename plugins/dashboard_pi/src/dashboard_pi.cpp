@@ -224,7 +224,7 @@ void getListItemForInstrument(wxListItem &item, unsigned int id)
 //---------------------------------------------------------------------------------------------------------
 
 dashboard_pi::dashboard_pi(void *ppimgr)
-      :opencpn_plugin_16(ppimgr), wxTimer(this)
+      :wxTimer(this), opencpn_plugin_16(ppimgr)
 {
       // Create the PlugIn icons
       initialize_images();
