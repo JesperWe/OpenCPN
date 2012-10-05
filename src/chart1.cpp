@@ -7589,8 +7589,8 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "DASHR; 200;  0;  0;",              // Dashboard Red
         "DASHG;   0;200;  0;",              // Dashboard Green
         "DASHN; 200;120;  0;",              // Dashboard Needle
-        "DASH1; 171;171;255;",              // Dashboard Illustrations
-        "DASH2; 109;118;163;",              // Dashboard Illustrations
+        "DASH1; 204;204;255;",              // Dashboard Illustrations
+        "DASH2; 122;131;172;",              // Dashboard Illustrations
 
         "Table:DUSK", "GREEN1; 60;128; 60;", "GREEN2; 22; 75; 22;", "GREEN3; 80;100; 80;",
         "GREEN4;  0;128;  0;", "BLUE1;  80; 80;160;", "BLUE2;  30; 30;120;", "BLUE3;   0;  0;128;",
