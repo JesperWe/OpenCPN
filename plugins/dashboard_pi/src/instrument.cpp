@@ -51,6 +51,8 @@ DashboardInstrument::DashboardInstrument(wxWindow *pparent, wxWindowID id, wxStr
       m_height = 10;
       m_cap_flag = cap_flag;
 
+      SetBackgroundStyle( wxBG_STYLE_CUSTOM );
+
       wxClientDC dc(this);
       int width;
       dc.GetTextExtent(m_title, &width, &m_TitleHeight, 0, 0, g_pFontTitle);
@@ -65,8 +67,7 @@ int DashboardInstrument::GetCapacity()
 
 void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
 {
-    wxPaintDC pdc( this );
-
+    wxBufferedPaintDC pdc( this );
     if( !pdc.IsOk() ) return;
 
     wxRect rect = GetClientRect();
@@ -96,6 +97,7 @@ void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
     GetGlobalColor( _T("DASHF"), &cl );
     dc.SetTextForeground( cl );
     dc.DrawText( m_title, 5, 0 );
+
     mdc.SelectObject( wxNullBitmap );
     pdc.DrawBitmap( bm, 0, 0, false );
 }
