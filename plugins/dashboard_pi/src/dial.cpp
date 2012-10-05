@@ -114,15 +114,6 @@ void DashboardInstrument_Dial::DrawFrame(wxGCDC* dc)
       int width, height;
       dc->GetTextExtent(_T("000"), &width, &height, 0, 0, g_pFontLabel);
       m_cy = m_TitleHeight + 2;
-      if (m_MainValueOption == DIAL_POSITION_TOPLEFT || m_MainValueOption == DIAL_POSITION_TOPRIGHT ||
-                m_ExtraValueOption == DIAL_POSITION_TOPLEFT || m_ExtraValueOption == DIAL_POSITION_TOPRIGHT)
-      {
-            //availableHeight -= height;
-            //m_cy += height;
-      }
-      if (m_MainValueOption == DIAL_POSITION_BOTTOMLEFT || m_MainValueOption == DIAL_POSITION_BOTTOMRIGHT ||
-                m_ExtraValueOption == DIAL_POSITION_BOTTOMLEFT || m_ExtraValueOption == DIAL_POSITION_BOTTOMRIGHT)
-            ;//availableHeight -= height;
       m_cy += availableHeight / 2;
       m_radius = availableHeight / 2;
 
@@ -409,11 +400,15 @@ void DrawCompassRose(wxGCDC* dc, int cx, int cy, int radius, int startangle, boo
       dc->SetFont(*g_pFontSmall);
 
       wxColour cl;
-      wxPen pen;
-      pen.SetStyle(wxSOLID);
-      GetGlobalColor(_T("DASHFL"), &cl);
-      pen.SetColour(cl);
-      dc->SetPen(pen);
+      wxPen* pen;
+      GetGlobalColor(_T("DASH2"), &cl);
+      pen = wxThePenList->FindOrCreatePen( cl, 1, wxSOLID );
+      wxBrush* b2 = wxTheBrushList->FindOrCreateBrush( cl );
+
+      GetGlobalColor(_T("DASH1"), &cl);
+      wxBrush* b1 = wxTheBrushList->FindOrCreateBrush( cl );
+
+      dc->SetPen(*pen);
       dc->SetTextForeground(cl);
 
       int offset = 0;
@@ -432,7 +427,7 @@ void DrawCompassRose(wxGCDC* dc, int cx, int cy, int radius, int startangle, boo
                 dc->DrawRotatedText(Value, TextPoint.x,
                                                     TextPoint.y, -90 - tmpangle);
             }
-            dc->SetBrush(*wxTRANSPARENT_BRUSH);
+            dc->SetBrush(*b1);
             points[0].x = cx;
             points[0].y = cy;
             points[1].x = cx + radius * 0.1 * cos(deg2rad(tmpangle-45));
@@ -444,7 +439,7 @@ void DrawCompassRose(wxGCDC* dc, int cx, int cy, int radius, int startangle, boo
 
             points[1].x = cx + radius * 0.1 * cos(deg2rad(tmpangle+45));
             points[1].y = cy + radius * 0.1 * sin(deg2rad(tmpangle+45));
-            dc->SetBrush(cl);
+            dc->SetBrush(*b2);
             dc->DrawPolygon(3, points, 0, 0);
             offset++;
       }
@@ -454,12 +449,10 @@ void DrawBoat( wxGCDC* dc, int cx, int cy, int radius )
 {
     // Now draw the boat
     wxColour cl;
-    wxPen pen;
-    GetGlobalColor(_T("GREY1"), &cl);
-    pen.SetStyle(wxSOLID);
-    pen.SetColour(cl);
-    dc->SetPen(pen);
-    GetGlobalColor(_T("GREY2"), &cl);
+    GetGlobalColor(_T("DASH2"), &cl);
+    wxPen* pen = wxThePenList->FindOrCreatePen( cl, 1, wxSOLID );
+    dc->SetPen( *pen );
+    GetGlobalColor(_T("DASH1"), &cl);
     dc->SetBrush(cl);
     wxPoint points[7];
 

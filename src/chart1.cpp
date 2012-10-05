@@ -7589,6 +7589,8 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "DASHR; 200;  0;  0;",              // Dashboard Red
         "DASHG;   0;200;  0;",              // Dashboard Green
         "DASHN; 200;120;  0;",              // Dashboard Needle
+        "DASH1; 171;171;255;",              // Dashboard Illustrations
+        "DASH2; 109;118;163;",              // Dashboard Illustrations
 
         "Table:DUSK", "GREEN1; 60;128; 60;", "GREEN2; 22; 75; 22;", "GREEN3; 80;100; 80;",
         "GREEN4;  0;128;  0;", "BLUE1;  80; 80;160;", "BLUE2;  30; 30;120;", "BLUE3;   0;  0;128;",
@@ -7608,6 +7610,8 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "DASHR;  58; 21; 21;",              // Dashboard Red
         "DASHG;  21; 58; 21;",              // Dashboard Green
         "DASHN; 100; 50;  0;",              // Dashboard Needle
+        "DASH1;  76; 76;113;",              // Dashboard Illustrations
+        "DASH2;  48; 52; 72;",              // Dashboard Illustrations
 
         "Table:NIGHT", "GREEN1; 30; 80; 30;", "GREEN2; 15; 60; 15;", "GREEN3; 12; 23;  9;",
         "GREEN4;  0; 64;  0;", "BLUE1;  60; 60;100;", "BLUE2;  22; 22; 85;", "BLUE3;   0;  0; 40;",
@@ -7626,6 +7630,8 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "DASHR;  70; 15; 15;",              // Dashboard Red
         "DASHG;  15; 70; 15;",              // Dashboard Green
         "DASHN;  17; 80; 56;",              // Dashboard Needle
+        "DASH1;  48; 52; 72;",              // Dashboard Illustrations
+        "DASH2;  36; 36; 53;",              // Dashboard Illustrations
 
         "*****" };
 
