@@ -1619,7 +1619,7 @@ AddInstrumentDlg::AddInstrumentDlg(wxWindow *pparent, wxWindowID id)
       imglist->Add(*_img_instrument);
       imglist->Add(*_img_dial);
 
-      m_pListCtrlInstruments = new wxListCtrl( this, wxID_ANY, wxDefaultPosition, wxSize(250, 180), wxLC_REPORT|wxLC_NO_HEADER|wxLC_SINGLE_SEL );
+      m_pListCtrlInstruments = new wxListCtrl( this, wxID_ANY, wxDefaultPosition, wxSize(250, 180), wxLC_REPORT|wxLC_NO_HEADER|wxLC_SINGLE_SEL|wxLC_SORT_ASCENDING );
       itemBoxSizer01->Add(m_pListCtrlInstruments, 0, wxEXPAND|wxALL, 5);
       m_pListCtrlInstruments->AssignImageList(imglist, wxIMAGE_LIST_SMALL);
       m_pListCtrlInstruments->InsertColumn(0, _("Instruments"));
