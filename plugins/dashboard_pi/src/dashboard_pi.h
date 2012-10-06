@@ -233,19 +233,18 @@ enum
 class DashboardWindow : public wxWindow
 {
 public:
-      DashboardWindow(wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr);
-      ~DashboardWindow();
+    DashboardWindow( wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr );
+    ~DashboardWindow();
 
-      void SetColorScheme(PI_ColorScheme cs);
-      void SetSizerOrientation( int orient );
-      void OnSize(wxSizeEvent& evt);
-      void SetInstrumentList(wxArrayInt list);
-      void SetInstrumentWidth(int width);
-      void SendSentenceToAllInstruments(int st, double value, wxString unit);
-      void SendSatInfoToAllInstruments(int cnt, int seq, SAT_INFO sats[4]);
-      void SendUtcTimeToAllInstruments(int st, wxDateTime value);
-      //const wxSize DoGetBestSize();
-      /*TODO: OnKeyPress pass event to main window or disable focus*/
+    void SetColorScheme( PI_ColorScheme cs );
+    void SetSizerOrientation( int orient );
+    void OnSize( wxSizeEvent& evt );
+    void SetInstrumentList( wxArrayInt list );
+    void SetInstrumentWidth( int width );
+    void SendSentenceToAllInstruments( int st, double value, wxString unit );
+    void SendSatInfoToAllInstruments( int cnt, int seq, SAT_INFO sats[4] );
+    void SendUtcTimeToAllInstruments( int st, wxDateTime value );
+    /*TODO: OnKeyPress pass event to main window or disable focus*/
 
 private:
       wxAuiManager         *m_pauimgr;

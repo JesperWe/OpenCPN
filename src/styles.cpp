@@ -450,9 +450,11 @@ void Style::SetColorScheme( ColorScheme cs )
 {
     colorscheme = cs;
     Unload();
-    wxBitmap bm = graphics->GetSubBitmap(
-            wxRect( consoleTextBackgroundLoc, consoleTextBackgroundSize ) );
-    consoleTextBackground = SetBitmapBrightness( bm );
+    if( consoleTextBackgroundSize != wxSize(0,0) ) {
+        wxBitmap bm = graphics->GetSubBitmap(
+                wxRect( consoleTextBackgroundLoc, consoleTextBackgroundSize ) );
+        consoleTextBackground = SetBitmapBrightness( bm );
+    }
 }
 
 void Style::Unload()
@@ -928,8 +930,9 @@ void StyleManager::SetStyle( wxString name )
         return;
     }
 
-    style->consoleTextBackground = style->graphics->GetSubBitmap(
-            wxRect( style->consoleTextBackgroundLoc, style->consoleTextBackgroundSize ) );
+    if( style->consoleTextBackgroundSize != wxSize(0,0) )
+        style->consoleTextBackground = style->graphics->GetSubBitmap(
+                wxRect( style->consoleTextBackgroundLoc, style->consoleTextBackgroundSize ) );
     nextInvocationStyle = style->name;
     return;
 }

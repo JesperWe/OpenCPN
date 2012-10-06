@@ -44,7 +44,7 @@
 //----------------------------------------------------------------
 
 DashboardInstrument::DashboardInstrument(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag)
-      :wxWindow(pparent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE, title)
+      :wxControl(pparent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE)
 {
       m_title = title;
       m_width = 10;
@@ -114,7 +114,7 @@ DashboardInstrument_Single::DashboardInstrument_Single(wxWindow *pparent, wxWind
       m_format = format;
 
       m_data = _T("---");
-      SetInstrumentWidth(200);
+      SetInstrumentWidth( DefaultWidth );
 }
 
 void DashboardInstrument_Single::SetInstrumentWidth(int width)
@@ -188,7 +188,7 @@ DashboardInstrument_Position::DashboardInstrument_Position(wxWindow *pparent, wx
       m_data2 = _T("---");
       m_cap_flag1 = cap_flag1;
       m_cap_flag2 = cap_flag2;
-      SetInstrumentWidth(200);
+      SetInstrumentWidth( DefaultWidth );
 }
 
 void DashboardInstrument_Position::SetInstrumentWidth(int width)
