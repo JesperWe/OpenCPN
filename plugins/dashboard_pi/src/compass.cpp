@@ -46,7 +46,7 @@ DashboardInstrument_Compass::DashboardInstrument_Compass( wxWindow *parent, wxWi
 {
       SetOptionMarker(5, DIAL_MARKER_SIMPLE, 2);
       SetOptionLabel(20, DIAL_LABEL_ROTATED);
-      SetOptionMainValue( _T("%.0f")+DEGREE_SIGN, DIAL_POSITION_INSIDE);
+      SetOptionMainValue( _T("%.0f"), DIAL_POSITION_INSIDE);
 
       SetInstrumentWidth(200);
 }
@@ -59,10 +59,12 @@ void DashboardInstrument_Compass::SetData(int st, double data, wxString unit)
             m_AngleStart = -data;
             // Required to display data
             m_MainValue = data;
+            m_MainValueUnit = unit;
       }
       else if (st == m_ExtraValueCap)
       {
             m_ExtraValue = data;
+            m_ExtraValueUnit = unit;
       }
 }
 

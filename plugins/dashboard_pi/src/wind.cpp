@@ -80,7 +80,6 @@ void DashboardInstrument_WindCompass::DrawBackground(wxGCDC* dc)
 DashboardInstrument_TrueWindAngle::DashboardInstrument_TrueWindAngle( wxWindow *parent, wxWindowID id, wxString title, int cap_flag) :
       DashboardInstrument_Dial( parent, id, title, cap_flag, 0, 360, 0, 360)
 {
-      m_unit=_T("");
       SetOptionMarker(10, DIAL_MARKER_REDGREENBAR, 3);
       // Labels are set static because we've no logic to display them this way
       wxString labels[] = {_T(""), _T("30"), _T("60"), _T("90"), _T("120"), _T("150"), _T(""), _T("150"), _T("120"), _T("90"), _T("60"), _T("30")};
@@ -93,6 +92,7 @@ void DashboardInstrument_TrueWindAngle::DrawBackground(wxGCDC* dc)
 {
     DrawBoat( dc, m_cx, m_cy, m_radius );
 }
+
 void DashboardInstrument_TrueWindAngle::DrawForeground(wxGCDC* dc)
 {
       // The default foreground is the arrow used in most dials
@@ -120,7 +120,7 @@ void DashboardInstrument_TrueWindAngle::DrawForeground(wxGCDC* dc)
 	  //this is fix for a +/-180° round instrument, when m_MainValue is supplied as <0..180><L | R>, in this case the "True wind angle"
 	  //do it here, because otherwise m_MainValueOption is incorrect !!!
 	  double data;
-	  if(m_unit == _T("DegL"))	//specially for instrument OCPN_DBP_STC_VWT
+	  if(m_MainValueUnit == _T("DegL"))	//specially for instrument OCPN_DBP_STC_VWT
 		  data=360-m_MainValue;
 	  else
 		  data=m_MainValue;
@@ -142,13 +142,5 @@ void DashboardInstrument_TrueWindAngle::DrawForeground(wxGCDC* dc)
       points[3].x = m_cx + (m_radius * 0.22 * cos(value - 2.8));
       points[3].y = m_cy + (m_radius * 0.22 * sin(value - 2.8));
       dc->DrawPolygon(4, points, 0, 0);
-}
-void DashboardInstrument_TrueWindAngle::SetData(int st, double data, wxString unit)
-{
-      if (st == m_MainValueCap)
-            m_MainValue = data;
-      else if (st == m_ExtraValueCap)
-            m_ExtraValue = data;
-      m_unit=unit;
 }
 

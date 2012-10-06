@@ -167,7 +167,7 @@ void DashboardInstrument_Single::SetData(int st, double data, wxString unit)
  ... to be completed
  */
                 else
-                  m_data = wxString::Format(m_format, data);
+                  m_data = wxString::Format(m_format, data)+_T(" ")+unit;
             }
             else
                 m_data = _T("---");
@@ -227,6 +227,7 @@ void DashboardInstrument_Position::SetData(int st, double data, wxString unit)
             m_data2 = toSDMM(2, data);
       }
       else return;
+      Refresh();
 }
 
 void DashboardInstrument_Sun::SetData(int st, double data, wxString unit)

@@ -78,10 +78,12 @@ void DashboardInstrument_RudderAngle::SetData(int st, double data, wxString unit
             if (data < m_MainValueMin) m_MainValue = m_MainValueMin;
             else if (data > m_MainValueMax) m_MainValue = m_MainValueMax;
             else m_MainValue = data;
+            m_MainValueUnit = unit;
       }
       else if (st == m_ExtraValueCap)
       {
             m_ExtraValue = data;
+            m_ExtraValueUnit = unit;
       }
       else return;
 }

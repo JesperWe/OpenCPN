@@ -45,6 +45,7 @@ DashboardInstrument_Depth::DashboardInstrument_Depth( wxWindow *parent, wxWindow
 {
       m_MaxDepth = 0;
       m_Depth = 0;
+      m_DepthUnit = _T("m");
       m_Temp = _T("--");
       for (int idx = 0; idx < DEPTH_RECORD_COUNT; idx++)
       {
@@ -76,11 +77,11 @@ void DashboardInstrument_Depth::SetData(int st, double data, wxString unit)
                   m_ArrayDepth[idx-1] = m_ArrayDepth[idx];
             }
             m_ArrayDepth[DEPTH_RECORD_COUNT-1] = data;
+            m_DepthUnit = unit;
       }
       else if (st == OCPN_DBP_STC_TMP)
       {
-            m_Temp.Printf(_T("%.1f")+DEGREE_SIGN, data);
-            m_Temp.Append(unit);
+            m_Temp = wxString::Format(_T("%.1f"), data)+DEGREE_SIGN+unit;
       }
 }
 
@@ -102,6 +103,7 @@ void DashboardInstrument_Depth::DrawBackground(wxGCDC* dc)
       pen.SetStyle(wxSOLID);
       GetGlobalColor(_T("DASHF"), &cl);
       pen.SetColour(cl);
+      pen.SetWidth(2);
       dc->SetPen(pen);
 
       dc->DrawLine(3, 40, rect.width-3, 40);
@@ -125,12 +127,12 @@ void DashboardInstrument_Depth::DrawBackground(wxGCDC* dc)
       m_MaxDepth *= 1.2;
 
       wxString label;
-      label.Printf(_T("%5.0f m"), 0.0);
+      label.Printf(_T("%.0f ")+m_DepthUnit, 0.0);
       int width, height;
       dc->GetTextExtent(label, &width, &height, 0, 0, g_pFontSmall);
       dc->DrawText(label, rect.width-width-1, 40-height);
 
-      label.Printf(_T("%5.0f m"), m_MaxDepth);
+      label.Printf(_T("%.0f ")+m_DepthUnit, m_MaxDepth);
       dc->GetTextExtent(label, &width, &height, 0, 0, g_pFontSmall);
       dc->DrawText(label, rect.width-width-1, rect.height-height);
 }
@@ -142,7 +144,7 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc)
       GetGlobalColor(_T("DASHF"), &cl);
       dc->SetTextForeground( cl );
       dc->SetFont(*g_pFontData);
-      dc->DrawText(wxString::Format(_T("%5.1f m"), m_Depth), 10, m_TitleHeight);
+      dc->DrawText(wxString::Format(_T("%.1f "), m_Depth)+m_DepthUnit, 10, m_TitleHeight);
 
       dc->SetFont(*g_pFontLabel);
       int width, height;

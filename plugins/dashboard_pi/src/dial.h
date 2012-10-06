@@ -109,10 +109,12 @@ class DashboardInstrument_Dial: public DashboardInstrument
             int m_MainValueCap;
             double m_MainValueMin, m_MainValueMax;
             wxString m_MainValueFormat;
+            wxString m_MainValueUnit;
             DialPositionOption m_MainValueOption;
             double m_ExtraValue;
             int m_ExtraValueCap;
             wxString m_ExtraValueFormat;
+            wxString m_ExtraValueUnit;
             DialPositionOption m_ExtraValueOption;
             DialMarkerOption m_MarkerOption;
             int m_MarkerOffset;
@@ -125,7 +127,7 @@ class DashboardInstrument_Dial: public DashboardInstrument
             virtual void DrawMarkers(wxGCDC* dc);
             virtual void DrawLabels(wxGCDC* dc);
             virtual void DrawBackground(wxGCDC* dc);
-            virtual void DrawData(wxGCDC* dc, double value, wxString format, DialPositionOption position);
+            virtual void DrawData(wxGCDC* dc, double value, wxString unit, wxString format, DialPositionOption position);
             virtual void DrawForeground(wxGCDC* dc);
 };
 

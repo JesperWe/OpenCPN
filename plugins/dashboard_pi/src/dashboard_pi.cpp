@@ -1723,14 +1723,14 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list)
                   instrument = new DashboardInstrument_Position(this, wxID_ANY, getInstrumentCaption(id));
                   break;
             case ID_DBP_I_SOG:
-                  instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_SOG, _T("%5.2f Kts"));
+                  instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_SOG, _T("%5.2f"));
                   break;
             case ID_DBP_D_SOG:
                   instrument = new DashboardInstrument_Speedometer(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_SOG, 0, 12);
                   ((DashboardInstrument_Dial *)instrument)->SetOptionLabel(1, DIAL_LABEL_HORIZONTAL);
                   //(DashboardInstrument_Dial *)instrument->SetOptionMarker(0.1, DIAL_MARKER_SIMPLE, 5);
                   ((DashboardInstrument_Dial *)instrument)->SetOptionMarker(0.5, DIAL_MARKER_SIMPLE, 2);
-                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_STW, _T("STW\n%.2f Kts"), DIAL_POSITION_BOTTOMLEFT);
+                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_STW, _T("STW\n%.2f"), DIAL_POSITION_BOTTOMLEFT);
                   break;
             case ID_DBP_I_COG:
                   instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_COG, _T("%.0f"));
@@ -1739,10 +1739,10 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list)
                   instrument = new DashboardInstrument_Compass(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_COG);
                   ((DashboardInstrument_Dial *)instrument)->SetOptionMarker(5, DIAL_MARKER_SIMPLE, 2);
                   ((DashboardInstrument_Dial *)instrument)->SetOptionLabel(30, DIAL_LABEL_ROTATED);
-                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_SOG, _T("SOG\n%.2f Kts"), DIAL_POSITION_BOTTOMLEFT);
+                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_SOG, _T("SOG\n%.2f"), DIAL_POSITION_BOTTOMLEFT);
                   break;
             case ID_DBP_I_STW:
-                  instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_STW, _T("%.2f Kts"));
+                  instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_STW, _T("%.2f"));
                   break;
             case ID_DBP_I_HDG: //true heading
                   // TODO: Option True or Magnetic
@@ -1753,33 +1753,33 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list)
                   break;
             case ID_DBP_D_AW:
                   instrument = new DashboardInstrument_Wind(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_AWA);
-                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_AWS, _T("%.1f Kts"), DIAL_POSITION_INSIDE);
+                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_AWS, _T("%.1f"), DIAL_POSITION_INSIDE);
                   break;
             case ID_DBP_D_AWA:
                   instrument = new DashboardInstrument_Wind(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_AWA);
                   break;
             case ID_DBP_I_AWS:
-                  instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_AWS, _T("%.2f Kts"));
+                  instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_AWS, _T("%.2f"));
                   break;
             case ID_DBP_D_AWS:
                   instrument = new DashboardInstrument_Speedometer(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_AWS, 0, 45);
                   ((DashboardInstrument_Dial *)instrument)->SetOptionLabel(5, DIAL_LABEL_HORIZONTAL);
                   ((DashboardInstrument_Dial *)instrument)->SetOptionMarker(1, DIAL_MARKER_SIMPLE, 5);
-                  ((DashboardInstrument_Dial *)instrument)->SetOptionMainValue(_T("A %.2f Kts"), DIAL_POSITION_BOTTOMLEFT);
-                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_TWS, _T("T %.1f Kts"), DIAL_POSITION_BOTTOMRIGHT);
+                  ((DashboardInstrument_Dial *)instrument)->SetOptionMainValue(_T("A %.2f"), DIAL_POSITION_BOTTOMLEFT);
+                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_TWS, _T("T %.1f"), DIAL_POSITION_BOTTOMRIGHT);
                   break;
             case ID_DBP_D_TW:  //True Wind direction
                   instrument = new DashboardInstrument_WindCompass( this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_MWD );
-                  ((DashboardInstrument_Dial *)instrument)->SetOptionMainValue( _T("%.0f")+DEGREE_SIGN, DIAL_POSITION_BOTTOMLEFT);
-                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_TWS, _T("%.1f Kts"), DIAL_POSITION_INSIDE);
+                  ((DashboardInstrument_Dial *)instrument)->SetOptionMainValue( _T("%.0f"), DIAL_POSITION_BOTTOMLEFT);
+                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_TWS, _T("%.1f"), DIAL_POSITION_INSIDE);
                   break;
             case ID_DBP_D_TWA:	//True 	Wind angle +-180° on boat axis
                   instrument = new DashboardInstrument_TrueWindAngle( this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_VWT );
-                  ((DashboardInstrument_Dial *)instrument)->SetOptionMainValue( _T("%.0f")+DEGREE_SIGN, DIAL_POSITION_BOTTOMLEFT);
-                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_TWS, _T("%.1f Kts"), DIAL_POSITION_INSIDE);
+                  ((DashboardInstrument_Dial *)instrument)->SetOptionMainValue( _T("%.0f"), DIAL_POSITION_BOTTOMLEFT);
+                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_TWS, _T("%.1f"), DIAL_POSITION_INSIDE);
                   break;
             case ID_DBP_I_DPT:
-                  instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_DPT, _T("%5.1fm"));
+                  instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_DPT, _T("%5.1f"));
                   break;
             case ID_DBP_D_DPT:
                   instrument = new DashboardInstrument_Depth(this, wxID_ANY, getInstrumentCaption(id));
@@ -1797,19 +1797,19 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list)
                   instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_MWD, _T("%5.0f"));
                   break;
             case ID_DBP_I_TWS: // true wind speed
-                  instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_TWS, _T("%2.2f Kts"));
+                  instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_TWS, _T("%2.2f"));
                   break;
             case ID_DBP_I_AWA: //apparent wind speed
                   instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_AWA2, _T("%5.0f"));
                   break;
             case ID_DBP_I_VMG:
-                  instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_VMG, _T("%5.2f Kts"));
+                  instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_VMG, _T("%5.2f"));
                   break;
             case ID_DBP_D_VMG:
                   instrument = new DashboardInstrument_Speedometer(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_VMG, 0, 12);
                   ((DashboardInstrument_Dial *)instrument)->SetOptionLabel(1, DIAL_LABEL_HORIZONTAL);
                   ((DashboardInstrument_Dial *)instrument)->SetOptionMarker(0.5, DIAL_MARKER_SIMPLE, 2);
-                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_SOG, _T("SOG\n%.2f Kts"), DIAL_POSITION_BOTTOMLEFT);
+                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_SOG, _T("SOG\n%.2f"), DIAL_POSITION_BOTTOMLEFT);
                   break;
             case ID_DBP_I_RSA:
                   instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_RSA, _T("%5.0f"));

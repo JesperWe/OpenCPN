@@ -62,8 +62,10 @@ DashboardInstrument_Dial::DashboardInstrument_Dial( wxWindow *parent, wxWindowID
       m_MainValue = s_value;
       m_ExtraValue = 0;
       m_MainValueFormat = _T("%d");
+      m_MainValueUnit = _T("");
       m_MainValueOption = DIAL_POSITION_NONE;
       m_ExtraValueFormat = _T("%d");
+      m_ExtraValueUnit = _T("");
       m_ExtraValueOption = DIAL_POSITION_NONE;
       m_MarkerOption = DIAL_MARKER_SIMPLE;
       m_MarkerStep = 1;
@@ -88,9 +90,15 @@ void DashboardInstrument_Dial::SetInstrumentWidth(int width)
 void DashboardInstrument_Dial::SetData(int st, double data, wxString unit)
 {
       if (st == m_MainValueCap)
+      {
             m_MainValue = data;
+            m_MainValueUnit = unit;
+      }
       else if (st == m_ExtraValueCap)
+      {
             m_ExtraValue = data;
+            m_ExtraValueUnit = unit;
+      }
 }
 
 void DashboardInstrument_Dial::Draw(wxGCDC* bdc)
@@ -99,8 +107,8 @@ void DashboardInstrument_Dial::Draw(wxGCDC* bdc)
     DrawMarkers(bdc);
     DrawLabels(bdc);
     DrawBackground(bdc);
-    DrawData(bdc, m_MainValue, m_MainValueFormat, m_MainValueOption);
-    DrawData(bdc, m_ExtraValue, m_ExtraValueFormat, m_ExtraValueOption);
+    DrawData(bdc, m_MainValue, m_MainValueUnit, m_MainValueFormat, m_MainValueOption);
+    DrawData(bdc, m_ExtraValue, m_ExtraValueUnit, m_ExtraValueFormat, m_ExtraValueOption);
     DrawForeground(bdc);
 }
 
@@ -268,7 +276,7 @@ void DashboardInstrument_Dial::DrawBackground(wxGCDC* dc)
 }
 
 void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value,
-            wxString format, DialPositionOption position)
+            wxString unit, wxString format, DialPositionOption position)
 {
       if (position == DIAL_POSITION_NONE)
             return;
@@ -282,7 +290,12 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value,
 
       wxString text;
       if(!wxIsNaN(value))
-           text = wxString::Format(format, value);
+      {
+          if (unit == _T("Deg"))
+               text = wxString::Format(format, value)+DEGREE_SIGN;
+          else
+               text = wxString::Format(format, value)+_T(" ")+unit;
+      }
       else
            text = _T("---");
 
@@ -381,7 +394,7 @@ void DashboardInstrument_Dial::DrawForeground(wxGCDC* dc)
 /* Shared functions */
 void DrawCompassRose(wxGCDC* dc, int cx, int cy, int radius, int startangle, bool showlabels)
 {
-      wxPoint TextPoint, points[3];
+      wxPoint pt, points[3];
       wxString Value;
       int width, height;
       wxString CompassArray[] = {_("N"),_("NE"),_("E"),_("SE"),_("S"),_("SW"),_("W"),_("NW"),_("N")};
@@ -399,38 +412,50 @@ void DrawCompassRose(wxGCDC* dc, int cx, int cy, int radius, int startangle, boo
 
       dc->SetPen(*pen);
       dc->SetTextForeground(cl);
+      dc->SetBrush(*b2);
 
       int offset = 0;
       for(double tmpangle = startangle - ANGLE_OFFSET;
-                        tmpangle <= startangle + 360 - ANGLE_OFFSET; tmpangle+=45)
+                        tmpangle < startangle + 360 - ANGLE_OFFSET; tmpangle+=90)
       {
             if (showlabels)
             {
                 Value = CompassArray[offset];
                 dc->GetTextExtent(Value, &width, &height, 0, 0, g_pFontSmall);
                 double x = width/2;
-                long double anglefortext = asin((x/radius));
-                anglefortext = tmpangle - rad2deg(anglefortext);
-                TextPoint.x = cx + radius * cos(deg2rad(anglefortext));
-                TextPoint.y = cy + radius * sin(deg2rad(anglefortext));
-                dc->DrawRotatedText(Value, TextPoint.x,
-                                                    TextPoint.y, -90 - tmpangle);
+                long double anglefortext = tmpangle - rad2deg(asin((x/radius)));
+                pt.x = cx + radius * cos(deg2rad(anglefortext));
+                pt.y = cy + radius * sin(deg2rad(anglefortext));
+                dc->DrawRotatedText(Value, pt.x, pt.y, -90 - tmpangle);
+                Value = CompassArray[offset+1];
+                dc->GetTextExtent(Value, &width, &height, 0, 0, g_pFontSmall);
+                x = width/2;
+                anglefortext = tmpangle - rad2deg(asin((x/radius))) + 45;
+                pt.x = cx + radius * cos(deg2rad(anglefortext));
+                pt.y = cy + radius * sin(deg2rad(anglefortext));
+                dc->DrawRotatedText(Value, pt.x, pt.y, -135 - tmpangle);
             }
-            dc->SetBrush(*b1);
             points[0].x = cx;
             points[0].y = cy;
-            points[1].x = cx + radius * 0.1 * cos(deg2rad(tmpangle-45));
-            points[1].y = cy + radius * 0.1 * sin(deg2rad(tmpangle-45));
-            double size = (offset % 2 ? 0.50 : 0.80);
-            points[2].x = cx + radius * size * cos(deg2rad(tmpangle));
-            points[2].y = cy + radius * size * sin(deg2rad(tmpangle));
+            points[1].x = cx + radius * 0.15 * cos(deg2rad(tmpangle));
+            points[1].y = cy + radius * 0.15 * sin(deg2rad(tmpangle));
+            points[2].x = cx + radius * 0.6 * cos(deg2rad(tmpangle+45));
+            points[2].y = cy + radius * 0.6 * sin(deg2rad(tmpangle+45));
             dc->DrawPolygon(3, points, 0, 0);
-
-            points[1].x = cx + radius * 0.1 * cos(deg2rad(tmpangle+45));
-            points[1].y = cy + radius * 0.1 * sin(deg2rad(tmpangle+45));
+            points[1].x = cx + radius * 0.15 * cos(deg2rad(tmpangle+90));
+            points[1].y = cy + radius * 0.15 * sin(deg2rad(tmpangle+90));
+            dc->SetBrush(*b1);
+            dc->DrawPolygon(3, points, 0, 0);
+            points[2].x = cx + radius * 0.8 * cos(deg2rad(tmpangle));
+            points[2].y = cy + radius * 0.8 * sin(deg2rad(tmpangle));
+            points[1].x = cx + radius * 0.15 * cos(deg2rad(tmpangle+45));
+            points[1].y = cy + radius * 0.15 * sin(deg2rad(tmpangle+45));
+            dc->DrawPolygon(3, points, 0, 0);
+            points[2].x = cx + radius * 0.8 * cos(deg2rad(tmpangle+90));
+            points[2].y = cy + radius * 0.8 * sin(deg2rad(tmpangle+90));
             dc->SetBrush(*b2);
             dc->DrawPolygon(3, points, 0, 0);
-            offset++;
+            offset += 2;
       }
 }
 

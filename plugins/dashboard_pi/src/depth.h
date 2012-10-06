@@ -62,6 +62,7 @@ class DashboardInstrument_Depth: public DashboardInstrument
             double m_ArrayDepth[DEPTH_RECORD_COUNT];
             double m_MaxDepth;
             double m_Depth;
+            wxString m_DepthUnit;
             wxString m_Temp;
 
             void Draw(wxGCDC* dc);
