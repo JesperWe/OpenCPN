@@ -301,6 +301,8 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value,
                text = wxString::Format(format, value)+DEGREE_SIGN+_T("T");
           else if (unit == _T("DegM"))
                text = wxString::Format(format, value)+DEGREE_SIGN+_T("M");
+          else if (unit == _T("N")) // Knots
+               text = wxString::Format(format, value)+_T(" Kts");
           else
                text = wxString::Format(format, value)+_T(" ")+unit;
       }
