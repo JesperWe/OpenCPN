@@ -1217,7 +1217,7 @@ void dashboard_pi::ApplyConfig(void)
             {
                   if (! cont->m_pDashboardWindow )
                   {
-                        cont->m_pDashboardWindow = new DashboardWindow(GetOCPNCanvasWindow(), wxID_ANY, m_pauimgr);
+                        cont->m_pDashboardWindow = new DashboardWindow(GetOCPNCanvasWindow(), wxID_ANY, m_pauimgr, this );
                         // Name contains Orientation for perspective
                         wxAuiPaneInfo pane = wxAuiPaneInfo().Name(wxString::Format(_T("Dashboard%d"), i-1)+cont->m_sOrientation).Caption(cont->m_sCaption).CaptionVisible(true).Float().FloatingPosition(10,100).Show(cont->m_bIsVisible);
                         if (cont->m_sOrientation == _T("V"))
@@ -1653,10 +1653,11 @@ unsigned int AddInstrumentDlg::GetInstrumentAdded()
 //----------------------------------------------------------------
 
 // wxWS_EX_VALIDATE_RECURSIVELY required to push events to parents
-DashboardWindow::DashboardWindow(wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr)
+DashboardWindow::DashboardWindow(wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr, dashboard_pi* plugin )
       :wxWindow(pparent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE, _T("Dashboard"))
 {
       m_pauimgr = auimgr;
+      m_plugin = plugin;
       SetMinSize( wxSize( DefaultWidth, -1 ) );
 
 //wx2.9      itemBoxSizer = new wxWrapSizer(wxVERTICAL);
@@ -1669,6 +1670,8 @@ DashboardWindow::DashboardWindow(wxWindow *pparent, wxWindowID id, wxAuiManager 
       m_pauimgr->Update();
       DimeWindow(this);
       Connect( wxEVT_SIZE, wxSizeEventHandler( DashboardWindow::OnSize ), NULL, this );
+      Connect( wxEVT_CONTEXT_MENU, wxContextMenuEventHandler( DashboardWindow::OnContextMenu ), NULL, this );
+      Connect( wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( DashboardWindow::OnContextMenuSelect ), NULL, this );
 }
 
 DashboardWindow::~DashboardWindow()
@@ -1686,6 +1689,25 @@ void DashboardWindow::OnSize( wxSizeEvent& event )
     Layout();
     event.Skip();
     return;
+}
+
+void DashboardWindow::OnContextMenu( wxContextMenuEvent& event )
+{
+    wxMenu* contextMenu = new wxMenu();
+    wxMenuItem* btnPrefs = new wxMenuItem(contextMenu, 1, _("Preferences...") );
+    contextMenu->Append( btnPrefs );
+    PopupMenu( contextMenu );
+    delete contextMenu;
+}
+
+void DashboardWindow::OnContextMenuSelect( wxCommandEvent& event )
+{
+    switch( event.GetId() ) {
+        case 1: {
+            m_plugin->ShowPreferencesDialog( this );
+            break;
+        }
+    }
 }
 
 void DashboardWindow::SetColorScheme(PI_ColorScheme cs)

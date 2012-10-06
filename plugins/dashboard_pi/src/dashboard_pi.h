@@ -233,12 +233,14 @@ enum
 class DashboardWindow : public wxWindow
 {
 public:
-    DashboardWindow( wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr );
+    DashboardWindow( wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr, dashboard_pi* plugin );
     ~DashboardWindow();
 
     void SetColorScheme( PI_ColorScheme cs );
     void SetSizerOrientation( int orient );
     void OnSize( wxSizeEvent& evt );
+    void OnContextMenu( wxContextMenuEvent& evt );
+    void OnContextMenuSelect( wxCommandEvent& evt );
     void SetInstrumentList( wxArrayInt list );
     void SetInstrumentWidth( int width );
     void SendSentenceToAllInstruments( int st, double value, wxString unit );
@@ -248,6 +250,7 @@ public:
 
 private:
       wxAuiManager         *m_pauimgr;
+      dashboard_pi*         m_plugin;
 
 //wx2.9      wxWrapSizer*          itemBoxSizer;
       wxBoxSizer*          itemBoxSizer;
