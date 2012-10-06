@@ -1657,7 +1657,7 @@ DashboardWindow::DashboardWindow(wxWindow *pparent, wxWindowID id, wxAuiManager 
       :wxWindow(pparent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE, _T("Dashboard"))
 {
       m_pauimgr = auimgr;
-
+      SetMinSize( wxSize( DefaultWidth, -1 ) );
       DimeWindow(this);
 
 //wx2.9      itemBoxSizer = new wxWrapSizer(wxVERTICAL);
@@ -1869,7 +1869,7 @@ void DashboardWindow::SetInstrumentWidth( int width )
         m_ArrayOfInstrument.Item( i )->m_pInstrument->SetInstrumentWidth( width );
     }
     wxAuiPaneInfo &pi = m_pauimgr->GetPane(this);
-    pi.MinSize( wxSize( DefaultWidth, -1) );
+    pi.MinSize( wxSize( DefaultWidth, -1 ) );
     pi.BestSize( GetMinSize() );
 }
 
