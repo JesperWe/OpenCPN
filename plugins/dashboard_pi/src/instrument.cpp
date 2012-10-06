@@ -157,8 +157,6 @@ void DashboardInstrument_Single::SetData(int st, double data, wxString unit)
                   m_data = _T(">")+ wxString::Format(m_format, data)+DEGREE_SIGN;
                 else if (unit == _T("DegR"))
                   m_data = wxString::Format(m_format, data)+DEGREE_SIGN+_T("<");
-                else if (unit == _T("N")) //Knots
-                  m_data = wxString::Format(m_format, data)+_T(" Kts");
 /* maybe in the future ...
                 else if (unit == _T("M")) // m/s
                   m_data = wxString::Format(m_format, data)+_T(" m/s");

@@ -97,6 +97,7 @@ enum
 	  ID_DBP_I_TWS,   //True Wind speed, text display
 	  ID_DBP_D_TWA,   //True Wind Angle +-180° on boat axis, graphical
       ID_DBP_I_HDM,   //heading (magnetic)
+      ID_DBP_D_HDT,   //compass
       ID_DBP_LAST_ENTRY  //this has a reference in one of the routines; defining a "LAST_ENTRY" and setting the reference to it, is one codeline less to change (and find) when adding new instruments :-)
 };
 
@@ -113,6 +114,8 @@ wxString getInstrumentCaption(unsigned int id)
       case ID_DBP_I_COG:
             return _("COG");
       case ID_DBP_D_COG:
+            return _("GPS Compass");
+      case ID_DBP_D_HDT:
             return _("Compass");
       case ID_DBP_I_STW:
             return _("STW");
@@ -212,6 +215,7 @@ void getListItemForInstrument(wxListItem &item, unsigned int id)
       case ID_DBP_D_VMG:
       case ID_DBP_D_RSA:
       case ID_DBP_D_GPS:
+      case ID_DBP_D_HDT:
             item.SetImage(1);
             break;
       }
@@ -630,7 +634,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence)
                   SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, mwdval, windunit);
 
                   //m_NMEA0183.Mwd.WindAngleMagnetic
-                  SendSentenceToAllInstruments(OCPN_DBP_STC_TWS, m_NMEA0183.Mwd.WindSpeedKnots, _("N"));
+                  SendSentenceToAllInstruments(OCPN_DBP_STC_TWS, m_NMEA0183.Mwd.WindSpeedKnots, _("Kts"));
                   //m_NMEA0183.Mwd.WindSpeedms
                 }
                 SendSentenceToAllInstruments(OCPN_DBP_STC_MWD, mwdval, windunit);
@@ -1748,6 +1752,12 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list)
                   ((DashboardInstrument_Dial *)instrument)->SetOptionMarker(5, DIAL_MARKER_SIMPLE, 2);
                   ((DashboardInstrument_Dial *)instrument)->SetOptionLabel(30, DIAL_LABEL_ROTATED);
                   ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_SOG, _T("SOG\n%.2f"), DIAL_POSITION_BOTTOMLEFT);
+                  break;
+            case ID_DBP_D_HDT:
+                  instrument = new DashboardInstrument_Compass(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_HDT);
+                  ((DashboardInstrument_Dial *)instrument)->SetOptionMarker(5, DIAL_MARKER_SIMPLE, 2);
+                  ((DashboardInstrument_Dial *)instrument)->SetOptionLabel(30, DIAL_LABEL_ROTATED);
+                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_STW, _T("STW\n%.2f"), DIAL_POSITION_BOTTOMLEFT);
                   break;
             case ID_DBP_I_STW:
                   instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_STW, _T("%.2f"));
