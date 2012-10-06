@@ -358,13 +358,13 @@ void DashboardInstrument_Dial::DrawForeground(wxGCDC* dc)
 {
       // The default foreground is the arrow used in most dials
       wxColour cl;
-      GetGlobalColor(_T("DASH1"), &cl);
+      GetGlobalColor(_T("DASH2"), &cl);
       wxPen pen1;
       pen1.SetStyle(wxSOLID);
       pen1.SetColour(cl);
       pen1.SetWidth(2);
       dc->SetPen(pen1);
-      GetGlobalColor(_T("DASH2"), &cl);
+      GetGlobalColor(_T("DASH1"), &cl);
       wxBrush brush1;
       brush1.SetStyle(wxSOLID);
       brush1.SetColour(cl);
