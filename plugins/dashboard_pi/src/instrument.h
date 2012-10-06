@@ -102,6 +102,7 @@ public:
       virtual void SetInstrumentWidth(int width) = 0;
       virtual void OnPaint(wxPaintEvent& WXUNUSED(event));
       virtual void SetData(int st, double data, wxString unit) = 0;
+      int GetHeight() { return m_height; }
 
 private:
 

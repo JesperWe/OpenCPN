@@ -1658,11 +1658,16 @@ DashboardWindow::DashboardWindow(wxWindow *pparent, wxWindowID id, wxAuiManager 
 {
       m_pauimgr = auimgr;
       SetMinSize( wxSize( DefaultWidth, -1 ) );
-      DimeWindow(this);
 
 //wx2.9      itemBoxSizer = new wxWrapSizer(wxVERTICAL);
       itemBoxSizer = new wxBoxSizer(wxVERTICAL);
       SetSizer(itemBoxSizer);
+      wxAuiPaneInfo &pi = m_pauimgr->GetPane(this);
+      pi.MinSize( wxSize( DefaultWidth, DefaultWidth ) );
+      pi.BestSize( wxSize( DefaultWidth, DefaultWidth ) );
+      pi.FloatingSize( wxSize( DefaultWidth, DefaultWidth ) );
+      m_pauimgr->Update();
+      DimeWindow(this);
       Connect( wxEVT_SIZE, wxSizeEventHandler( DashboardWindow::OnSize ), NULL, this );
 }
 
@@ -1865,11 +1870,13 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list)
 
 void DashboardWindow::SetInstrumentWidth( int width )
 {
+    int accMinHeight = 0;
     for( size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++ ) {
         m_ArrayOfInstrument.Item( i )->m_pInstrument->SetInstrumentWidth( width );
+        accMinHeight += m_ArrayOfInstrument.Item( i )->m_pInstrument->GetHeight();
     }
     wxAuiPaneInfo &pi = m_pauimgr->GetPane(this);
-    pi.MinSize( wxSize( DefaultWidth, -1 ) );
+    pi.MinSize( wxSize( DefaultWidth, accMinHeight ) );
     pi.BestSize( GetMinSize() );
 }
 
