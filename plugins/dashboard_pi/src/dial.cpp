@@ -293,6 +293,14 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value,
       {
           if (unit == _T("Deg"))
                text = wxString::Format(format, value)+DEGREE_SIGN;
+          else if (unit == _T("DegL")) // No special display for now, might be XX°< (as in text-only instrument)
+               text = wxString::Format(format, value)+DEGREE_SIGN;
+          else if (unit == _T("DegR")) // No special display for now, might be >XX°
+               text = wxString::Format(format, value)+DEGREE_SIGN;
+          else if (unit == _T("DegT"))
+               text = wxString::Format(format, value)+DEGREE_SIGN+_T("T");
+          else if (unit == _T("DegM"))
+               text = wxString::Format(format, value)+DEGREE_SIGN+_T("M");
           else
                text = wxString::Format(format, value)+_T(" ")+unit;
       }
@@ -350,13 +358,13 @@ void DashboardInstrument_Dial::DrawForeground(wxGCDC* dc)
 {
       // The default foreground is the arrow used in most dials
       wxColour cl;
-      GetGlobalColor(_T("GREY1"), &cl);
+      GetGlobalColor(_T("DASH1"), &cl);
       wxPen pen1;
       pen1.SetStyle(wxSOLID);
       pen1.SetColour(cl);
       pen1.SetWidth(2);
       dc->SetPen(pen1);
-      GetGlobalColor(_T("GREY2"), &cl);
+      GetGlobalColor(_T("DASH2"), &cl);
       wxBrush brush1;
       brush1.SetStyle(wxSOLID);
       brush1.SetColour(cl);
@@ -371,11 +379,19 @@ void DashboardInstrument_Dial::DrawForeground(wxGCDC* dc)
       brush.SetColour(cl);
       dc->SetBrush(brush);
 
+      //this is fix for a +/-180° round instrument, when m_MainValue is supplied as <0..180><L | R>, in this case the "True wind angle"
+      //do it here, because otherwise m_MainValue is incorrect !!!
+      double data;
+      if(m_MainValueUnit == _T("DegL")) //specially for instrument OCPN_DBP_STC_VWT
+          data=360-m_MainValue;
+      else
+          data=m_MainValue;
+
       // The arrow should stay inside fixed limits
       double val;
-      if (m_MainValue < m_MainValueMin) val = m_MainValueMin;
-      else if (m_MainValue > m_MainValueMax) val = m_MainValueMax;
-      else val = m_MainValue;
+      if (data < m_MainValueMin) val = m_MainValueMin;
+      else if (data > m_MainValueMax) val = m_MainValueMax;
+      else val = data;
 
       double value = deg2rad((val - m_MainValueMin) * m_AngleRange / (m_MainValueMax - m_MainValueMin)) + deg2rad(m_AngleStart - ANGLE_OFFSET);
 

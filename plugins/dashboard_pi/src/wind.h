@@ -90,7 +90,6 @@ class DashboardInstrument_TrueWindAngle: public DashboardInstrument_Dial
       protected:
 
             void DrawBackground(wxGCDC* dc);
-            void DrawForeground(wxGCDC* dc);
 };
 
 #endif // __Wind_H__
