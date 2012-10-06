@@ -104,115 +104,106 @@ void DashboardInstrument_Dial::Draw(wxGCDC* bdc)
     DrawForeground(bdc);
 }
 
-void DashboardInstrument_Dial::DrawFrame(wxGCDC* dc)
+void DashboardInstrument_Dial::DrawFrame( wxGCDC* dc )
 {
-      wxRect rect = GetClientRect();
-      wxColour cl;
+    wxRect rect = GetClientRect();
+    wxColour cl;
 
-      m_cx = rect.width / 2;
-      int availableHeight = rect.height - m_TitleHeight - 6;
-      int width, height;
-      dc->GetTextExtent(_T("000"), &width, &height, 0, 0, g_pFontLabel);
-      m_cy = m_TitleHeight + 2;
-      m_cy += availableHeight / 2;
-      m_radius = availableHeight / 2;
+    m_cx = rect.width / 2;
+    int availableHeight = rect.height - m_TitleHeight - 6;
+    int width, height;
+    dc->GetTextExtent( _T("000"), &width, &height, 0, 0, g_pFontLabel );
+    m_cy = m_TitleHeight + 2;
+    m_cy += availableHeight / 2;
+    m_radius = availableHeight / 2;
 
-      GetGlobalColor(_T("DASHL"), &cl);
-      dc->SetTextForeground(cl);
-      dc->SetBrush(*wxTRANSPARENT_BRUSH);
+    GetGlobalColor( _T("DASHL"), &cl );
+    dc->SetTextForeground( cl );
+    dc->SetBrush( *wxTRANSPARENT_BRUSH);
 
-      wxPen pen;
-      pen.SetWidth(2);
+    int penwidth = 1 + GetParent()->GetSize().x / 100;
+    wxPen* pen = wxThePenList->FindOrCreatePen( cl, penwidth, wxSOLID );
 
-      if (m_MarkerOption == DIAL_MARKER_REDGREENBAR)
-      {
-            pen.SetWidth(4);
-            GetGlobalColor(_T("DASHR"), &cl);
-            pen.SetColour(cl);
-            dc->SetPen(pen);
-            double angle1 = deg2rad(270); // 305-ANGLE_OFFSET
-            double angle2 = deg2rad(90); // 55-ANGLE_OFFSET
-            wxCoord x1 = m_cx + ((m_radius-3) * cos(angle1));
-            wxCoord y1 = m_cy + ((m_radius-3) * sin(angle1));
-            wxCoord x2 = m_cx + ((m_radius-3) * cos(angle2));
-            wxCoord y2 = m_cy + ((m_radius-3) * sin(angle2));
-            dc->DrawArc(x1, y1, x2, y2, m_cx, m_cy);
-            GetGlobalColor(_T("DASHG"), &cl);
-            pen.SetColour(cl);
-            dc->SetPen(pen);
-            angle1 = deg2rad(90); // 305-ANGLE_OFFSET
-            angle2 = deg2rad(270); // 55-ANGLE_OFFSET
-            x1 = m_cx + ((m_radius-3) * cos(angle1));
-            y1 = m_cy + ((m_radius-3) * sin(angle1));
-            x2 = m_cx + ((m_radius-3) * cos(angle2));
-            y2 = m_cy + ((m_radius-3) * sin(angle2));
-            dc->DrawArc(x1, y1, x2, y2, m_cx, m_cy);
-            GetGlobalColor(_T("DASHF"), &cl);
-            pen.SetWidth(2);
-      }
-      GetGlobalColor(_T("DASHF"), &cl);
-      pen.SetStyle(wxSOLID);
-      pen.SetColour(cl);
-      dc->SetPen(pen);
+    if( m_MarkerOption == DIAL_MARKER_REDGREENBAR ) {
+        pen->SetWidth( penwidth * 2 );
+        GetGlobalColor( _T("DASHR"), &cl );
+        pen->SetColour( cl );
+        dc->SetPen( *pen );
+        double angle1 = deg2rad( 270 ); // 305-ANGLE_OFFSET
+        double angle2 = deg2rad( 90 ); // 55-ANGLE_OFFSET
+        int radi = m_radius - 1 - penwidth;
+        wxCoord x1 = m_cx + ( ( radi ) * cos( angle1 ) );
+        wxCoord y1 = m_cy + ( ( radi ) * sin( angle1 ) );
+        wxCoord x2 = m_cx + ( ( radi ) * cos( angle2 ) );
+        wxCoord y2 = m_cy + ( ( radi ) * sin( angle2 ) );
+        dc->DrawArc( x1, y1, x2, y2, m_cx, m_cy );
+        GetGlobalColor( _T("DASHG"), &cl );
+        pen->SetColour( cl );
+        dc->SetPen( *pen );
+        angle1 = deg2rad( 90 ); // 305-ANGLE_OFFSET
+        angle2 = deg2rad( 270 ); // 55-ANGLE_OFFSET
+        x1 = m_cx + ( ( radi ) * cos( angle1 ) );
+        y1 = m_cy + ( ( radi ) * sin( angle1 ) );
+        x2 = m_cx + ( ( radi ) * cos( angle2 ) );
+        y2 = m_cy + ( ( radi ) * sin( angle2 ) );
+        dc->DrawArc( x1, y1, x2, y2, m_cx, m_cy );
+        GetGlobalColor( _T("DASHF"), &cl );
+        pen->SetWidth( penwidth );
+    }
+    GetGlobalColor( _T("DASHF"), &cl );
+    pen->SetColour( cl );
+    dc->SetPen( *pen );
 
-      dc->DrawCircle(m_cx, m_cy, m_radius);
+    dc->DrawCircle( m_cx, m_cy, m_radius );
 }
 
 void DashboardInstrument_Dial::DrawMarkers(wxGCDC* dc)
 {
-      if (m_MarkerOption == DIAL_MARKER_NONE)
-            return;
+    if( m_MarkerOption == DIAL_MARKER_NONE ) return;
 
-      wxColour cl;
-      GetGlobalColor(_T("DASHF"), &cl);
-      wxPen pen;
-      pen.SetStyle(wxSOLID);
-      pen.SetColour(cl);
-      dc->SetPen(pen);
+    wxColour cl;
+    GetGlobalColor( _T("DASHF"), &cl );
+    int penwidth = GetParent()->GetSize().x / 100;
+    wxPen* pen = wxThePenList->FindOrCreatePen( cl, penwidth, wxSOLID );
+    dc->SetPen( *pen );
 
-      int diff_angle = m_AngleStart + m_AngleRange - ANGLE_OFFSET;
-      // angle between markers
-      double abm = m_AngleRange * m_MarkerStep / (m_MainValueMax - m_MainValueMin);
-      // don't draw last value, it's already done as first
-      if (m_AngleRange == 360) diff_angle -= abm;
+    int diff_angle = m_AngleStart + m_AngleRange - ANGLE_OFFSET;
+    // angle between markers
+    double abm = m_AngleRange * m_MarkerStep / ( m_MainValueMax - m_MainValueMin );
+    // don't draw last value, it's already done as first
+    if( m_AngleRange == 360 ) diff_angle -= abm;
 
-      int offset = 0;
-      for(double angle = m_AngleStart - ANGLE_OFFSET; angle <= diff_angle; angle += abm)
-      {
-            if (m_MarkerOption == DIAL_MARKER_REDGREEN)
-            {
-                  int a = int(angle + ANGLE_OFFSET) % 360;
-                  if (a > 180)
-                        GetGlobalColor(_T("DASHR"), &cl);
-                  else if ((a > 0) && (a < 180))
-                        GetGlobalColor(_T("DASHG"), &cl);
-                  else
-                        GetGlobalColor(_T("DASHF"), &cl);
+    int offset = 0;
+    for( double angle = m_AngleStart - ANGLE_OFFSET; angle <= diff_angle; angle += abm ) {
+        if( m_MarkerOption == DIAL_MARKER_REDGREEN ) {
+            int a = int( angle + ANGLE_OFFSET ) % 360;
+            if( a > 180 ) GetGlobalColor( _T("DASHR"), &cl );
+            else if( ( a > 0 ) && ( a < 180 ) ) GetGlobalColor( _T("DASHG"), &cl );
+            else
+                GetGlobalColor( _T("DASHF"), &cl );
 
-                  pen.SetColour(cl);
-                  dc->SetPen(pen);
-            }
+            pen->SetColour( cl );
+            dc->SetPen( *pen );
+        }
 
-            double size = 0.92;
-            if(offset % m_MarkerOffset)
-            {
-                  size = 0.96;
-            }
-            offset++;
+        double size = 0.92;
+        if( offset % m_MarkerOffset ) {
+            size = 0.96;
+        }
+        offset++;
 
-            dc->DrawLine(m_cx + (m_radius * size * cos(deg2rad(angle))),
-                        m_cy + (m_radius * size * sin(deg2rad(angle))),
-                        m_cx + (m_radius * cos(deg2rad(angle))),
-                        m_cy + (m_radius * sin(deg2rad(angle))));
-      }
-      // We must reset pen color so following drawings are fine
-      if (m_MarkerOption == DIAL_MARKER_REDGREEN)
-      {
-            GetGlobalColor(_T("DASHF"), &cl);
-            pen.SetStyle(wxSOLID);
-            pen.SetColour(cl);
-            dc->SetPen(pen);
-      }
+        dc->DrawLine( m_cx + ( (m_radius-1) * size * cos( deg2rad( angle ) ) ),
+                m_cy + ( (m_radius-1) * size * sin( deg2rad( angle ) ) ),
+                m_cx + ( (m_radius-1) * cos( deg2rad( angle ) ) ),
+                m_cy + ( (m_radius-1) * sin( deg2rad( angle ) ) ) );
+    }
+    // We must reset pen color so following drawings are fine
+    if( m_MarkerOption == DIAL_MARKER_REDGREEN ) {
+        GetGlobalColor( _T("DASHF"), &cl );
+        pen->SetStyle( wxSOLID );
+        pen->SetColour( cl );
+        dc->SetPen( *pen );
+    }
 }
 
 void DashboardInstrument_Dial::DrawLabels(wxGCDC* dc)
@@ -310,12 +301,10 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value,
             {
                   TextPoint.x = m_cx - (width / 2) - 1;
                   TextPoint.y = (rect.height * .75) - height;
-                  wxPen pen;
-                  pen.SetStyle(wxSOLID);
                   GetGlobalColor(_T("DASHL"), &cl);
-                  pen.SetColour(cl);
-                  pen.SetWidth(1);
-                  dc->SetPen(pen);
+                  int penwidth = GetParent()->GetSize().x / 100;
+                  wxPen* pen = wxThePenList->FindOrCreatePen( cl, penwidth, wxSOLID );
+                  dc->SetPen( *pen );
                   GetGlobalColor(_T("DASHB"), &cl);
                   dc->SetBrush(cl);
                   // There might be a background drawn below
