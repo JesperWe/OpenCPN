@@ -3338,7 +3338,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         case ID_TRACK: {
             if( !g_bTrackActive ) TrackOn();
             else
-                TrackOff();
+                TrackOff( true );
             break;
         }
 

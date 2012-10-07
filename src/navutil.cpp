@@ -2514,6 +2514,14 @@ void Track::AddPointNow( bool do_add_point )
 
             skipPoints.push_back( gpsPoint );
             skipTimes.push_back( now.ToUTC() );
+
+            // Check if this is the last point of the track.
+            if( do_add_point ) {
+                RoutePoint *pTrackPoint = AddNewPoint( gpsPoint, now.ToUTC() );
+                pSelect->AddSelectableTrackSegment( m_lastStoredTP->m_lat, m_lastStoredTP->m_lon,
+                        pTrackPoint->m_lat, pTrackPoint->m_lon,
+                        m_lastStoredTP, pTrackPoint, this );
+            }
             break;
         }
     }
@@ -3885,7 +3893,7 @@ int MyConfig::LoadMyConfig( int iteration )
         if( tval >= 0.05 ) g_TrackDeltaDistance = tval;
     }
 
-    Read( _T ( "TrackPrecision" ), &g_nTrackPrecision, 1 );
+    Read( _T ( "TrackPrecision" ), &g_nTrackPrecision, 0 );
 
     Read( _T ( "NavObjectFileName" ), m_sNavObjSetFile );
 
