@@ -47,8 +47,6 @@ DashboardInstrument_Compass::DashboardInstrument_Compass( wxWindow *parent, wxWi
       SetOptionMarker(5, DIAL_MARKER_SIMPLE, 2);
       SetOptionLabel(20, DIAL_LABEL_ROTATED);
       SetOptionMainValue( _T("%.0f"), DIAL_POSITION_INSIDE);
-
-      SetInstrumentWidth(200);
 }
 
 void DashboardInstrument_Compass::SetData(int st, double data, wxString unit)

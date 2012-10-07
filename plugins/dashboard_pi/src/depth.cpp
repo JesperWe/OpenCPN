@@ -51,19 +51,14 @@ DashboardInstrument_Depth::DashboardInstrument_Depth( wxWindow *parent, wxWindow
       {
             m_ArrayDepth[idx] = 0;
       }
-
-      SetInstrumentWidth(200);
 }
 
-void DashboardInstrument_Depth::SetInstrumentWidth(int width)
+wxSize DashboardInstrument_Depth::GetSize()
 {
       wxClientDC dc(this);
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-      m_width = width;
-      m_height = m_TitleHeight+140;
-      SetMinSize(wxSize(m_width, m_height));
-      Refresh(false);
+      return wxSize( GetParent()->GetSize().x, m_TitleHeight+140 );
 }
 
 void DashboardInstrument_Depth::SetData(int st, double data, wxString unit)
@@ -93,7 +88,7 @@ void DashboardInstrument_Depth::Draw(wxGCDC* dc)
 
 void DashboardInstrument_Depth::DrawBackground(wxGCDC* dc)
 {
-      wxRect rect = GetClientRect();
+      wxSize size = GetClientSize();
       wxColour cl;
 
       GetGlobalColor(_T("DASHL"), &cl);
@@ -106,14 +101,14 @@ void DashboardInstrument_Depth::DrawBackground(wxGCDC* dc)
       pen.SetWidth(2);
       dc->SetPen(pen);
 
-      dc->DrawLine(3, 40, rect.width-3, 40);
-      dc->DrawLine(3, 140, rect.width-3, 140);
+      dc->DrawLine(3, 40, size.x-3, 40);
+      dc->DrawLine(3, 140, size.x-3, 140);
 
       pen.SetStyle(wxSHORT_DASH);
       dc->SetPen(pen);
-      dc->DrawLine(3, 65, rect.width-3, 65);
-      dc->DrawLine(3, 90, rect.width-3, 90);
-      dc->DrawLine(3, 115, rect.width-3, 115);
+      dc->DrawLine(3, 65, size.x-3, 65);
+      dc->DrawLine(3, 90, size.x-3, 90);
+      dc->DrawLine(3, 115, size.x-3, 115);
 
       dc->SetFont(*g_pFontSmall);
 
@@ -130,16 +125,16 @@ void DashboardInstrument_Depth::DrawBackground(wxGCDC* dc)
       label.Printf(_T("%.0f ")+m_DepthUnit, 0.0);
       int width, height;
       dc->GetTextExtent(label, &width, &height, 0, 0, g_pFontSmall);
-      dc->DrawText(label, rect.width-width-1, 40-height);
+      dc->DrawText(label, size.x-width-1, 40-height);
 
       label.Printf(_T("%.0f ")+m_DepthUnit, m_MaxDepth);
       dc->GetTextExtent(label, &width, &height, 0, 0, g_pFontSmall);
-      dc->DrawText(label, rect.width-width-1, rect.height-height);
+      dc->DrawText(label, size.x-width-1, size.y-height);
 }
 
 void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc)
 {
-      wxRect rect = GetClientRect();
+      wxSize size = GetClientSize();
       wxColour cl;
       GetGlobalColor(_T("DASHF"), &cl);
       dc->SetTextForeground( cl );
@@ -149,7 +144,7 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc)
       dc->SetFont(*g_pFontLabel);
       int width, height;
       dc->GetTextExtent(m_Temp, &width, &height, 0, 0, g_pFontLabel);
-      dc->DrawText(m_Temp, 0, rect.height-height);
+      dc->DrawText(m_Temp, 0, size.y-height);
 
       GetGlobalColor(_T("DASHL"), &cl);
       wxBrush brush;
@@ -159,7 +154,7 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc)
       dc->SetPen(*wxTRANSPARENT_PEN);
 
       double ratioH = 100.0 / m_MaxDepth; // 140-40=100
-      double ratioW = double(rect.width - 6) / (DEPTH_RECORD_COUNT-1);
+      double ratioW = double(size.x-6) / (DEPTH_RECORD_COUNT-1);
       wxPoint points[DEPTH_RECORD_COUNT+2];
       for (int idx = 0; idx < DEPTH_RECORD_COUNT; idx++)
       {
@@ -169,7 +164,7 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc)
             else
                   points[idx].y = 140;
       }
-      points[DEPTH_RECORD_COUNT].x = rect.width - 3;
+      points[DEPTH_RECORD_COUNT].x = size.x-3;
       points[DEPTH_RECORD_COUNT].y = 140;
       points[DEPTH_RECORD_COUNT+1].x = 3;
       points[DEPTH_RECORD_COUNT+1].y = 140;

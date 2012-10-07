@@ -69,8 +69,8 @@ class DashboardInstrumentContainer;
 class DashboardWindowContainer
 {
       public:
-            DashboardWindowContainer(DashboardWindow *dashboard_window, wxString caption, wxString orientation, int width, wxArrayInt inst) {
-                  m_pDashboardWindow = dashboard_window; m_sCaption = caption; m_sOrientation = orientation; m_iInstrumentWidth = width; m_aInstrumentList = inst; m_bIsVisible = false; m_bIsDeleted = false; }
+            DashboardWindowContainer(DashboardWindow *dashboard_window, wxString caption, wxString orientation, wxArrayInt inst) {
+                  m_pDashboardWindow = dashboard_window; m_sCaption = caption; m_sOrientation = orientation; m_aInstrumentList = inst; m_bIsVisible = false; m_bIsDeleted = false; }
 
             ~DashboardWindowContainer(){}
             DashboardWindow              *m_pDashboardWindow;
@@ -78,7 +78,6 @@ class DashboardWindowContainer
             bool                          m_bIsDeleted; // Only used for config
             wxString                      m_sCaption;
             wxString                      m_sOrientation;
-            int                           m_iInstrumentWidth;
             wxArrayInt                    m_aInstrumentList;
 };
 
@@ -204,7 +203,6 @@ private:
       wxTextCtrl                   *m_pTextCtrlCaption;
       wxCheckBox                   *m_pCheckBoxIsVisible;
       wxChoice                     *m_pChoiceOrientation;
-      wxSpinCtrl                   *m_pInstrumentWidth;
       wxListCtrl                   *m_pListCtrlInstruments;
       wxButton                     *m_pButtonAdd;
       wxButton                     *m_pButtonEdit;
@@ -242,7 +240,6 @@ public:
     void OnContextMenu( wxContextMenuEvent& evt );
     void OnContextMenuSelect( wxCommandEvent& evt );
     void SetInstrumentList( wxArrayInt list );
-    void SetInstrumentWidth( int width );
     void SendSentenceToAllInstruments( int st, double value, wxString unit );
     void SendSatInfoToAllInstruments( int cnt, int seq, SAT_INFO sats[4] );
     void SendUtcTimeToAllInstruments( int st, wxDateTime value );

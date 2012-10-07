@@ -50,8 +50,6 @@ DashboardInstrument_Wind::DashboardInstrument_Wind( wxWindow *parent, wxWindowID
       // Labels are set static because we've no logic to display them this way
       wxString labels[] = {_T(""), _T("30"), _T("60"), _T("90"), _T("120"), _T("150"), _T(""), _T("150"), _T("120"), _T("90"), _T("60"), _T("30")};
       SetOptionLabel(30, DIAL_LABEL_HORIZONTAL, wxArrayString(12, labels));
-
-      SetInstrumentWidth(200);
 }
 
 void DashboardInstrument_Wind::DrawBackground(wxGCDC* dc)
@@ -65,8 +63,6 @@ DashboardInstrument_WindCompass::DashboardInstrument_WindCompass( wxWindow *pare
       SetOptionMarker(5, DIAL_MARKER_SIMPLE, 2);
       wxString labels[] = {_("N"), _("NE"), _("E"), _("SE"), _("S"), _("SW"), _("W"), _("NW")};
       SetOptionLabel(45, DIAL_LABEL_HORIZONTAL, wxArrayString(8, labels));
-
-      SetInstrumentWidth(200);
 }
 
 void DashboardInstrument_WindCompass::DrawBackground(wxGCDC* dc)
@@ -84,8 +80,6 @@ DashboardInstrument_TrueWindAngle::DashboardInstrument_TrueWindAngle( wxWindow *
       // Labels are set static because we've no logic to display them this way
       wxString labels[] = {_T(""), _T("30"), _T("60"), _T("90"), _T("120"), _T("150"), _T(""), _T("150"), _T("120"), _T("90"), _T("60"), _T("30")};
       SetOptionLabel(30, DIAL_LABEL_HORIZONTAL, wxArrayString(12, labels));
-
-      SetInstrumentWidth(200);
 }
 
 void DashboardInstrument_TrueWindAngle::DrawBackground(wxGCDC* dc)

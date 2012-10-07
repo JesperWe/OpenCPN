@@ -99,16 +99,17 @@ public:
       ~DashboardInstrument(){}
 
       int GetCapacity();
-      virtual void SetInstrumentWidth(int width) = 0;
+      void OnEraseBackground(wxEraseEvent& WXUNUSED(evt));
+      void OnSize(wxSizeEvent& evt);
+      virtual wxSize GetSize() = 0;
       virtual void OnPaint(wxPaintEvent& WXUNUSED(event));
       virtual void SetData(int st, double data, wxString unit) = 0;
-      int GetHeight() { return m_height; }
 
 private:
 
 protected:
       int               m_cap_flag;
-      int               m_TitleHeight, m_width, m_height;
+      int               m_TitleHeight;
       wxString          m_title;
 
       virtual void Draw(wxGCDC* dc) = 0;
@@ -121,7 +122,7 @@ public:
       DashboardInstrument_Single(wxWindow *pparent, wxWindowID id, wxString title, int cap, wxString format);
       ~DashboardInstrument_Single(){}
 
-      void SetInstrumentWidth(int width);
+      wxSize GetSize();
       void SetData(int st, double data, wxString unit);
 
 protected:
@@ -139,7 +140,7 @@ public:
       DashboardInstrument_Position(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag1=OCPN_DBP_STC_LAT, int cap_flag2=OCPN_DBP_STC_LON);
       ~DashboardInstrument_Position(){}
 
-      void SetInstrumentWidth(int width);
+      wxSize GetSize();
       void SetData(int st, double data, wxString unit);
 
 protected:

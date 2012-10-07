@@ -58,20 +58,16 @@ DashboardInstrument_GPS::DashboardInstrument_GPS( wxWindow *parent, wxWindowID i
             m_SatInfo[idx].AzimuthDegreesTrue = 0;
             m_SatInfo[idx].SignalToNoiseRatio = 0;
       }
-
-      SetInstrumentWidth(200);
 }
 
-void DashboardInstrument_GPS::SetInstrumentWidth(int width)
+wxSize DashboardInstrument_GPS::GetSize()
 {
       wxClientDC dc(this);
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
+      int width = GetParent()->GetSize().x;
       m_cx = width/2;
-      m_width = width;
-      m_height = m_TitleHeight+140;
-      SetMinSize(wxSize(m_width, m_height));
-      Refresh(false);
+      return wxSize( width, m_TitleHeight+140 );
 }
 
 void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, SAT_INFO sats[4])
@@ -100,7 +96,7 @@ void DashboardInstrument_GPS::Draw(wxGCDC* dc)
 
 void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc)
 {
-      wxRect rect = GetClientRect();
+      wxSize size = GetClientSize();
       wxColour cl;
 
       GetGlobalColor(_T("DASHB"), &cl);
@@ -127,8 +123,8 @@ void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc)
 
       dc->SetBackgroundMode(wxTRANSPARENT);
 
-      dc->DrawLine(3, 100, rect.width-3, 100);
-      dc->DrawLine(3, 140, rect.width-3, 140);
+      dc->DrawLine(3, 100, size.x-3, 100);
+      dc->DrawLine(3, 140, size.x-3, 140);
 
       pen.SetStyle(wxDOT);
       dc->SetPen(pen);
@@ -137,9 +133,9 @@ void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc)
 
       pen.SetStyle(wxSHORT_DASH);
       dc->SetPen(pen);
-      dc->DrawLine(3, 110, rect.width-3, 110);
-      dc->DrawLine(3, 120, rect.width-3, 120);
-      dc->DrawLine(3, 130, rect.width-3, 130);
+      dc->DrawLine(3, 110, size.x-3, 110);
+      dc->DrawLine(3, 120, size.x-3, 120);
+      dc->DrawLine(3, 130, size.x-3, 130);
 }
 
 void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc)

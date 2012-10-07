@@ -53,7 +53,7 @@ class DashboardInstrument_Depth: public DashboardInstrument
 
             ~DashboardInstrument_Depth(void){}
 
-            void SetInstrumentWidth(int width);
+            wxSize GetSize();
             void SetData(int, double, wxString);
 
       private:

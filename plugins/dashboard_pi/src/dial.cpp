@@ -72,19 +72,15 @@ DashboardInstrument_Dial::DashboardInstrument_Dial( wxWindow *parent, wxWindowID
       m_LabelStep = 1;
       m_MarkerOffset = 1;
       m_LabelOption = DIAL_LABEL_HORIZONTAL;
-
-      SetInstrumentWidth(200);
 }
 
-void DashboardInstrument_Dial::SetInstrumentWidth(int width)
+wxSize DashboardInstrument_Dial::GetSize()
 {
       wxClientDC dc(this);
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-      m_width = width;
-      m_height = m_TitleHeight+width;
-      SetMinSize(wxSize(m_width, m_height));
-      Refresh(false);
+      w = GetParent()->GetSize().x;
+      return wxSize( w, m_TitleHeight+w );
 }
 
 void DashboardInstrument_Dial::SetData(int st, double data, wxString unit)
@@ -114,11 +110,11 @@ void DashboardInstrument_Dial::Draw(wxGCDC* bdc)
 
 void DashboardInstrument_Dial::DrawFrame( wxGCDC* dc )
 {
-    wxRect rect = GetClientRect();
+    wxSize size = GetClientSize();
     wxColour cl;
 
-    m_cx = rect.width / 2;
-    int availableHeight = rect.height - m_TitleHeight - 6;
+    m_cx = size.x / 2;
+    int availableHeight = size.y - m_TitleHeight - 6;
     int width, height;
     dc->GetTextExtent( _T("000"), &width, &height, 0, 0, g_pFontLabel );
     m_cy = m_TitleHeight + 2;
@@ -286,7 +282,7 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value,
       GetGlobalColor(_T("DASHF"), &cl);
       dc->SetTextForeground(cl);
 
-      wxRect rect = GetClientRect();
+      wxSize size = GetClientSize();
 
       wxString text;
       if(!wxIsNaN(value))
@@ -323,7 +319,7 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value,
             case DIAL_POSITION_INSIDE:
             {
                   TextPoint.x = m_cx - (width / 2) - 1;
-                  TextPoint.y = (rect.height * .75) - height;
+                  TextPoint.y = (size.y * .75) - height;
                   GetGlobalColor(_T("DASHL"), &cl);
                   int penwidth = GetParent()->GetSize().x / 100;
                   wxPen* pen = wxThePenList->FindOrCreatePen( cl, penwidth, wxSOLID );
@@ -340,16 +336,16 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value,
                   TextPoint.y = m_TitleHeight;
                   break;
             case DIAL_POSITION_TOPRIGHT:
-                  TextPoint.x = rect.width-width-1;
+                  TextPoint.x = size.x-width-1;
                   TextPoint.y = m_TitleHeight;
                   break;
             case DIAL_POSITION_BOTTOMLEFT:
                   TextPoint.x = 0;
-                  TextPoint.y = rect.height-height;
+                  TextPoint.y = size.y-height;
                   break;
             case DIAL_POSITION_BOTTOMRIGHT:
-                  TextPoint.x = rect.width-width-1;
-                  TextPoint.y = rect.height-height;
+                  TextPoint.x = size.x-width-1;
+                  TextPoint.y = size.x-height;
                   break;
       }
 

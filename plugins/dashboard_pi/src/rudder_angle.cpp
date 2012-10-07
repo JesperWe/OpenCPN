@@ -52,19 +52,15 @@ DashboardInstrument_RudderAngle::DashboardInstrument_RudderAngle( wxWindow *pare
       wxString labels[] = {_T("40"), _T("30"), _T("20"), _T("10"), _T("0"), _T("10"), _T("20"), _T("30"), _T("40")};
       SetOptionLabel(10, DIAL_LABEL_HORIZONTAL, wxArrayString(9, labels));
 //      SetOptionExtraValue(_T("%02.0f"), DIAL_POSITION_INSIDE);
-
-      SetInstrumentWidth(200);
 }
 
-void DashboardInstrument_RudderAngle::SetInstrumentWidth(int width)
+wxSize DashboardInstrument_RudderAngle::GetSize()
 {
       wxClientDC dc(this);
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-      m_width = width;
-      m_height = m_TitleHeight+width*.7;
-      SetMinSize(wxSize(m_width, m_height));
-      Refresh(false);
+      w = GetParent()->GetSize().x;
+      return wxSize( w, m_TitleHeight+w*.7 );
 }
 
 void DashboardInstrument_RudderAngle::SetData(int st, double data, wxString unit)
@@ -92,12 +88,12 @@ void DashboardInstrument_RudderAngle::DrawFrame(wxGCDC* dc)
 {
       // We don't need the upper part
       // Move center up
-      wxRect rect = GetClientRect();
+      wxSize size = GetClientSize();
       wxColour cl;
 
-      m_cx = rect.width / 2;
-      m_cy = m_TitleHeight + (rect.height - m_TitleHeight) * 0.38;
-      m_radius = (rect.height - m_TitleHeight)*.6;
+      m_cx = size.x / 2;
+      m_cy = m_TitleHeight + (size.y - m_TitleHeight) * 0.38;
+      m_radius = (size.y - m_TitleHeight)*.6;
 
       dc->SetBrush(*wxTRANSPARENT_BRUSH);
 

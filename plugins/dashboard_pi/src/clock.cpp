@@ -44,17 +44,14 @@ DashboardInstrument_Clock::DashboardInstrument_Clock( wxWindow *parent, wxWindow
 {
 }
 
-void DashboardInstrument_Clock::SetInstrumentWidth(int width)
+wxSize DashboardInstrument_Clock::GetSize()
 {
       wxClientDC dc(this);
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
       dc.GetTextExtent(_T("00:00:00 UTC"), &w, &m_DataHeight, 0, 0, g_pFontData);
 
-      m_width = width;
-      m_height = m_TitleHeight+m_DataHeight;
-      SetMinSize(wxSize(m_width, m_height));
-      Refresh(false);
+      return wxSize( GetParent()->GetSize().x, m_TitleHeight+m_DataHeight );
 }
 
 void DashboardInstrument_Clock::SetUtcTime(int st, wxDateTime data)
