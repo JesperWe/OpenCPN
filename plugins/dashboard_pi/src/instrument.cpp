@@ -73,9 +73,8 @@ void DashboardInstrument::OnEraseBackground(wxEraseEvent& WXUNUSED(evt))
 void DashboardInstrument::OnSize(wxSizeEvent& evt)
 {
     evt.Skip();
-    Layout();
     SetMinSize(GetSize());
-    Fit();
+    GetParent()->Layout();
     Refresh();
 }
 

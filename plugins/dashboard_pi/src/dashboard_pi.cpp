@@ -1851,7 +1851,7 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list)
             if(instrument)
             {
                    m_ArrayOfInstrument.Add(new DashboardInstrumentContainer(id, instrument, instrument->GetCapacity()));
-                   itemBoxSizer->Add(instrument, 0, wxALL, 0);
+                   itemBoxSizer->Add(instrument, 0, wxALL|wxEXPAND, 0);
             }
       }
       Layout();
