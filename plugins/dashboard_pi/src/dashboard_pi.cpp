@@ -1595,12 +1595,31 @@ void DashboardWindow::OnContextMenu( wxContextMenuEvent& event )
     contextMenu->Append( btnOrient );
     wxMenuItem* btnPrefs = new wxMenuItem( contextMenu, ID_DASH_PREFS, _("Preferences...") );
     contextMenu->Append( btnPrefs );
+    contextMenu->AppendSeparator();
+
+    for( unsigned int i = ID_DBP_I_POS; i < ID_DBP_LAST_ENTRY; i++ ) { //do not reference an instrument, but the last dummy entry in the list
+        wxMenuItem* item = contextMenu->AppendCheckItem( i, getInstrumentCaption( i ) );
+        item->Check( false );
+        for( unsigned int cur = 0; cur < m_ArrayOfInstrument.size(); cur++ ) {
+            DashboardInstrument* instr = m_ArrayOfInstrument.Item( cur )->m_pInstrument;
+            if( instr->instrumentTypeId == i ) item->Check( true );
+        }
+    }
+
     PopupMenu( contextMenu );
     delete contextMenu;
 }
 
 void DashboardWindow::OnContextMenuSelect( wxCommandEvent& event )
 {
+    if( event.GetId() < ID_DASH_PREFS ) { // It is an instrument.
+        if( event.IsChecked() ) m_Container->m_aInstrumentList.Add( event.GetId() );
+        else m_Container->m_aInstrumentList.Remove( event.GetId() );
+        SetInstrumentList( m_Container->m_aInstrumentList );
+        GetSizer()->Layout();
+        return;
+    }
+
     switch( event.GetId() ){
         case ID_DASH_PREFS: {
             m_plugin->ShowPreferencesDialog( this );
@@ -1847,6 +1866,7 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
                     break;
             }
             if( instrument ) {
+                instrument->instrumentTypeId = id;
                 m_ArrayOfInstrument.Add(
                         new DashboardInstrumentContainer( id, instrument,
                                 instrument->GetCapacity() ) );
