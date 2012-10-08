@@ -1205,37 +1205,35 @@ void dashboard_pi::ApplyConfig( void )
             m_ArrayOfDashboardWindow.Remove( cont );
             delete cont;
         } else {
+            int orient = (cont->m_sOrientation == _T("V") ? wxVERTICAL : wxHORIZONTAL);
+            bool vertical = (orient == wxVERTICAL);
+
             if( !cont->m_pDashboardWindow ) {
                 cont->m_pDashboardWindow = new DashboardWindow( GetOCPNCanvasWindow(), wxID_ANY,
-                        m_pauimgr, this );
+                        m_pauimgr, this, orient );
                 m_pauimgr->AddPane( cont->m_pDashboardWindow,
                         wxAuiPaneInfo().CaptionVisible( true ).Float().FloatingPosition( 50, 50 ) );
             }
             DashboardWindow* win = cont->m_pDashboardWindow;
 
-            wxAuiPaneInfo& pane = m_pauimgr->GetPane( win );
-            pane.Name( wxString::Format( _T("Dashboard%d"), i - 1 ) + cont->m_sOrientation ).Caption(
-                    cont->m_sCaption ).Show( cont->m_bIsVisible );
-
-            // Name contains Orientation for perspective
-            if( cont->m_sOrientation == _T("V") ) {
-                pane.TopDockable( false ).BottomDockable( false ).LeftDockable( true ).RightDockable(
-                        true );
-                if( win->GetSizerOrientation() != wxVERTICAL ) pane.Float();
-                win->SetSizerOrientation( wxVERTICAL );
-            } else if( cont->m_sOrientation == _T("H") ) {
-                pane.TopDockable( true ).BottomDockable( true ).LeftDockable( false ).RightDockable(
-                        false );
-                if( win->GetSizerOrientation() != wxHORIZONTAL ) pane.Float();
-                win->SetSizerOrientation( wxHORIZONTAL );
+            if( win->GetSizerOrientation() != orient ) {
+                /* wxAUI doesn't update MinSize of a floating pane, see ticket #14571
+                 * so we must detach the pane then create another one */
+                m_pauimgr->DetachPane( win );
+                win->SetSizerOrientation( orient );
+                m_pauimgr->AddPane( win,
+                        wxAuiPaneInfo().CaptionVisible( true ).Float().FloatingPosition( 50, 50 ) );
             }
-
+            wxAuiPaneInfo& pane = m_pauimgr->GetPane( win );
+            /* Name must contain orientation or the previous perspective will be kept */
+            pane.Name( wxString::Format( _T("Dashboard%d"), i - 1 ) + cont->m_sOrientation ).Caption(
+                    cont->m_sCaption ).Show( cont->m_bIsVisible ).TopDockable( 
+                    !vertical ).BottomDockable( !vertical ).LeftDockable( 
+                    vertical ).RightDockable( vertical );
             win->SetInstrumentList( cont->m_aInstrumentList );
-            wxSize sz = win->GetMinSize();
 
-            pane.MinSize( sz );
-            pane.BestSize( sz );
-            pane.FloatingSize( sz );
+            wxSize sz = win->GetMinSize();
+            pane.MinSize( sz ).BestSize( sz ).FloatingSize( sz );
         }
     }
     m_pauimgr->Update();
@@ -1628,15 +1626,15 @@ unsigned int AddInstrumentDlg::GetInstrumentAdded()
 //----------------------------------------------------------------
 
 // wxWS_EX_VALIDATE_RECURSIVELY required to push events to parents
-DashboardWindow::DashboardWindow(wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr, dashboard_pi* plugin )
+DashboardWindow::DashboardWindow(wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr, dashboard_pi* plugin, int orient )
       :wxWindow(pparent, id, wxDefaultPosition, wxSize( DefaultWidth, -1 ), wxBORDER_NONE, _T("Dashboard"))
 {
       m_pauimgr = auimgr;
       m_plugin = plugin;
       SetMinSize( wxSize( DefaultWidth, -1 ) );
 
-//wx2.9      itemBoxSizer = new wxWrapSizer(wxVERTICAL);
-      itemBoxSizer = new wxBoxSizer(wxVERTICAL);
+//wx2.9      itemBoxSizer = new wxWrapSizer( orient );
+      itemBoxSizer = new wxBoxSizer( orient );
       SetSizer(itemBoxSizer);
       Connect( wxEVT_SIZE, wxSizeEventHandler( DashboardWindow::OnSize ), NULL, this );
       Connect( wxEVT_CONTEXT_MENU, wxContextMenuEventHandler( DashboardWindow::OnContextMenu ), NULL, this );
@@ -1688,7 +1686,7 @@ void DashboardWindow::SetSizerOrientation( int orient )
       itemBoxSizer->SetOrientation( orient );
       if( orient == wxVERTICAL ) SetMinSize( wxSize( DefaultWidth, -1 ) );
       else SetMinSize( wxSize( -1, DefaultWidth ) );
-      Layout();
+      Fit();
 }
 
 int DashboardWindow::GetSizerOrientation()
@@ -1710,8 +1708,7 @@ bool isArrayIntEqual(const wxArrayInt& l1, const wxArrayOfInstrument &l2)
 
 void DashboardWindow::SetInstrumentList(wxArrayInt list)
 {
-    if( isArrayIntEqual( list, m_ArrayOfInstrument ) )
-        return;
+    if(! isArrayIntEqual( list, m_ArrayOfInstrument ) ) {
 
 /* options
       ID_DBP_D_SOG: config max value, show STW optional
@@ -1866,8 +1863,9 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list)
                 }
             }
       }
-      Layout();
-      SetMinSize( itemBoxSizer->GetMinSize() );
+    }
+    Layout();
+    SetMinSize( itemBoxSizer->GetMinSize() );
 }
 
 void DashboardWindow::SendSentenceToAllInstruments(int st, double value, wxString unit)

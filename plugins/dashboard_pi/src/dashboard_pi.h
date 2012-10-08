@@ -231,7 +231,7 @@ enum
 class DashboardWindow : public wxWindow
 {
 public:
-    DashboardWindow( wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr, dashboard_pi* plugin );
+    DashboardWindow( wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr, dashboard_pi* plugin, int orient );
     ~DashboardWindow();
 
     void SetColorScheme( PI_ColorScheme cs );
