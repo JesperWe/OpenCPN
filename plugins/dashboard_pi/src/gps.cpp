@@ -68,7 +68,7 @@ wxSize DashboardInstrument_GPS::GetSize()
       int width = GetParent()->GetSize().x;
       m_cx = width/2;
       if( ((wxBoxSizer *)(GetParent()->GetSizer()))->GetOrientation() == wxHORIZONTAL ) {
-          return wxSize( GetParent()->GetSize().y * 1.2, GetParent()->GetSize().y );
+          return wxSize( DefaultWidth, m_TitleHeight+140 );
       } else {
           return wxSize( width, m_TitleHeight+140 );
       }

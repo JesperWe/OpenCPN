@@ -135,7 +135,7 @@ wxSize DashboardInstrument_Single::GetSize()
       dc.GetTextExtent(_T("000"), &w, &m_DataHeight, 0, 0, g_pFontData);
 
       if( ((wxBoxSizer *)(GetParent()->GetSizer()))->GetOrientation() == wxHORIZONTAL ) {
-          return wxSize( wxMin(GetParent()->GetSize().y, 200), GetParent()->GetSize().y );
+          return wxSize( DefaultWidth, m_TitleHeight+m_DataHeight );
       } else {
           return wxSize( GetParent()->GetSize().x, m_TitleHeight+m_DataHeight );
       }
@@ -209,9 +209,9 @@ wxSize DashboardInstrument_Position::GetSize()
       dc.GetTextExtent(_T("000"), &w, &m_DataHeight, 0, 0, g_pFontData);
 
       if( ((wxBoxSizer *)(GetParent()->GetSizer()))->GetOrientation() == wxHORIZONTAL ) {
-          return wxSize( GetParent()->GetSize().y*1.2, GetParent()->GetSize().y );
+          return wxSize( DefaultWidth, m_TitleHeight+m_DataHeight*2 );
       } else {
-          return wxSize( GetParent()->GetSize().x, m_TitleHeight+m_DataHeight );
+          return wxSize( GetParent()->GetSize().x, m_TitleHeight+m_DataHeight*2 );
       }
 }
 
