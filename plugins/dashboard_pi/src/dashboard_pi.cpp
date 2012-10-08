@@ -1617,13 +1617,12 @@ void DashboardWindow::OnContextMenuSelect( wxCommandEvent& event )
         else m_Container->m_aInstrumentList.Remove( event.GetId() );
         SetInstrumentList( m_Container->m_aInstrumentList );
         GetSizer()->Layout();
-        return;
     }
 
     switch( event.GetId() ){
         case ID_DASH_PREFS: {
             m_plugin->ShowPreferencesDialog( this );
-            break;
+            return; // Does it's own save.
         }
         case ID_DASH_VERTICAL: {
             ChangePaneOrientation( wxVERTICAL );
@@ -1634,6 +1633,7 @@ void DashboardWindow::OnContextMenuSelect( wxCommandEvent& event )
             break;
         }
     }
+    m_plugin->SaveConfig();
 }
 
 void DashboardWindow::SetColorScheme( PI_ColorScheme cs )

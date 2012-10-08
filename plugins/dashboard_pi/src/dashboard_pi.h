@@ -138,10 +138,10 @@ public:
       void SetColorScheme(PI_ColorScheme cs);
       void OnPaneClose( wxAuiManagerEvent& event );
       void UpdateAuiStatus(void);
+      bool SaveConfig(void);
 
 private:
       bool LoadConfig(void);
-      bool SaveConfig(void);
       void ApplyConfig(void);
       void SendSentenceToAllInstruments(int st, double value, wxString unit);
       void SendSatInfoToAllInstruments(int cnt, int seq, SAT_INFO sats[4]);
