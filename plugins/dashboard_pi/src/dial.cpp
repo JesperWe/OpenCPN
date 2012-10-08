@@ -77,10 +77,17 @@ DashboardInstrument_Dial::DashboardInstrument_Dial( wxWindow *parent, wxWindowID
 wxSize DashboardInstrument_Dial::GetSize()
 {
       wxClientDC dc(this);
+      wxSize size = GetParent()->GetSize();
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-      w = GetParent()->GetSize().x;
-      return wxSize( w, m_TitleHeight+w );
+      w = size.x;
+      if( horizontal ) {
+          wxLogMessage( _T("Dial %dx%d Horiz"), size.x, size.y );
+          return wxSize( size.y * 1.1, size.y );
+      } else {
+          wxLogMessage( _T("Dial %dx%d Vert"), size.x, size.y );
+          return wxSize( w, m_TitleHeight+w );
+      }
 }
 
 void DashboardInstrument_Dial::SetData(int st, double data, wxString unit)
@@ -126,6 +133,8 @@ void DashboardInstrument_Dial::DrawFrame( wxGCDC* dc )
     dc->SetBrush( *wxTRANSPARENT_BRUSH);
 
     int penwidth = 1 + GetParent()->GetSize().x / 100;
+    if( horizontal ) penwidth = 1 + GetParent()->GetSize().y / 100;
+
     wxPen* pen = wxThePenList->FindOrCreatePen( cl, penwidth, wxSOLID );
 
     if( m_MarkerOption == DIAL_MARKER_REDGREENBAR ) {
@@ -168,6 +177,7 @@ void DashboardInstrument_Dial::DrawMarkers(wxGCDC* dc)
     wxColour cl;
     GetGlobalColor( _T("DASHF"), &cl );
     int penwidth = GetParent()->GetSize().x / 100;
+    if( horizontal ) penwidth = GetParent()->GetSize().y / 100;
     wxPen* pen = wxThePenList->FindOrCreatePen( cl, penwidth, wxSOLID );
     dc->SetPen( *pen );
 
@@ -322,6 +332,7 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value,
                   TextPoint.y = (size.y * .75) - height;
                   GetGlobalColor(_T("DASHL"), &cl);
                   int penwidth = GetParent()->GetSize().x / 100;
+                  if( horizontal ) penwidth = GetParent()->GetSize().y / 100;
                   wxPen* pen = wxThePenList->FindOrCreatePen( cl, penwidth, wxSOLID );
                   dc->SetPen( *pen );
                   GetGlobalColor(_T("DASHB"), &cl);

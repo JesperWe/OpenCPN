@@ -1190,55 +1190,73 @@ bool dashboard_pi::SaveConfig(void)
             return false;
 }
 
-void dashboard_pi::ApplyConfig(void)
+void dashboard_pi::ApplyConfig( void )
 {
-      // Reverse order to handle deletes
-      for (size_t i = m_ArrayOfDashboardWindow.GetCount(); i > 0; i--)
-      {
-            DashboardWindowContainer *cont = m_ArrayOfDashboardWindow.Item(i-1);
-            if ( cont->m_bIsDeleted )
-            {
-                  if ( cont->m_pDashboardWindow )
-                  {
-                        m_pauimgr->DetachPane( cont->m_pDashboardWindow );
-                        cont->m_pDashboardWindow->Close();
-                        cont->m_pDashboardWindow->Destroy();
-                        cont->m_pDashboardWindow = NULL;
-                  }
-                  m_ArrayOfDashboardWindow.Remove( cont );
-                  delete cont;
+    // Reverse order to handle deletes
+    for( size_t i = m_ArrayOfDashboardWindow.GetCount(); i > 0; i-- ) {
+        DashboardWindowContainer *cont = m_ArrayOfDashboardWindow.Item( i - 1 );
+        if( cont->m_bIsDeleted ) {
+            if( cont->m_pDashboardWindow ) {
+                m_pauimgr->DetachPane( cont->m_pDashboardWindow );
+                cont->m_pDashboardWindow->Close();
+                cont->m_pDashboardWindow->Destroy();
+                cont->m_pDashboardWindow = NULL;
             }
-            else
-            {
-                  if (! cont->m_pDashboardWindow )
-                  {
-                        cont->m_pDashboardWindow = new DashboardWindow(GetOCPNCanvasWindow(), wxID_ANY, m_pauimgr, this);
-                        m_pauimgr->AddPane( cont->m_pDashboardWindow, wxAuiPaneInfo().CaptionVisible(true).Float().FloatingPosition(50,50) );
-                  }
-                  wxAuiPaneInfo& pane = m_pauimgr->GetPane( cont->m_pDashboardWindow );
-                  pane.Name(wxString::Format(_T("Dashboard%d"), i-1)+cont->m_sOrientation).Caption(cont->m_sCaption).Show(cont->m_bIsVisible);
-                  // Name contains Orientation for perspective
-                  if (cont->m_sOrientation == _T("V"))
-                  {
-                        pane.TopDockable(false).BottomDockable(false).LeftDockable(true).RightDockable(true);
-                        cont->m_pDashboardWindow->SetSizerOrientation( wxVERTICAL );
-                  }
-                  else if (cont->m_sOrientation == _T("H"))
-                  {
-                        pane.TopDockable(true).BottomDockable(true).LeftDockable(false).RightDockable(false);
-                        cont->m_pDashboardWindow->SetSizerOrientation( wxHORIZONTAL );
-                  }
-//                  pane.Row(1);
-// TODO: orientation may have changed. then we've a problem with dock constraints (AUI bug?)
-                  cont->m_pDashboardWindow->SetInstrumentList(cont->m_aInstrumentList);
-                  wxSize sz = cont->m_pDashboardWindow->GetMinSize();
-                  wxLogMessage(wxString::Format(_T("GetMinSize = (%d, %d)"), sz.x, sz.y));
-                  pane.MinSize(sz);
-                  pane.BestSize(sz);
-                  pane.FloatingSize(sz);
+            m_ArrayOfDashboardWindow.Remove( cont );
+            delete cont;
+        } else {
+            if( !cont->m_pDashboardWindow ) {
+                cont->m_pDashboardWindow = new DashboardWindow( GetOCPNCanvasWindow(), wxID_ANY,
+                        m_pauimgr, this );
+                m_pauimgr->AddPane( cont->m_pDashboardWindow,
+                        wxAuiPaneInfo().CaptionVisible( true ).Float().FloatingPosition( 50, 50 ) );
             }
-      }
-      m_pauimgr->Update();
+            DashboardWindow* win = cont->m_pDashboardWindow;
+
+            wxAuiPaneInfo& pane = m_pauimgr->GetPane( win );
+            pane.Name( wxString::Format( _T("Dashboard%d"), i - 1 ) + cont->m_sOrientation ).Caption(
+                    cont->m_sCaption ).Show( cont->m_bIsVisible );
+
+            // Name contains Orientation for perspective
+            if( cont->m_sOrientation == _T("V") ) {
+                pane.TopDockable( false ).BottomDockable( false ).LeftDockable( true ).RightDockable(
+                        true );
+                if( win->GetSizerOrientation() != wxVERTICAL ) {
+                    pane.Float();
+                    pane.BestSize( DefaultWidth, DefaultWidth );
+                }
+                win->SetSizerOrientation( wxVERTICAL );
+                for( size_t i = 0; i < win->GetInstruments()->GetCount(); i++ ) {
+                    DashboardInstrumentContainer* ic =
+                            (DashboardInstrumentContainer*) win->GetInstruments()->Item( i );
+                    ic->m_pInstrument->horizontal = false;
+                }
+            } else if( cont->m_sOrientation == _T("H") ) {
+                pane.TopDockable( true ).BottomDockable( true ).LeftDockable( false ).RightDockable(
+                        false );
+                if( win->GetSizerOrientation() != wxHORIZONTAL ) {
+                    pane.Float();
+                    pane.BestSize( DefaultWidth, DefaultWidth );
+                }
+                win->SetSizerOrientation( wxHORIZONTAL );
+                for( size_t i = 0; i < win->GetInstruments()->GetCount(); i++ ) {
+                    DashboardInstrumentContainer* ic =
+                            (DashboardInstrumentContainer*) win->GetInstruments()->Item( i );
+                    ic->m_pInstrument->horizontal = true;
+                }
+            }
+
+            m_pauimgr->Update();
+            cont->m_pDashboardWindow->SetInstrumentList( cont->m_aInstrumentList );
+            wxSize sz = win->GetMinSize();
+
+            pane.MinSize( sz );
+            pane.BestSize( sz );
+            pane.FloatingSize( sz );
+            m_pauimgr->Update();
+        }
+    }
+    m_pauimgr->Update();
 }
 
 /* DashboardPreferencesDialog
@@ -1655,7 +1673,9 @@ DashboardWindow::~DashboardWindow()
 void DashboardWindow::OnSize( wxSizeEvent& event )
 {
     event.Skip();
+    GetParent()->Layout();
     Layout();
+    wxLogMessage(_T("Dashboard->OnSize(%d,%d)"), GetSize().x, GetSize().y );
 }
 
 void DashboardWindow::OnContextMenu( wxContextMenuEvent& event )
@@ -1686,6 +1706,13 @@ void DashboardWindow::SetColorScheme(PI_ColorScheme cs)
 void DashboardWindow::SetSizerOrientation( int orient )
 {
       itemBoxSizer->SetOrientation( orient );
+      horizontal = orient == wxHORIZONTAL;
+      Layout();
+}
+
+int DashboardWindow::GetSizerOrientation()
+{
+      return itemBoxSizer->GetOrientation();
 }
 
 bool isArrayIntEqual(const wxArrayInt& l1, const wxArrayOfInstrument &l2)
@@ -1702,8 +1729,12 @@ bool isArrayIntEqual(const wxArrayInt& l1, const wxArrayOfInstrument &l2)
 
 void DashboardWindow::SetInstrumentList(wxArrayInt list)
 {
-      if (isArrayIntEqual(list, m_ArrayOfInstrument))
-            return;
+    if( isArrayIntEqual( list, m_ArrayOfInstrument ) ) {
+        //GetParent()->Layout();
+        Layout();
+        SetMinSize( itemBoxSizer->GetMinSize() );
+        return;
+    }
 
 /* options
       ID_DBP_D_SOG: config max value, show STW optional
@@ -1850,10 +1881,16 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list)
             }
             if(instrument)
             {
-                   m_ArrayOfInstrument.Add(new DashboardInstrumentContainer(id, instrument, instrument->GetCapacity()));
-                   itemBoxSizer->Add(instrument, 0, wxALL|wxEXPAND, 0);
+                instrument->horizontal = horizontal;
+                m_ArrayOfInstrument.Add(
+                        new DashboardInstrumentContainer( id, instrument, instrument->GetCapacity() ) );
+                itemBoxSizer->Add( instrument, 0, wxALL | wxEXPAND, 0 );
+                if( horizontal ) {
+                    itemBoxSizer->AddSpacer( 5 );
+                }
             }
       }
+      //GetParent()->Layout();
       Layout();
       SetMinSize( itemBoxSizer->GetMinSize() );
 }

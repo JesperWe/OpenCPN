@@ -67,7 +67,11 @@ wxSize DashboardInstrument_GPS::GetSize()
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
       int width = GetParent()->GetSize().x;
       m_cx = width/2;
-      return wxSize( width, m_TitleHeight+140 );
+      if( horizontal ) {
+          return wxSize( GetParent()->GetSize().y * 1.2, GetParent()->GetSize().y );
+      } else {
+          return wxSize( width, m_TitleHeight+140 );
+      }
 }
 
 void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, SAT_INFO sats[4])

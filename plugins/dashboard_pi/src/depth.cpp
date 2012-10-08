@@ -58,7 +58,11 @@ wxSize DashboardInstrument_Depth::GetSize()
       wxClientDC dc(this);
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-      return wxSize( GetParent()->GetSize().x, m_TitleHeight+140 );
+      if( horizontal ) {
+          return wxSize( GetParent()->GetSize().y * 1.5, GetParent()->GetSize().y );
+      } else {
+          return wxSize( GetParent()->GetSize().x, m_TitleHeight+140 );
+      }
 }
 
 void DashboardInstrument_Depth::SetData(int st, double data, wxString unit)

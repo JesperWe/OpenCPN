@@ -6,7 +6,7 @@
  * Author:   Jean-Eudes Onfray
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,7 +21,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
 
@@ -236,6 +236,8 @@ public:
 
     void SetColorScheme( PI_ColorScheme cs );
     void SetSizerOrientation( int orient );
+    int GetSizerOrientation();
+    wxArrayOfInstrument* GetInstruments() { return &m_ArrayOfInstrument; }
     void OnSize( wxSizeEvent& evt );
     void OnContextMenu( wxContextMenuEvent& evt );
     void OnContextMenuSelect( wxCommandEvent& evt );
@@ -244,6 +246,8 @@ public:
     void SendSatInfoToAllInstruments( int cnt, int seq, SAT_INFO sats[4] );
     void SendUtcTimeToAllInstruments( int st, wxDateTime value );
     /*TODO: OnKeyPress pass event to main window or disable focus*/
+
+      bool                 horizontal;
 
 private:
       wxAuiManager         *m_pauimgr;

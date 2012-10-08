@@ -6,7 +6,7 @@
  * Author:   Jean-Eudes Onfray
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,7 +21,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
 
@@ -105,7 +105,7 @@ public:
       virtual void OnPaint(wxPaintEvent& WXUNUSED(event));
       virtual void SetData(int st, double data, wxString unit) = 0;
 
-private:
+      bool              horizontal;
 
 protected:
       int               m_cap_flag;
@@ -113,7 +113,6 @@ protected:
       wxString          m_title;
 
       virtual void Draw(wxGCDC* dc) = 0;
-
 };
 
 class DashboardInstrument_Single : public DashboardInstrument
@@ -131,7 +130,6 @@ protected:
       int               m_DataHeight;
 
       void Draw(wxGCDC* dc);
-
 };
 
 class DashboardInstrument_Position : public DashboardInstrument
@@ -151,7 +149,6 @@ protected:
       int               m_DataHeight;
 
       void Draw(wxGCDC* dc);
-
 };
 
 class DashboardInstrument_Sun : public DashboardInstrument_Position
@@ -173,4 +170,3 @@ private:
 };
 
 #endif
-

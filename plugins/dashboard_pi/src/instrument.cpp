@@ -6,7 +6,7 @@
  * Author:   Jean-Eudes Onfray
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,7 +21,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
 
@@ -32,7 +32,7 @@
   #include "wx/wx.h"
 #endif //precompiled headers
 
-
+#include "dashboard_pi.h"
 #include "instrument.h"
 #include <math.h>
 #include <time.h>
@@ -51,6 +51,7 @@ DashboardInstrument::DashboardInstrument(wxWindow *pparent, wxWindowID id, wxStr
 
       SetBackgroundStyle( wxBG_STYLE_CUSTOM );
 
+      horizontal = ((DashboardWindow*)(pparent))->horizontal;
       wxClientDC dc(this);
       int width;
       dc.GetTextExtent(m_title, &width, &m_TitleHeight, 0, 0, g_pFontTitle);
@@ -73,8 +74,9 @@ void DashboardInstrument::OnEraseBackground(wxEraseEvent& WXUNUSED(evt))
 void DashboardInstrument::OnSize(wxSizeEvent& evt)
 {
     evt.Skip();
-    SetMinSize(GetSize());
-    GetParent()->Layout();
+    SetMinSize( GetSize() );
+    wxLogMessage(_T("    Instr->OnSize(%d,%d)"), GetSize().x, GetSize().y );
+    //GetParent()->Layout();
     Refresh();
 }
 
@@ -125,7 +127,6 @@ DashboardInstrument_Single::DashboardInstrument_Single(wxWindow *pparent, wxWind
       :DashboardInstrument(pparent, id, title, cap_flag)
 {
       m_format = format;
-
       m_data = _T("---");
 }
 
@@ -136,7 +137,11 @@ wxSize DashboardInstrument_Single::GetSize()
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
       dc.GetTextExtent(_T("000"), &w, &m_DataHeight, 0, 0, g_pFontData);
 
-      return wxSize( GetParent()->GetSize().x, m_TitleHeight+m_DataHeight );
+      if( horizontal ) {
+          return wxSize( wxMin(GetParent()->GetSize().y, 200), GetParent()->GetSize().y );
+      } else {
+          return wxSize( GetParent()->GetSize().x, m_TitleHeight+m_DataHeight );
+      }
 }
 
 void DashboardInstrument_Single::Draw(wxGCDC* dc)
@@ -206,7 +211,11 @@ wxSize DashboardInstrument_Position::GetSize()
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
       dc.GetTextExtent(_T("000"), &w, &m_DataHeight, 0, 0, g_pFontData);
 
-      return wxSize( GetParent()->GetSize().x, m_TitleHeight+m_DataHeight*2 );
+      if( horizontal ) {
+          return wxSize( GetParent()->GetSize().y*1.2, GetParent()->GetSize().y );
+      } else {
+          return wxSize( GetParent()->GetSize().x, m_TitleHeight+m_DataHeight );
+      }
 }
 
 void DashboardInstrument_Position::Draw(wxGCDC* dc)

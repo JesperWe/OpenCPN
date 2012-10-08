@@ -60,7 +60,11 @@ wxSize DashboardInstrument_RudderAngle::GetSize()
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
       w = GetParent()->GetSize().x;
-      return wxSize( w, m_TitleHeight+w*.7 );
+      if( horizontal ) {
+          return wxSize( GetParent()->GetSize().y, GetParent()->GetSize().y );
+      } else {
+          return wxSize( w, m_TitleHeight+w*.7 );
+      }
 }
 
 void DashboardInstrument_RudderAngle::SetData(int st, double data, wxString unit)
