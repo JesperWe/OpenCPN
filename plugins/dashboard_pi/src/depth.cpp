@@ -58,7 +58,7 @@ wxSize DashboardInstrument_Depth::GetSize()
       wxClientDC dc(this);
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-      if( horizontal ) {
+      if( ((wxBoxSizer *)(GetParent()->GetSizer()))->GetOrientation() == wxHORIZONTAL ) {
           return wxSize( GetParent()->GetSize().y * 1.5, GetParent()->GetSize().y );
       } else {
           return wxSize( GetParent()->GetSize().x, m_TitleHeight+140 );

@@ -60,7 +60,7 @@ wxSize DashboardInstrument_RudderAngle::GetSize()
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
       w = GetParent()->GetSize().x;
-      if( horizontal ) {
+      if( ((wxBoxSizer *)(GetParent()->GetSizer()))->GetOrientation() == wxHORIZONTAL ) {
           return wxSize( GetParent()->GetSize().y, GetParent()->GetSize().y );
       } else {
           return wxSize( w, m_TitleHeight+w*.7 );

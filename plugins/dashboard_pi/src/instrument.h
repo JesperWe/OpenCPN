@@ -105,8 +105,6 @@ public:
       virtual void OnPaint(wxPaintEvent& WXUNUSED(event));
       virtual void SetData(int st, double data, wxString unit) = 0;
 
-      bool              horizontal;
-
 protected:
       int               m_cap_flag;
       int               m_TitleHeight;

@@ -1221,39 +1221,21 @@ void dashboard_pi::ApplyConfig( void )
             if( cont->m_sOrientation == _T("V") ) {
                 pane.TopDockable( false ).BottomDockable( false ).LeftDockable( true ).RightDockable(
                         true );
-                if( win->GetSizerOrientation() != wxVERTICAL ) {
-                    pane.Float();
-                    pane.BestSize( DefaultWidth, DefaultWidth );
-                }
+                if( win->GetSizerOrientation() != wxVERTICAL ) pane.Float();
                 win->SetSizerOrientation( wxVERTICAL );
-                for( size_t i = 0; i < win->GetInstruments()->GetCount(); i++ ) {
-                    DashboardInstrumentContainer* ic =
-                            (DashboardInstrumentContainer*) win->GetInstruments()->Item( i );
-                    ic->m_pInstrument->horizontal = false;
-                }
             } else if( cont->m_sOrientation == _T("H") ) {
                 pane.TopDockable( true ).BottomDockable( true ).LeftDockable( false ).RightDockable(
                         false );
-                if( win->GetSizerOrientation() != wxHORIZONTAL ) {
-                    pane.Float();
-                    pane.BestSize( DefaultWidth, DefaultWidth );
-                }
+                if( win->GetSizerOrientation() != wxHORIZONTAL ) pane.Float();
                 win->SetSizerOrientation( wxHORIZONTAL );
-                for( size_t i = 0; i < win->GetInstruments()->GetCount(); i++ ) {
-                    DashboardInstrumentContainer* ic =
-                            (DashboardInstrumentContainer*) win->GetInstruments()->Item( i );
-                    ic->m_pInstrument->horizontal = true;
-                }
             }
 
-            m_pauimgr->Update();
-            cont->m_pDashboardWindow->SetInstrumentList( cont->m_aInstrumentList );
+            win->SetInstrumentList( cont->m_aInstrumentList );
             wxSize sz = win->GetMinSize();
 
             pane.MinSize( sz );
             pane.BestSize( sz );
             pane.FloatingSize( sz );
-            m_pauimgr->Update();
         }
     }
     m_pauimgr->Update();
@@ -1673,9 +1655,7 @@ DashboardWindow::~DashboardWindow()
 void DashboardWindow::OnSize( wxSizeEvent& event )
 {
     event.Skip();
-    GetParent()->Layout();
     Layout();
-    wxLogMessage(_T("Dashboard->OnSize(%d,%d)"), GetSize().x, GetSize().y );
 }
 
 void DashboardWindow::OnContextMenu( wxContextMenuEvent& event )
@@ -1706,7 +1686,8 @@ void DashboardWindow::SetColorScheme(PI_ColorScheme cs)
 void DashboardWindow::SetSizerOrientation( int orient )
 {
       itemBoxSizer->SetOrientation( orient );
-      horizontal = orient == wxHORIZONTAL;
+      if( orient == wxVERTICAL ) SetMinSize( wxSize( DefaultWidth, -1 ) );
+      else SetMinSize( wxSize( -1, DefaultWidth ) );
       Layout();
 }
 
@@ -1729,12 +1710,8 @@ bool isArrayIntEqual(const wxArrayInt& l1, const wxArrayOfInstrument &l2)
 
 void DashboardWindow::SetInstrumentList(wxArrayInt list)
 {
-    if( isArrayIntEqual( list, m_ArrayOfInstrument ) ) {
-        //GetParent()->Layout();
-        Layout();
-        SetMinSize( itemBoxSizer->GetMinSize() );
+    if( isArrayIntEqual( list, m_ArrayOfInstrument ) )
         return;
-    }
 
 /* options
       ID_DBP_D_SOG: config max value, show STW optional
@@ -1881,16 +1858,14 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list)
             }
             if(instrument)
             {
-                instrument->horizontal = horizontal;
                 m_ArrayOfInstrument.Add(
                         new DashboardInstrumentContainer( id, instrument, instrument->GetCapacity() ) );
                 itemBoxSizer->Add( instrument, 0, wxALL | wxEXPAND, 0 );
-                if( horizontal ) {
+                if( itemBoxSizer->GetOrientation() == wxHORIZONTAL ) {
                     itemBoxSizer->AddSpacer( 5 );
                 }
             }
       }
-      //GetParent()->Layout();
       Layout();
       SetMinSize( itemBoxSizer->GetMinSize() );
 }

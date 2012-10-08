@@ -237,7 +237,6 @@ public:
     void SetColorScheme( PI_ColorScheme cs );
     void SetSizerOrientation( int orient );
     int GetSizerOrientation();
-    wxArrayOfInstrument* GetInstruments() { return &m_ArrayOfInstrument; }
     void OnSize( wxSizeEvent& evt );
     void OnContextMenu( wxContextMenuEvent& evt );
     void OnContextMenuSelect( wxCommandEvent& evt );
@@ -246,8 +245,6 @@ public:
     void SendSatInfoToAllInstruments( int cnt, int seq, SAT_INFO sats[4] );
     void SendUtcTimeToAllInstruments( int st, wxDateTime value );
     /*TODO: OnKeyPress pass event to main window or disable focus*/
-
-      bool                 horizontal;
 
 private:
       wxAuiManager         *m_pauimgr;

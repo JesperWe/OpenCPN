@@ -51,7 +51,7 @@ wxSize DashboardInstrument_Clock::GetSize()
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
       dc.GetTextExtent(_T("00:00:00 UTC"), &w, &m_DataHeight, 0, 0, g_pFontData);
 
-      if( horizontal ) {
+      if( ((wxBoxSizer *)(GetParent()->GetSizer()))->GetOrientation() == wxHORIZONTAL ) {
           return wxSize( wxMin(GetParent()->GetSize().y, 200), GetParent()->GetSize().y );
       } else {
           return wxSize( GetParent()->GetSize().x, m_TitleHeight+m_DataHeight );

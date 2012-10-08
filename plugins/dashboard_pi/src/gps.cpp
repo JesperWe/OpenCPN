@@ -67,7 +67,7 @@ wxSize DashboardInstrument_GPS::GetSize()
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
       int width = GetParent()->GetSize().x;
       m_cx = width/2;
-      if( horizontal ) {
+      if( ((wxBoxSizer *)(GetParent()->GetSizer()))->GetOrientation() == wxHORIZONTAL ) {
           return wxSize( GetParent()->GetSize().y * 1.2, GetParent()->GetSize().y );
       } else {
           return wxSize( width, m_TitleHeight+140 );

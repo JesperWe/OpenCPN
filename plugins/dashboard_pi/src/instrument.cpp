@@ -32,7 +32,6 @@
   #include "wx/wx.h"
 #endif //precompiled headers
 
-#include "dashboard_pi.h"
 #include "instrument.h"
 #include <math.h>
 #include <time.h>
@@ -51,7 +50,6 @@ DashboardInstrument::DashboardInstrument(wxWindow *pparent, wxWindowID id, wxStr
 
       SetBackgroundStyle( wxBG_STYLE_CUSTOM );
 
-      horizontal = ((DashboardWindow*)(pparent))->horizontal;
       wxClientDC dc(this);
       int width;
       dc.GetTextExtent(m_title, &width, &m_TitleHeight, 0, 0, g_pFontTitle);
@@ -75,8 +73,7 @@ void DashboardInstrument::OnSize(wxSizeEvent& evt)
 {
     evt.Skip();
     SetMinSize( GetSize() );
-    wxLogMessage(_T("    Instr->OnSize(%d,%d)"), GetSize().x, GetSize().y );
-    //GetParent()->Layout();
+    GetParent()->Layout();
     Refresh();
 }
 
@@ -137,7 +134,7 @@ wxSize DashboardInstrument_Single::GetSize()
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
       dc.GetTextExtent(_T("000"), &w, &m_DataHeight, 0, 0, g_pFontData);
 
-      if( horizontal ) {
+      if( ((wxBoxSizer *)(GetParent()->GetSizer()))->GetOrientation() == wxHORIZONTAL ) {
           return wxSize( wxMin(GetParent()->GetSize().y, 200), GetParent()->GetSize().y );
       } else {
           return wxSize( GetParent()->GetSize().x, m_TitleHeight+m_DataHeight );
@@ -211,7 +208,7 @@ wxSize DashboardInstrument_Position::GetSize()
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
       dc.GetTextExtent(_T("000"), &w, &m_DataHeight, 0, 0, g_pFontData);
 
-      if( horizontal ) {
+      if( ((wxBoxSizer *)(GetParent()->GetSizer()))->GetOrientation() == wxHORIZONTAL ) {
           return wxSize( GetParent()->GetSize().y*1.2, GetParent()->GetSize().y );
       } else {
           return wxSize( GetParent()->GetSize().x, m_TitleHeight+m_DataHeight );
