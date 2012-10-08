@@ -228,10 +228,18 @@ enum
       ID_DASHBOARD_WINDOW
 };
 
+enum
+{
+      ID_DASH_PREFS = 999,
+      ID_DASH_VERTICAL,
+      ID_DASH_HORIZONTAL
+};
+
 class DashboardWindow : public wxWindow
 {
 public:
-    DashboardWindow( wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr, dashboard_pi* plugin, int orient );
+    DashboardWindow( wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr, dashboard_pi* plugin,
+             int orient, DashboardWindowContainer* mycont, int myIndex );
     ~DashboardWindow();
 
     void SetColorScheme( PI_ColorScheme cs );
@@ -244,7 +252,11 @@ public:
     void SendSentenceToAllInstruments( int st, double value, wxString unit );
     void SendSatInfoToAllInstruments( int cnt, int seq, SAT_INFO sats[4] );
     void SendUtcTimeToAllInstruments( int st, wxDateTime value );
-    /*TODO: OnKeyPress pass event to main window or disable focus*/
+    void ChangePaneOrientation( int orient );
+/*TODO: OnKeyPress pass event to main window or disable focus*/
+
+    int                  m_dbIndex;
+    DashboardWindowContainer* m_Container;
 
 private:
       wxAuiManager         *m_pauimgr;

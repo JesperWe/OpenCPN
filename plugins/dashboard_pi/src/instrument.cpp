@@ -206,10 +206,10 @@ wxSize DashboardInstrument_Position::GetSize()
       wxClientDC dc(this);
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-      dc.GetTextExtent(_T("000"), &w, &m_DataHeight, 0, 0, g_pFontData);
+      dc.GetTextExtent(_T("000  00.0000"), &w, &m_DataHeight, 0, 0, g_pFontData);
 
       if( ((wxBoxSizer *)(GetParent()->GetSizer()))->GetOrientation() == wxHORIZONTAL ) {
-          return wxSize( DefaultWidth, m_TitleHeight+m_DataHeight*2 );
+          return wxSize( w+10, m_TitleHeight+m_DataHeight*2 );
       } else {
           return wxSize( GetParent()->GetSize().x, m_TitleHeight+m_DataHeight*2 );
       }
