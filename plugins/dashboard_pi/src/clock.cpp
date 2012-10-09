@@ -39,23 +39,18 @@
     #include <wx/wx.h>
 #endif
 
-DashboardInstrument_Clock::DashboardInstrument_Clock( wxWindow *parent, wxWindowID id, wxString title) :
-      DashboardInstrument_Single(parent, id, title, OCPN_DBP_STC_CLK, _T("%02i:%02i:%02i UTC"))
+DashboardInstrument_Clock::DashboardInstrument_Clock( wxWindow *parent, wxWindowID id ) :
+      DashboardInstrument_Single(parent, id, OCPN_DBP_STC_CLK, _T("%02i:%02i:%02i UTC"))
 {
 }
 
-wxSize DashboardInstrument_Clock::GetSize( int orient, wxSize hint )
+wxSize DashboardInstrument_Clock::GetSize( wxSize hint )
 {
       wxClientDC dc(this);
       int w;
-      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
       dc.GetTextExtent(_T("00:00:00 UTC"), &w, &m_DataHeight, 0, 0, g_pFontData);
 
-      if( orient== wxHORIZONTAL ) {
-          return wxSize( DefaultWidth, wxMax(m_TitleHeight+m_DataHeight, hint.y) );
-      } else {
-          return wxSize( wxMax(hint.x, DefaultWidth), m_TitleHeight+m_DataHeight );
-      }
+      return wxSize( DefaultWidth, m_DataHeight );
 }
 
 void DashboardInstrument_Clock::SetUtcTime(int st, wxDateTime data)
@@ -69,8 +64,8 @@ void DashboardInstrument_Clock::SetUtcTime(int st, wxDateTime data)
       }
 }
 
-DashboardInstrument_Moon::DashboardInstrument_Moon( wxWindow *parent, wxWindowID id, wxString title) :
-      DashboardInstrument_Single(parent, id, title, OCPN_DBP_STC_MON, _T("%i/4 %c"))
+DashboardInstrument_Moon::DashboardInstrument_Moon( wxWindow *parent, wxWindowID id ) :
+      DashboardInstrument_Single(parent, id, OCPN_DBP_STC_MON, _T("%i/4 %c"))
 {
 }
 

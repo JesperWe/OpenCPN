@@ -78,7 +78,7 @@ FIND_PACKAGE(Gettext REQUIRED)
 
 
 SET(SRC_DASHBOARD
-            src/dashboard_pi.h
+        src/dashboard_pi.h
  		src/dashboard_pi.cpp
  		src/instrument.cpp
  		src/instrument.h
@@ -86,21 +86,23 @@ SET(SRC_DASHBOARD
  		src/compass.h
  		src/dial.cpp
  		src/dial.h
-            src/gps.cpp
-            src/gps.h
-            src/rudder_angle.cpp
-            src/rudder_angle.h
+        src/gps.cpp
+        src/gps.h
+        src/rudder_angle.cpp
+        src/rudder_angle.h
  		src/speedometer.cpp
  		src/speedometer.h
  		src/wind.cpp
  		src/wind.h
-            src/depth.cpp
-            src/depth.h
+        src/depth.cpp
+        src/depth.h
 	    src/clock.cpp
-            src/clock.h
-            src/icons.cpp
-            src/icons.h
- 	)
+        src/clock.h
+	    src/celestial.cpp
+        src/celestial.h
+        src/icons.cpp
+        src/icons.h
+    )
 
 SET(SRC_NMEA0183
 		src/nmea0183/LatLong.hpp

@@ -46,10 +46,10 @@
 class DashboardInstrument_RudderAngle: public DashboardInstrument_Dial
 {
       public:
-            DashboardInstrument_RudderAngle( wxWindow *parent, wxWindowID id, wxString title);
+            DashboardInstrument_RudderAngle( wxWindow *parent, wxWindowID id );
             ~DashboardInstrument_RudderAngle(void){}
 
-            wxSize GetSize( int orient, wxSize hint );
+            wxSize GetSize( wxSize hint );
             void SetData(int, double, wxString);
 
       private:

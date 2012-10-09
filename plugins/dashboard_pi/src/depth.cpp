@@ -40,8 +40,8 @@
     #include <wx/wx.h>
 #endif
 
-DashboardInstrument_Depth::DashboardInstrument_Depth( wxWindow *parent, wxWindowID id, wxString title) :
-      DashboardInstrument(parent, id, title, OCPN_DBP_STC_DPT | OCPN_DBP_STC_TMP)
+DashboardInstrument_Depth::DashboardInstrument_Depth( wxWindow *parent, wxWindowID id ) :
+      DashboardInstrument(parent, id, OCPN_DBP_STC_DPT | OCPN_DBP_STC_TMP)
 {
       m_MaxDepth = 0;
       m_Depth = 0;
@@ -53,16 +53,9 @@ DashboardInstrument_Depth::DashboardInstrument_Depth( wxWindow *parent, wxWindow
       }
 }
 
-wxSize DashboardInstrument_Depth::GetSize( int orient, wxSize hint )
+wxSize DashboardInstrument_Depth::GetSize( wxSize hint )
 {
-      wxClientDC dc(this);
-      int w;
-      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-      if( orient == wxHORIZONTAL ) {
-          return wxSize( DefaultWidth, wxMax(m_TitleHeight+140, hint.y) );
-      } else {
-          return wxSize( wxMax(hint.x, DefaultWidth), m_TitleHeight+140 );
-      }
+      return wxSize( DefaultWidth, 140 );
 }
 
 void DashboardInstrument_Depth::SetData(int st, double data, wxString unit)
@@ -92,7 +85,7 @@ void DashboardInstrument_Depth::Draw(wxGCDC* dc)
 
 void DashboardInstrument_Depth::DrawBackground(wxGCDC* dc)
 {
-      wxSize size = GetClientSize();
+      wxSize size = GetSize( GetClientSize() );
       wxColour cl;
 
       GetGlobalColor(_T("DASHL"), &cl);
@@ -138,12 +131,12 @@ void DashboardInstrument_Depth::DrawBackground(wxGCDC* dc)
 
 void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc)
 {
-      wxSize size = GetClientSize();
+      wxSize size = GetSize( GetClientSize() );
       wxColour cl;
       GetGlobalColor(_T("DASHF"), &cl);
       dc->SetTextForeground( cl );
       dc->SetFont(*g_pFontData);
-      dc->DrawText(wxString::Format(_T("%.1f "), m_Depth)+m_DepthUnit, 10, m_TitleHeight);
+      dc->DrawText(wxString::Format(_T("%.1f "), m_Depth)+m_DepthUnit, 10, 0);
 
       dc->SetFont(*g_pFontLabel);
       int width, height;

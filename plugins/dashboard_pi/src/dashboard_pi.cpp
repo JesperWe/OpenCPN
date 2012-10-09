@@ -34,7 +34,6 @@
 #include "dashboard_pi.h"
 #include "icons.h"
 
-wxFont *g_pFontTitle;
 wxFont *g_pFontData;
 wxFont *g_pFontLabel;
 wxFont *g_pFontSmall;
@@ -297,7 +296,6 @@ int dashboard_pi::Init( void )
     mPriWindT = 99; // True wind
     mPriDepth = 99;
 
-    g_pFontTitle = new wxFont( 10, wxFONTFAMILY_SWISS, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL );
     g_pFontData = new wxFont( 14, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
     g_pFontLabel = new wxFont( 8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
     g_pFontSmall = new wxFont( 8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
@@ -329,22 +327,21 @@ bool dashboard_pi::DeInit( void )
     if( IsRunning() ) // Timer started?
     Stop(); // Stop timer
 
-    for( size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++ ) {
-        DashboardWindow *dashboard_window = m_ArrayOfDashboardWindow.Item( i )->m_pDashboardWindow;
-        if( dashboard_window ) {
-            m_pauimgr->DetachPane( dashboard_window );
-            dashboard_window->Close();
-            dashboard_window->Destroy();
-            m_ArrayOfDashboardWindow.Item( i )->m_pDashboardWindow = NULL;
+    for( size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++ ) {
+        DashboardInstrument *instrument = m_ArrayOfInstrument.Item( i )->m_pInstrument;
+        if( instrument ) {
+            m_pauimgr->DetachPane( instrument );
+            instrument->Close();
+            instrument->Destroy();
+            m_ArrayOfInstrument.Item( i )->m_pInstrument = NULL;
         }
     }
 
-    for( size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++ ) {
-        DashboardWindowContainer *pdwc = m_ArrayOfDashboardWindow.Item( i );
+    for( size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++ ) {
+        DashboardInstrumentContainer *pdwc = m_ArrayOfInstrument.Item( i );
         delete pdwc;
     }
 
-    delete g_pFontTitle;
     delete g_pFontData;
     delete g_pFontLabel;
     delete g_pFontSmall;
@@ -354,9 +351,10 @@ bool dashboard_pi::DeInit( void )
 
 void dashboard_pi::Notify()
 {
-    for( size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++ ) {
-        DashboardWindow *dashboard_window = m_ArrayOfDashboardWindow.Item( i )->m_pDashboardWindow;
-        if( dashboard_window ) dashboard_window->Refresh();
+    SendUtcTimeToAllInstruments( OCPN_DBP_STC_CLK | OCPN_DBP_STC_MON, mUTCDateTime );
+    for( size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++ ) {
+        DashboardInstrument *instrument = m_ArrayOfInstrument.Item( i )->m_pInstrument;
+        if( instrument ) instrument->Refresh();
     }
 }
 
@@ -404,25 +402,37 @@ Provides navigation instrument display from NMEA source.");
 
 void dashboard_pi::SendSentenceToAllInstruments( int st, double value, wxString unit )
 {
-    for( size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++ ) {
-        DashboardWindow *dashboard_window = m_ArrayOfDashboardWindow.Item( i )->m_pDashboardWindow;
-        if( dashboard_window ) dashboard_window->SendSentenceToAllInstruments( st, value, unit );
+    for( size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++ ) {
+        DashboardInstrument *instrument = m_ArrayOfInstrument.Item( i )->m_pInstrument;
+        if( !instrument ) continue;
+        if( m_ArrayOfInstrument.Item( i )->m_cap_flag & st ) {
+            instrument->SetData( st, value, unit );
+        }
     }
 }
 
 void dashboard_pi::SendUtcTimeToAllInstruments( int st, wxDateTime value )
 {
-    for( size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++ ) {
-        DashboardWindow *dashboard_window = m_ArrayOfDashboardWindow.Item( i )->m_pDashboardWindow;
-        if( dashboard_window ) dashboard_window->SendUtcTimeToAllInstruments( st, value );
+    for( size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++ ) {
+        DashboardInstrument *instrument = m_ArrayOfInstrument.Item( i )->m_pInstrument;
+        if( !instrument ) continue;
+        if( ( m_ArrayOfInstrument.Item( i )->m_cap_flag & OCPN_DBP_STC_MON )
+                && instrument->IsKindOf(CLASSINFO(DashboardInstrument_Moon)))
+            ((DashboardInstrument_Moon*)instrument)->SetUtcTime(st, value);
+        if( ( m_ArrayOfInstrument.Item( i )->m_cap_flag & OCPN_DBP_STC_CLK ) &&
+                (instrument->IsKindOf(CLASSINFO(DashboardInstrument_Clock)) || instrument->IsKindOf(CLASSINFO(DashboardInstrument_Sun))))
+            ((DashboardInstrument_Clock*)instrument)->SetUtcTime(st, value);
     }
 }
 
 void dashboard_pi::SendSatInfoToAllInstruments( int cnt, int seq, SAT_INFO sats[4] )
 {
-    for( size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++ ) {
-        DashboardWindow *dashboard_window = m_ArrayOfDashboardWindow.Item( i )->m_pDashboardWindow;
-        if( dashboard_window ) dashboard_window->SendSatInfoToAllInstruments( cnt, seq, sats );
+    for( size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++ ) {
+        DashboardInstrument *instrument = m_ArrayOfInstrument.Item( i )->m_pInstrument;
+        if( !instrument ) continue;
+        if( ( m_ArrayOfInstrument.Item( i )->m_cap_flag & OCPN_DBP_STC_GPS )
+                && instrument->IsKindOf(CLASSINFO(DashboardInstrument_GPS)))
+            ((DashboardInstrument_GPS*)instrument)->SetSatInfo(cnt, seq, sats);
     }
 }
 
@@ -431,7 +441,6 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
     m_NMEA0183 << sentence;
 
     if( m_NMEA0183.PreParse() ) {
-        SendUtcTimeToAllInstruments( OCPN_DBP_STC_CLK | OCPN_DBP_STC_MON, mUTCDateTime );
         if( m_NMEA0183.LastSentenceIDReceived == _T("DBT") ) {
             if( m_NMEA0183.Parse() ) {
                 if( mPriDepth >= 1 ) {
@@ -890,18 +899,10 @@ int dashboard_pi::GetToolbarToolCount( void )
 
 void dashboard_pi::ShowPreferencesDialog( wxWindow* parent )
 {
-    for( size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++ ) {
-        DashboardWindowContainer *cont = m_ArrayOfDashboardWindow.Item( i );
-        wxAuiPaneInfo &pane = m_pauimgr->GetPane( cont->m_pDashboardWindow );
-        cont->m_bIsVisible = ( pane.IsOk() && pane.IsShown() );
-    }
-
     DashboardPreferencesDialog *dialog = new DashboardPreferencesDialog( parent, wxID_ANY,
-            m_ArrayOfDashboardWindow );
+            m_ArrayOfInstrument );
 
     if( dialog->ShowModal() == wxID_OK ) {
-        delete g_pFontTitle;
-        g_pFontTitle = new wxFont( dialog->m_pFontPickerTitle->GetSelectedFont() );
         delete g_pFontData;
         g_pFontData = new wxFont( dialog->m_pFontPickerData->GetSelectedFont() );
         delete g_pFontLabel;
@@ -912,32 +913,33 @@ void dashboard_pi::ShowPreferencesDialog( wxWindow* parent )
         // OnClose should handle that for us normally but it doesn't seems to do so
         // We must save changes first
         dialog->SaveDashboardConfig();
-        m_ArrayOfDashboardWindow.Clear();
-        m_ArrayOfDashboardWindow = dialog->m_Config;
+        m_ArrayOfInstrument.Clear();
+        m_ArrayOfInstrument = dialog->m_Config;
 
         ApplyConfig();
         SaveConfig();
-        SetToolbarItemState( m_toolbar_item_id, GetDashboardWindowShownCount() != 0 );
+        SetToolbarItemState( m_toolbar_item_id, GetInstrumentShownCount() != 0 );
     }
     dialog->Destroy();
 }
 
 void dashboard_pi::SetColorScheme( PI_ColorScheme cs )
 {
-    for( size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++ ) {
-        DashboardWindow *dashboard_window = m_ArrayOfDashboardWindow.Item( i )->m_pDashboardWindow;
-        if( dashboard_window ) dashboard_window->SetColorScheme( cs );
+    for( size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++ ) {
+        DashboardInstrument *instrument = m_ArrayOfInstrument.Item( i )->m_pInstrument;
+//    DimeWindow( instrument );
+        if( instrument ) instrument->Refresh( false );
     }
 }
 
-int dashboard_pi::GetDashboardWindowShownCount()
+int dashboard_pi::GetInstrumentShownCount()
 {
     int cnt = 0;
 
-    for( size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++ ) {
-        DashboardWindow *dashboard_window = m_ArrayOfDashboardWindow.Item( i )->m_pDashboardWindow;
-        if( dashboard_window ) {
-            wxAuiPaneInfo &pane = m_pauimgr->GetPane( dashboard_window );
+    for( size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++ ) {
+        DashboardInstrument *instrument = m_ArrayOfInstrument.Item( i )->m_pInstrument;
+        if( instrument ) {
+            wxAuiPaneInfo &pane = m_pauimgr->GetPane( instrument );
             if( pane.IsOk() && pane.IsShown() ) cnt++;
         }
     }
@@ -947,15 +949,18 @@ int dashboard_pi::GetDashboardWindowShownCount()
 void dashboard_pi::OnPaneClose( wxAuiManagerEvent& event )
 {
     // if name is unique, we should use it
-    DashboardWindow *dashboard_window = (DashboardWindow *) event.pane->window;
+    DashboardInstrument *instrument = (DashboardInstrument *) event.pane->window;
     int cnt = 0;
-    for( size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++ ) {
-        DashboardWindow *d_w = m_ArrayOfDashboardWindow.Item( i )->m_pDashboardWindow;
-        if( d_w ) {
+    for( size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++ ) {
+        DashboardInstrumentContainer *cont = m_ArrayOfInstrument.Item( i );
+        DashboardInstrument *instr = cont->m_pInstrument;
+        if( instr ) {
             // we must not count this one because it is being closed
-            if( dashboard_window != d_w ) {
-                wxAuiPaneInfo &pane = m_pauimgr->GetPane( d_w );
+            if( instrument != instr ) {
+                wxAuiPaneInfo &pane = m_pauimgr->GetPane( instr );
                 if( pane.IsOk() && pane.IsShown() ) cnt++;
+            } else {
+                cont->m_bIsVisible = false;
             }
         }
     }
@@ -966,13 +971,13 @@ void dashboard_pi::OnPaneClose( wxAuiManagerEvent& event )
 
 void dashboard_pi::OnToolbarToolCallback( int id )
 {
-    int cnt = GetDashboardWindowShownCount();
+    int cnt = GetInstrumentShownCount();
 
-    for( size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++ ) {
-        DashboardWindowContainer *cont = m_ArrayOfDashboardWindow.Item( i );
-        DashboardWindow *dashboard_window = cont->m_pDashboardWindow;
-        if( dashboard_window ) {
-            wxAuiPaneInfo &pane = m_pauimgr->GetPane( dashboard_window );
+    for( size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++ ) {
+        DashboardInstrumentContainer *cont = m_ArrayOfInstrument.Item( i );
+        DashboardInstrument *instrument = cont->m_pInstrument;
+        if( instrument ) {
+            wxAuiPaneInfo &pane = m_pauimgr->GetPane( instrument );
             if( pane.IsOk() ) {
                 bool b_reset_pos = false;
 
@@ -1022,7 +1027,7 @@ void dashboard_pi::OnToolbarToolCallback( int id )
     }
     // Toggle is handled by the toolbar but we must keep plugin manager b_toggle updated
     // to actual status to ensure right status upon toolbar rebuild
-    SetToolbarItemState( m_toolbar_item_id, GetDashboardWindowShownCount() != 0/*cnt==0*/);
+    SetToolbarItemState( m_toolbar_item_id, GetInstrumentShownCount() != 0);
     m_pauimgr->Update();
 }
 
@@ -1033,15 +1038,16 @@ void dashboard_pi::UpdateAuiStatus( void )
     //    It is a chance for the PlugIn to syncronize itself internally with the state of any Panes that
     //    were added to the frame in the PlugIn ctor.
 
-    for( size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++ ) {
-        DashboardWindowContainer *cont = m_ArrayOfDashboardWindow.Item( i );
-        wxAuiPaneInfo &pane = m_pauimgr->GetPane( cont->m_pDashboardWindow );
+    for( size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++ ) {
+        DashboardInstrumentContainer *cont = m_ArrayOfInstrument.Item( i );
+        wxAuiPaneInfo &pane = m_pauimgr->GetPane( cont->m_pInstrument );
+        // Initialize visible state as perspective is loaded now
         cont->m_bIsVisible = ( pane.IsOk() && pane.IsShown() );
     }
 
     //    We use this callback here to keep the context menu selection in sync with the window state
 
-    SetToolbarItemState( m_toolbar_item_id, GetDashboardWindowShownCount() != 0 );
+    SetToolbarItemState( m_toolbar_item_id, GetInstrumentShownCount() != 0 );
 }
 
 bool dashboard_pi::LoadConfig( void )
@@ -1052,8 +1058,6 @@ bool dashboard_pi::LoadConfig( void )
         pConf->SetPath( _T("/PlugIns/Dashboard") );
 
         wxString config;
-        pConf->Read( _T("FontTitle"), &config, wxEmptyString );
-        if( !config.IsEmpty() ) g_pFontTitle->SetNativeFontInfo( config );
         pConf->Read( _T("FontData"), &config, wxEmptyString );
         if( !config.IsEmpty() ) g_pFontData->SetNativeFontInfo( config );
         pConf->Read( _T("FontLabel"), &config, wxEmptyString );
@@ -1061,50 +1065,69 @@ bool dashboard_pi::LoadConfig( void )
         pConf->Read( _T("FontSmall"), &config, wxEmptyString );
         if( !config.IsEmpty() ) g_pFontSmall->SetNativeFontInfo( config );
 
+        wxString version;
+        pConf->Read( _T("Version"), &version, wxEmptyString );
         int d_cnt;
         pConf->Read( _T("DashboardCount"), &d_cnt, -1 );
         // TODO: Memory leak? We should destroy everything first
-        m_ArrayOfDashboardWindow.Clear();
+        m_ArrayOfInstrument.Clear();
         if( d_cnt == -1 ) {
-            // No v1.1 config found. Let's load v1.0 or default settings.
+            // Load v1.0 or default settings.
             int i_cnt;
             pConf->Read( _T("InstrumentCount"), &i_cnt, -1 );
-            wxArrayInt ar;
             if( i_cnt != -1 ) {
                 for( int i = 0; i < i_cnt; i++ ) {
                     int id;
                     pConf->Read( wxString::Format( _T("Instrument%d"), i + 1 ), &id, -1 );
-                    if( id != -1 ) ar.Add( id );
+                    if( id != -1 )
+                        m_ArrayOfInstrument.Add(
+                            new DashboardInstrumentContainer( id, NULL, 0, GetUUID(), getInstrumentCaption( id ) ) );
                 }
             } else {
                 // This is the default instrument list
-                ar.Add( ID_DBP_I_POS );
-                ar.Add( ID_DBP_D_COG );
-                ar.Add( ID_DBP_D_GPS );
+                m_ArrayOfInstrument.Add(
+                    new DashboardInstrumentContainer( ID_DBP_I_POS, NULL, 0, GetUUID(), getInstrumentCaption( ID_DBP_I_POS ) ) );
+                m_ArrayOfInstrument.Add(
+                    new DashboardInstrumentContainer( ID_DBP_D_COG, NULL, 0, GetUUID(), getInstrumentCaption( ID_DBP_D_COG ) ) );
+                m_ArrayOfInstrument.Add(
+                    new DashboardInstrumentContainer( ID_DBP_D_GPS, NULL, 0, GetUUID(), getInstrumentCaption( ID_DBP_D_GPS ) ) );
             }
-
-            m_ArrayOfDashboardWindow.Add(
-                    new DashboardWindowContainer( NULL, GetUUID(), _("Dashboard"), _T("V"), ar ) );
         } else {
-            for( int i = 0; i < d_cnt; i++ ) {
-                pConf->SetPath( wxString::Format( _T("/PlugIns/Dashboard/Dashboard%d"), i + 1 ) );
-                wxString name;
-                pConf->Read( _T("Name"), &name, GetUUID() );
-                wxString caption;
-                pConf->Read( _T("Caption"), &caption, _("Dashboard") );
-                wxString orient;
-                pConf->Read( _T("Orientation"), &orient, _T("V") );
-                int i_cnt;
-                pConf->Read( _T("InstrumentCount"), &i_cnt, -1 );
-                wxArrayInt ar;
-                for( int i = 0; i < i_cnt; i++ ) {
-                    int id;
-                    pConf->Read( wxString::Format( _T("Instrument%d"), i + 1 ), &id, -1 );
-                    if( id != -1 ) ar.Add( id );
+            if( version.IsEmpty() ) {
+                // version 1.1
+                for( int i = 0; i < d_cnt; i++ ) {
+                    pConf->SetPath( wxString::Format( _T("/PlugIns/Dashboard/Dashboard%d"), i + 1 ) );
+                    wxString name;
+                    pConf->Read( _T("Name"), &name, GetUUID() );
+                    wxString caption;
+                    pConf->Read( _T("Caption"), &caption, _("Dashboard") );
+                    int i_cnt;
+                    pConf->Read( _T("InstrumentCount"), &i_cnt, -1 );
+                    // v1.1 config
+                    if( i_cnt != -1 ) {
+                        for( int i = 0; i < i_cnt; i++ ) {
+                            int id;
+                            pConf->Read( wxString::Format( _T("Instrument%d"), i + 1 ), &id, -1 );
+                            if( id != -1 )
+                                m_ArrayOfInstrument.Add(
+                                    new DashboardInstrumentContainer( id, NULL, 0, name, getInstrumentCaption( id ) ) );
+                        }
+                    }
                 }
-// TODO: Do not add if GetCount == 0
-                m_ArrayOfDashboardWindow.Add(
-                        new DashboardWindowContainer( NULL, name, caption, orient, ar ) );
+            } else {
+                // version 1.1
+                for( int i = 0; i < d_cnt; i++ ) {
+                    pConf->SetPath( wxString::Format( _T("/PlugIns/Dashboard/Dashboard%d"), i + 1 ) );
+                    wxString name;
+                    pConf->Read( _T("Name"), &name, GetUUID() );
+                    wxString caption;
+                    pConf->Read( _T("Caption"), &caption, _("Dashboard") );
+                    int id;
+                    pConf->Read( _T("Instrument"), &id, -1 );
+                    if( id != -1 )
+                        m_ArrayOfInstrument.Add(
+                            new DashboardInstrumentContainer( id, NULL, 0, name, caption ) );
+                }
             }
         }
 
@@ -1119,22 +1142,18 @@ bool dashboard_pi::SaveConfig( void )
 
     if( pConf ) {
         pConf->SetPath( _T("/PlugIns/Dashboard") );
-        pConf->Write( _T("FontTitle"), g_pFontTitle->GetNativeFontInfoDesc() );
+        pConf->Write( _T("Version"), _T("1.2") );
         pConf->Write( _T("FontData"), g_pFontData->GetNativeFontInfoDesc() );
         pConf->Write( _T("FontLabel"), g_pFontLabel->GetNativeFontInfoDesc() );
         pConf->Write( _T("FontSmall"), g_pFontSmall->GetNativeFontInfoDesc() );
 
-        pConf->Write( _T("DashboardCount" ), (int) m_ArrayOfDashboardWindow.GetCount() );
-        for( size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++ ) {
-            DashboardWindowContainer *cont = m_ArrayOfDashboardWindow.Item( i );
+        pConf->Write( _T("DashboardCount" ), (int) m_ArrayOfInstrument.GetCount() );
+        for( size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++ ) {
+            DashboardInstrumentContainer *cont = m_ArrayOfInstrument.Item( i );
             pConf->SetPath( wxString::Format( _T("/PlugIns/Dashboard/Dashboard%d"), i + 1 ) );
             pConf->Write( _T("Name"), cont->m_sName );
             pConf->Write( _T("Caption"), cont->m_sCaption );
-            pConf->Write( _T("Orientation"), cont->m_sOrientation );
-            pConf->Write( _T("InstrumentCount"), (int) cont->m_aInstrumentList.GetCount() );
-            for( size_t j = 0; j < cont->m_aInstrumentList.GetCount(); j++ )
-                pConf->Write( wxString::Format( _T("Instrument%d"), j + 1 ),
-                        cont->m_aInstrumentList.Item( j ) );
+            pConf->Write( _T("Instrument"), cont->m_ID );
         }
 
         return true;
@@ -1145,43 +1164,236 @@ bool dashboard_pi::SaveConfig( void )
 void dashboard_pi::ApplyConfig( void )
 {
     // Reverse order to handle deletes
-    for( size_t i = m_ArrayOfDashboardWindow.GetCount(); i > 0; i-- ) {
-        DashboardWindowContainer *cont = m_ArrayOfDashboardWindow.Item( i - 1 );
-        int orient = ( cont->m_sOrientation == _T("V") ? wxVERTICAL : wxHORIZONTAL );
+    for( size_t i = m_ArrayOfInstrument.GetCount(); i > 0; i-- ) {
+        DashboardInstrumentContainer *cont = m_ArrayOfInstrument.Item( i - 1 );
         if( cont->m_bIsDeleted ) {
-            if( cont->m_pDashboardWindow ) {
-                m_pauimgr->DetachPane( cont->m_pDashboardWindow );
-                cont->m_pDashboardWindow->Close();
-                cont->m_pDashboardWindow->Destroy();
-                cont->m_pDashboardWindow = NULL;
+            if( cont->m_pInstrument ) {
+                m_pauimgr->DetachPane( cont->m_pInstrument );
+                cont->m_pInstrument->Close();
+                cont->m_pInstrument->Destroy();
+                cont->m_pInstrument = NULL;
             }
-            m_ArrayOfDashboardWindow.Remove( cont );
+            m_ArrayOfInstrument.Remove( cont );
             delete cont;
-        } else if( !cont->m_pDashboardWindow ) {
+        } else if( !cont->m_pInstrument ) {
             // A new dashboard is created
-            cont->m_pDashboardWindow = new DashboardWindow( GetOCPNCanvasWindow(), wxID_ANY,
-                    m_pauimgr, this, orient, cont );
-            cont->m_pDashboardWindow->SetInstrumentList( cont->m_aInstrumentList );
-            bool vertical = orient == wxVERTICAL;
-            wxSize sz = cont->m_pDashboardWindow->GetMinSize();
-            m_pauimgr->AddPane( cont->m_pDashboardWindow,
+            cont->m_pInstrument = GetInstrument( cont->m_ID, GetOCPNCanvasWindow() );
+            cont->m_cap_flag = cont->m_pInstrument->GetCapacity();
+            wxSize sz = cont->m_pInstrument->GetSize( wxDefaultSize );
+            m_pauimgr->AddPane( cont->m_pInstrument,
                 wxAuiPaneInfo().Name( cont->m_sName ).Caption( cont->m_sCaption ).CaptionVisible( true ).TopDockable(
-                !vertical ).BottomDockable( !vertical ).LeftDockable( vertical ).RightDockable( vertical ).MinSize(
+                true ).BottomDockable( true ).LeftDockable( true ).RightDockable( true ).MinSize(
                 sz ).BestSize( sz ).FloatingSize( sz ).FloatingPosition( 100, 100 ).Float().Show( cont->m_bIsVisible ) );
         } else {
-            wxAuiPaneInfo& pane = m_pauimgr->GetPane( cont->m_pDashboardWindow );
+            wxAuiPaneInfo& pane = m_pauimgr->GetPane( cont->m_pInstrument );
             pane.Caption( cont->m_sCaption ).Show( cont->m_bIsVisible );
-            if( !cont->m_pDashboardWindow->isInstrumentListEqual( cont->m_aInstrumentList ) ) {
-                cont->m_pDashboardWindow->SetInstrumentList( cont->m_aInstrumentList );
-                wxSize sz = cont->m_pDashboardWindow->GetMinSize();
-                pane.MinSize( sz ).BestSize( sz ).FloatingSize( sz );
-            }
-            if( cont->m_pDashboardWindow->GetSizerOrientation() != orient ) {
-                cont->m_pDashboardWindow->ChangePaneOrientation( orient, false );
-            }
         }
     }
     m_pauimgr->Update();
+}
+
+DashboardInstrument *dashboard_pi::GetInstrument( int id, wxWindow *parent )
+{
+    /* options
+     ID_DBP_D_SOG: config max value, show STW optional
+     ID_DBP_D_COG:  +SOG +HDG? +BRG?
+     ID_DBP_D_AWS: config max value. Two arrows for AWS+TWS?
+     ID_DBP_D_VMG: config max value
+     ID_DBP_I_DPT: config unit (meter, feet, fathoms)
+     ID_DBP_D_DPT: show temp optional
+     // compass: use COG or HDG
+     // velocity range
+     // rudder range
+
+     */
+    DashboardInstrument *instrument = NULL;
+    switch( id ){
+    case ID_DBP_I_POS:
+        instrument = new DashboardInstrument_Position( parent, wxID_ANY );
+        break;
+    case ID_DBP_I_SOG:
+        instrument = new DashboardInstrument_Single( parent, wxID_ANY,
+                OCPN_DBP_STC_SOG, _T("%5.2f") );
+        break;
+    case ID_DBP_D_SOG:
+        instrument = new DashboardInstrument_Speedometer( parent, wxID_ANY,
+                OCPN_DBP_STC_SOG, 0, 12 );
+        ( (DashboardInstrument_Dial *) instrument )->SetOptionLabel( 1,
+                DIAL_LABEL_HORIZONTAL );
+        //(DashboardInstrument_Dial *)instrument->SetOptionMarker(0.1, DIAL_MARKER_SIMPLE, 5);
+        ( (DashboardInstrument_Dial *) instrument )->SetOptionMarker( 0.5,
+                DIAL_MARKER_SIMPLE, 2 );
+        ( (DashboardInstrument_Dial *) instrument )->SetOptionExtraValue(
+                OCPN_DBP_STC_STW, _T("STW\n%.2f"), DIAL_POSITION_BOTTOMLEFT );
+        break;
+    case ID_DBP_I_COG:
+        instrument = new DashboardInstrument_Single( parent, wxID_ANY,
+                OCPN_DBP_STC_COG, _T("%.0f") );
+        break;
+    case ID_DBP_D_COG:
+        instrument = new DashboardInstrument_Compass( parent, wxID_ANY,
+                OCPN_DBP_STC_COG );
+        ( (DashboardInstrument_Dial *) instrument )->SetOptionMarker( 5,
+                DIAL_MARKER_SIMPLE, 2 );
+        ( (DashboardInstrument_Dial *) instrument )->SetOptionLabel( 30,
+                DIAL_LABEL_ROTATED );
+        ( (DashboardInstrument_Dial *) instrument )->SetOptionExtraValue(
+                OCPN_DBP_STC_SOG, _T("SOG\n%.2f"), DIAL_POSITION_BOTTOMLEFT );
+        break;
+    case ID_DBP_D_HDT:
+        instrument = new DashboardInstrument_Compass( parent, wxID_ANY,
+                OCPN_DBP_STC_HDT );
+        ( (DashboardInstrument_Dial *) instrument )->SetOptionMarker( 5,
+                DIAL_MARKER_SIMPLE, 2 );
+        ( (DashboardInstrument_Dial *) instrument )->SetOptionLabel( 30,
+                DIAL_LABEL_ROTATED );
+        ( (DashboardInstrument_Dial *) instrument )->SetOptionExtraValue(
+                OCPN_DBP_STC_STW, _T("STW\n%.2f"), DIAL_POSITION_BOTTOMLEFT );
+        break;
+    case ID_DBP_I_STW:
+        instrument = new DashboardInstrument_Single( parent, wxID_ANY,
+                OCPN_DBP_STC_STW, _T("%.2f") );
+        break;
+    case ID_DBP_I_HDG: //true heading
+        // TODO: Option True or Magnetic
+        instrument = new DashboardInstrument_Single( parent, wxID_ANY,
+                OCPN_DBP_STC_HDT, _T("%.0f") );
+        break;
+    case ID_DBP_I_HDM:  //magnetic heading
+        instrument = new DashboardInstrument_Single( parent, wxID_ANY,
+                OCPN_DBP_STC_HDM, _T("%.0f") );
+        break;
+    case ID_DBP_D_AW:
+        instrument = new DashboardInstrument_Wind( parent, wxID_ANY,
+                OCPN_DBP_STC_AWA );
+        ( (DashboardInstrument_Dial *) instrument )->SetOptionExtraValue(
+                OCPN_DBP_STC_AWS, _T("%.1f"), DIAL_POSITION_INSIDE );
+        break;
+    case ID_DBP_D_AWA:
+        instrument = new DashboardInstrument_Wind( parent, wxID_ANY,
+                OCPN_DBP_STC_AWA );
+        break;
+    case ID_DBP_I_AWS:
+        instrument = new DashboardInstrument_Single( parent, wxID_ANY,
+                OCPN_DBP_STC_AWS, _T("%.2f") );
+        break;
+    case ID_DBP_D_AWS:
+        instrument = new DashboardInstrument_Speedometer( parent, wxID_ANY,
+                OCPN_DBP_STC_AWS, 0, 45 );
+        ( (DashboardInstrument_Dial *) instrument )->SetOptionLabel( 5,
+                DIAL_LABEL_HORIZONTAL );
+        ( (DashboardInstrument_Dial *) instrument )->SetOptionMarker( 1,
+                DIAL_MARKER_SIMPLE, 5 );
+        ( (DashboardInstrument_Dial *) instrument )->SetOptionMainValue( _T("A %.2f"),
+                DIAL_POSITION_BOTTOMLEFT );
+        ( (DashboardInstrument_Dial *) instrument )->SetOptionExtraValue(
+                OCPN_DBP_STC_TWS, _T("T %.1f"), DIAL_POSITION_BOTTOMRIGHT );
+        break;
+    case ID_DBP_D_TW:  //True Wind direction
+        instrument = new DashboardInstrument_WindCompass( parent, wxID_ANY,
+                OCPN_DBP_STC_MWD );
+        ( (DashboardInstrument_Dial *) instrument )->SetOptionMainValue( _T("%.0f"),
+                DIAL_POSITION_BOTTOMLEFT );
+        ( (DashboardInstrument_Dial *) instrument )->SetOptionExtraValue(
+                OCPN_DBP_STC_TWS, _T("%.1f"), DIAL_POSITION_INSIDE );
+        break;
+    case ID_DBP_D_TWA:	//True 	Wind angle +-180° on boat axis
+        instrument = new DashboardInstrument_TrueWindAngle( parent, wxID_ANY,
+                OCPN_DBP_STC_VWT );
+        ( (DashboardInstrument_Dial *) instrument )->SetOptionMainValue( _T("%.0f"),
+                DIAL_POSITION_BOTTOMLEFT );
+        ( (DashboardInstrument_Dial *) instrument )->SetOptionExtraValue(
+                OCPN_DBP_STC_TWS, _T("%.1f"), DIAL_POSITION_INSIDE );
+        break;
+    case ID_DBP_I_DPT:
+        instrument = new DashboardInstrument_Single( parent, wxID_ANY,
+                OCPN_DBP_STC_DPT, _T("%5.1f") );
+        break;
+    case ID_DBP_D_DPT:
+        instrument = new DashboardInstrument_Depth( parent, wxID_ANY );
+        break;
+    case ID_DBP_I_TMP: //water temperature
+        instrument = new DashboardInstrument_Single( parent, wxID_ANY,
+                OCPN_DBP_STC_TMP, _T("%2.1f") );
+        break;
+    case ID_DBP_I_ATMP: //air temperature
+        instrument = new DashboardInstrument_Single( parent, wxID_ANY,
+                OCPN_DBP_STC_ATMP, _T("%2.1f") );
+        break;
+    case ID_DBP_I_TWA: //true wind angle
+        instrument = new DashboardInstrument_Single( parent, wxID_ANY,
+                OCPN_DBP_STC_VWT, _T("%5.0f") );
+        break;
+    case ID_DBP_I_TWD: //true wind direction
+        instrument = new DashboardInstrument_Single( parent, wxID_ANY,
+                OCPN_DBP_STC_MWD, _T("%5.0f") );
+        break;
+    case ID_DBP_I_TWS: // true wind speed
+        instrument = new DashboardInstrument_Single( parent, wxID_ANY,
+                OCPN_DBP_STC_TWS, _T("%2.2f") );
+        break;
+    case ID_DBP_I_AWA: //apparent wind speed
+        instrument = new DashboardInstrument_Single( parent, wxID_ANY,
+                OCPN_DBP_STC_AWA2, _T("%5.0f") );
+        break;
+    case ID_DBP_I_VMG:
+        instrument = new DashboardInstrument_Single( parent, wxID_ANY,
+                OCPN_DBP_STC_VMG, _T("%5.2f") );
+        break;
+    case ID_DBP_D_VMG:
+        instrument = new DashboardInstrument_Speedometer( parent, wxID_ANY,
+                OCPN_DBP_STC_VMG, 0, 12 );
+        ( (DashboardInstrument_Dial *) instrument )->SetOptionLabel( 1,
+                DIAL_LABEL_HORIZONTAL );
+        ( (DashboardInstrument_Dial *) instrument )->SetOptionMarker( 0.5,
+                DIAL_MARKER_SIMPLE, 2 );
+        ( (DashboardInstrument_Dial *) instrument )->SetOptionExtraValue(
+                OCPN_DBP_STC_SOG, _T("SOG\n%.2f"), DIAL_POSITION_BOTTOMLEFT );
+        break;
+    case ID_DBP_I_RSA:
+        instrument = new DashboardInstrument_Single( parent, wxID_ANY,
+                OCPN_DBP_STC_RSA, _T("%5.0f") );
+        break;
+    case ID_DBP_D_RSA:
+        instrument = new DashboardInstrument_RudderAngle( parent, wxID_ANY );
+        break;
+    case ID_DBP_I_SAT:
+        instrument = new DashboardInstrument_Single( parent, wxID_ANY,
+                OCPN_DBP_STC_SAT, _T("%5.0f") );
+        break;
+    case ID_DBP_D_GPS:
+        instrument = new DashboardInstrument_GPS( parent, wxID_ANY );
+        break;
+    case ID_DBP_I_PTR:
+        instrument = new DashboardInstrument_Position( parent, wxID_ANY,
+                OCPN_DBP_STC_PLA, OCPN_DBP_STC_PLO );
+        break;
+    case ID_DBP_I_CLK:
+        instrument = new DashboardInstrument_Clock( parent, wxID_ANY );
+        break;
+    case ID_DBP_I_SUN:
+        instrument = new DashboardInstrument_Sun( parent, wxID_ANY );
+        break;
+    case ID_DBP_I_MON:
+        instrument = new DashboardInstrument_Moon( parent, wxID_ANY );
+        break;
+    }
+    return instrument;
+}
+
+void dashboard_pi::OnContextMenuSelect( wxCommandEvent& event )
+{
+    if( event.GetId() < ID_DASH_PREFS ) { // It is an instrument.
+        //if( event.IsChecked() )
+    }
+
+    switch( event.GetId() ){
+        case ID_DASH_PREFS: {
+            ShowPreferencesDialog( GetOCPNCanvasWindow() );
+            return; // Does it's own save.
+        }
+    }
+    SaveConfig();
 }
 
 /* DashboardPreferencesDialog
@@ -1189,7 +1401,7 @@ void dashboard_pi::ApplyConfig( void )
  */
 
 DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWindowID id,
-        wxArrayOfDashboard config ) :
+        wxArrayOfInstrument config ) :
         wxDialog( parent, id, _("Dashboard preferences"), wxDefaultPosition, wxDefaultSize,
                 wxDEFAULT_DIALOG_STYLE )
 {
@@ -1197,7 +1409,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
             NULL, this );
 
     // Copy original config
-    m_Config = wxArrayOfDashboard( config );
+    m_Config = wxArrayOfInstrument( config );
     //      Build Dashboard Page for Toolbox
     int border_size = 2;
 
@@ -1273,15 +1485,6 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
             wxDefaultSize );
     itemFlexGridSizer->Add( m_pTextCtrlCaption, 0, wxEXPAND | wxALL, border_size );
 
-    wxStaticText* itemStaticText02 = new wxStaticText( m_pPanelDashboard, wxID_ANY,
-            _("Orientation:"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer->Add( itemStaticText02, 0, wxEXPAND | wxALL, border_size );
-    m_pChoiceOrientation = new wxChoice( m_pPanelDashboard, wxID_ANY, wxDefaultPosition,
-            wxSize( 120, -1 ) );
-    m_pChoiceOrientation->Append( _("Vertical") );
-    m_pChoiceOrientation->Append( _("Horizontal") );
-    itemFlexGridSizer->Add( m_pChoiceOrientation, 0, wxALIGN_RIGHT | wxALL, border_size );
-
     wxImageList *imglist = new wxImageList( 20, 20, true, 2 );
     imglist->Add( *_img_instrument );
     imglist->Add( *_img_dial );
@@ -1341,12 +1544,6 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     wxFlexGridSizer *itemFlexGridSizer03 = new wxFlexGridSizer( 2 );
     itemFlexGridSizer03->AddGrowableCol( 1 );
     itemStaticBoxSizer01->Add( itemFlexGridSizer03, 1, wxEXPAND | wxALL, 0 );
-    wxStaticText* itemStaticText04 = new wxStaticText( itemPanelNotebook02, wxID_ANY, _("Title:"),
-            wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer03->Add( itemStaticText04, 0, wxEXPAND | wxALL, border_size );
-    m_pFontPickerTitle = new wxFontPickerCtrl( itemPanelNotebook02, wxID_ANY, *g_pFontTitle,
-            wxDefaultPosition, wxDefaultSize );
-    itemFlexGridSizer03->Add( m_pFontPickerTitle, 0, wxALIGN_RIGHT | wxALL, 0 );
     wxStaticText* itemStaticText05 = new wxStaticText( itemPanelNotebook02, wxID_ANY, _("Data:"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer03->Add( itemStaticText05, 0, wxEXPAND | wxALL, border_size );
@@ -1393,13 +1590,12 @@ void DashboardPreferencesDialog::OnCloseDialog( wxCloseEvent& event )
 void DashboardPreferencesDialog::SaveDashboardConfig()
 {
     if( curSel != -1 ) {
-        DashboardWindowContainer *cont = m_Config.Item( curSel );
+        DashboardInstrumentContainer *cont = m_Config.Item( curSel );
         cont->m_bIsVisible = m_pCheckBoxIsVisible->IsChecked();
         cont->m_sCaption = m_pTextCtrlCaption->GetValue();
-        cont->m_sOrientation = m_pChoiceOrientation->GetSelection() == 0 ? _T("V") : _T("H");
-        cont->m_aInstrumentList.Clear();
+//        cont->m_aInstrumentList.Clear();
         for( int i = 0; i < m_pListCtrlInstruments->GetItemCount(); i++ )
-            cont->m_aInstrumentList.Add( (int) m_pListCtrlInstruments->GetItemData( i ) );
+;//            cont->m_aInstrumentList.Add( (int) m_pListCtrlInstruments->GetItemData( i ) );
     }
 }
 
@@ -1421,24 +1617,22 @@ void DashboardPreferencesDialog::UpdateDashboardButtonsState()
 
     if( item != -1 ) {
         curSel = m_pListCtrlDashboards->GetItemData( item );
-        DashboardWindowContainer *cont = m_Config.Item( curSel );
+        DashboardInstrumentContainer *cont = m_Config.Item( curSel );
         m_pCheckBoxIsVisible->SetValue( cont->m_bIsVisible );
         m_pTextCtrlCaption->SetValue( cont->m_sCaption );
-        m_pChoiceOrientation->SetSelection( cont->m_sOrientation == _T("V") ? 0 : 1 );
         m_pListCtrlInstruments->DeleteAllItems();
-        for( size_t i = 0; i < cont->m_aInstrumentList.GetCount(); i++ ) {
-            wxListItem item;
-            getListItemForInstrument( item, cont->m_aInstrumentList.Item( i ) );
-            item.SetId( m_pListCtrlInstruments->GetItemCount() );
-            m_pListCtrlInstruments->InsertItem( item );
-        }
+//        for( size_t i = 0; i < cont->m_aInstrumentList.GetCount(); i++ ) {
+//            wxListItem item;
+//            getListItemForInstrument( item, cont->m_aInstrumentList.Item( i ) );
+//            item.SetId( m_pListCtrlInstruments->GetItemCount() );
+//            m_pListCtrlInstruments->InsertItem( item );
+//        }
 
         m_pListCtrlInstruments->SetColumnWidth( 0, wxLIST_AUTOSIZE );
     } else {
         curSel = -1;
         m_pCheckBoxIsVisible->SetValue( false );
         m_pTextCtrlCaption->SetValue( _T("") );
-        m_pChoiceOrientation->SetSelection( 0 );
         m_pListCtrlInstruments->DeleteAllItems();
     }
 //      UpdateButtonsState();
@@ -1451,7 +1645,7 @@ void DashboardPreferencesDialog::OnDashboardAdd( wxCommandEvent& event )
     // Data is index in m_Config
     m_pListCtrlDashboards->SetItemData( idx, m_Config.GetCount() );
     wxArrayInt ar;
-    m_Config.Add( new DashboardWindowContainer( NULL, GetUUID(), _("Dashboard"), _T("V"), ar ) );
+//    m_Config.Add( new DashboardInstrumentContainer( NULL, GetUUID(), _("Dashboard"), _T("V"), ar ) );
 }
 
 void DashboardPreferencesDialog::OnDashboardDelete( wxCommandEvent& event )
@@ -1591,402 +1785,4 @@ unsigned int AddInstrumentDlg::GetInstrumentAdded()
 
     return (int) m_pListCtrlInstruments->GetItemData( itemID );
 }
-
-//----------------------------------------------------------------
-//
-//    Dashboard Window Implementation
-//
-//----------------------------------------------------------------
-
-// wxWS_EX_VALIDATE_RECURSIVELY required to push events to parents
-DashboardWindow::DashboardWindow( wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr,
-        dashboard_pi* plugin, int orient, DashboardWindowContainer* mycont ) :
-        wxWindow( pparent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE,
-                _T("Dashboard") )
-{
-    m_pauimgr = auimgr;
-    m_plugin = plugin;
-    m_Container = mycont;
-
-//wx2.9      itemBoxSizer = new wxWrapSizer( orient );
-    itemBoxSizer = new wxBoxSizer( orient );
-    SetSizer( itemBoxSizer );
-    Connect( wxEVT_SIZE, wxSizeEventHandler( DashboardWindow::OnSize ), NULL, this );
-    Connect( wxEVT_CONTEXT_MENU, wxContextMenuEventHandler( DashboardWindow::OnContextMenu ), NULL,
-            this );
-    Connect( wxEVT_COMMAND_MENU_SELECTED,
-            wxCommandEventHandler( DashboardWindow::OnContextMenuSelect ), NULL, this );
-}
-
-DashboardWindow::~DashboardWindow()
-{
-    for( size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++ ) {
-        DashboardInstrumentContainer *pdic = m_ArrayOfInstrument.Item( i );
-        delete pdic;
-    }
-}
-
-void DashboardWindow::OnSize( wxSizeEvent& event )
-{
-    event.Skip();
-    Layout();
-}
-
-void DashboardWindow::OnContextMenu( wxContextMenuEvent& event )
-{
-    wxMenu* contextMenu = new wxMenu();
-
-    wxMenuItem* btnOrient;
-    if( itemBoxSizer->GetOrientation() == wxHORIZONTAL ) {
-        btnOrient = new wxMenuItem( contextMenu, ID_DASH_VERTICAL, _("Make Vertical") );
-    } else {
-        btnOrient = new wxMenuItem( contextMenu, ID_DASH_HORIZONTAL, _("Make Horizontal") );
-    }
-    contextMenu->Append( btnOrient );
-    wxMenuItem* btnPrefs = new wxMenuItem( contextMenu, ID_DASH_PREFS, _("Preferences...") );
-    contextMenu->Append( btnPrefs );
-    contextMenu->AppendSeparator();
-
-/*
-    for( unsigned int i = ID_DBP_I_POS; i < ID_DBP_LAST_ENTRY; i++ ) { //do not reference an instrument, but the last dummy entry in the list
-        wxMenuItem* item = contextMenu->AppendCheckItem( i, getInstrumentCaption( i ) );
-        item->Check( false );
-        for( unsigned int cur = 0; cur < m_ArrayOfInstrument.size(); cur++ ) {
-            DashboardInstrument* instr = m_ArrayOfInstrument.Item( cur )->m_pInstrument;
-            if( instr->instrumentTypeId == i ) item->Check( true );
-        }
-    }
-*/
-    PopupMenu( contextMenu );
-    delete contextMenu;
-}
-
-void DashboardWindow::OnContextMenuSelect( wxCommandEvent& event )
-{
-    if( event.GetId() < ID_DASH_PREFS ) { // It is an instrument.
-        if( event.IsChecked() ) m_Container->m_aInstrumentList.Add( event.GetId() );
-        else m_Container->m_aInstrumentList.Remove( event.GetId() );
-        SetInstrumentList( m_Container->m_aInstrumentList );
-        wxAuiPaneInfo& pane = m_pauimgr->GetPane( this );
-        wxSize sz = GetMinSize();
-        pane.MinSize( sz ).BestSize( sz ).FloatingSize( sz );
-    }
-
-    switch( event.GetId() ){
-        case ID_DASH_PREFS: {
-            m_plugin->ShowPreferencesDialog( this );
-            return; // Does it's own save.
-        }
-        case ID_DASH_VERTICAL: {
-            ChangePaneOrientation( wxVERTICAL, true );
-            m_Container->m_sOrientation = _T("V");
-            break;
-        }
-        case ID_DASH_HORIZONTAL: {
-            ChangePaneOrientation( wxHORIZONTAL, true );
-            m_Container->m_sOrientation = _T("H");
-            break;
-        }
-    }
-    m_plugin->SaveConfig();
-}
-
-void DashboardWindow::SetColorScheme( PI_ColorScheme cs )
-{
-    DimeWindow( this );
-    Refresh( false );
-}
-
-void DashboardWindow::ChangePaneOrientation( int orient, bool updateAUImgr )
-{
-    m_pauimgr->DetachPane( this );
-    SetSizerOrientation( orient );
-    bool vertical = orient == wxVERTICAL;
-    wxSize sz = GetMinSize();
-    // We must change Name to reset AUI perpective
-    m_Container->m_sName = GetUUID();
-    m_pauimgr->AddPane( this, wxAuiPaneInfo().Name( m_Container->m_sName ).Caption(
-        m_Container->m_sCaption ).CaptionVisible( true ).TopDockable( !vertical ).BottomDockable(
-        !vertical ).LeftDockable( vertical ).RightDockable( vertical ).MinSize( sz ).BestSize(
-        sz ).FloatingSize( sz ).FloatingPosition( 100, 100 ).Float().Show( m_Container->m_bIsVisible ) );
-    if ( updateAUImgr ) m_pauimgr->Update();
-}
-
-void DashboardWindow::SetSizerOrientation( int orient )
-{
-    itemBoxSizer->SetOrientation( orient );
-    /* We must reset all MinSize to ensure we start with new default */
-    wxWindowListNode* node = GetChildren().GetFirst();
-    while(node) {
-        node->GetData()->SetMinSize( wxDefaultSize );
-        node = node->GetNext();
-    }
-    SetMinSize( wxDefaultSize );
-    Fit();
-    SetMinSize( itemBoxSizer->GetMinSize() );
-}
-
-int DashboardWindow::GetSizerOrientation()
-{
-    return itemBoxSizer->GetOrientation();
-}
-
-bool isArrayIntEqual( const wxArrayInt& l1, const wxArrayOfInstrument &l2 )
-{
-    if( l1.GetCount() != l2.GetCount() ) return false;
-
-    for( size_t i = 0; i < l1.GetCount(); i++ )
-        if( l1.Item( i ) != l2.Item( i )->m_ID ) return false;
-
-    return true;
-}
-
-bool DashboardWindow::isInstrumentListEqual( const wxArrayInt& list )
-{
-    return isArrayIntEqual( list, m_ArrayOfInstrument );
-}
-
-void DashboardWindow::SetInstrumentList( wxArrayInt list )
-{
-    /* options
-     ID_DBP_D_SOG: config max value, show STW optional
-     ID_DBP_D_COG:  +SOG +HDG? +BRG?
-     ID_DBP_D_AWS: config max value. Two arrows for AWS+TWS?
-     ID_DBP_D_VMG: config max value
-     ID_DBP_I_DPT: config unit (meter, feet, fathoms)
-     ID_DBP_D_DPT: show temp optional
-     // compass: use COG or HDG
-     // velocity range
-     // rudder range
-
-     */
-    m_ArrayOfInstrument.Clear();
-    itemBoxSizer->Clear( true );
-    for( size_t i = 0; i < list.GetCount(); i++ ) {
-        int id = list.Item( i );
-        DashboardInstrument *instrument = NULL;
-        switch( id ){
-            case ID_DBP_I_POS:
-                instrument = new DashboardInstrument_Position( this, wxID_ANY,
-                        getInstrumentCaption( id ) );
-                break;
-            case ID_DBP_I_SOG:
-                instrument = new DashboardInstrument_Single( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_SOG, _T("%5.2f") );
-                break;
-            case ID_DBP_D_SOG:
-                instrument = new DashboardInstrument_Speedometer( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_SOG, 0, 12 );
-                ( (DashboardInstrument_Dial *) instrument )->SetOptionLabel( 1,
-                        DIAL_LABEL_HORIZONTAL );
-                //(DashboardInstrument_Dial *)instrument->SetOptionMarker(0.1, DIAL_MARKER_SIMPLE, 5);
-                ( (DashboardInstrument_Dial *) instrument )->SetOptionMarker( 0.5,
-                        DIAL_MARKER_SIMPLE, 2 );
-                ( (DashboardInstrument_Dial *) instrument )->SetOptionExtraValue(
-                        OCPN_DBP_STC_STW, _T("STW\n%.2f"), DIAL_POSITION_BOTTOMLEFT );
-                break;
-            case ID_DBP_I_COG:
-                instrument = new DashboardInstrument_Single( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_COG, _T("%.0f") );
-                break;
-            case ID_DBP_D_COG:
-                instrument = new DashboardInstrument_Compass( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_COG );
-                ( (DashboardInstrument_Dial *) instrument )->SetOptionMarker( 5,
-                        DIAL_MARKER_SIMPLE, 2 );
-                ( (DashboardInstrument_Dial *) instrument )->SetOptionLabel( 30,
-                        DIAL_LABEL_ROTATED );
-                ( (DashboardInstrument_Dial *) instrument )->SetOptionExtraValue(
-                        OCPN_DBP_STC_SOG, _T("SOG\n%.2f"), DIAL_POSITION_BOTTOMLEFT );
-                break;
-            case ID_DBP_D_HDT:
-                instrument = new DashboardInstrument_Compass( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_HDT );
-                ( (DashboardInstrument_Dial *) instrument )->SetOptionMarker( 5,
-                        DIAL_MARKER_SIMPLE, 2 );
-                ( (DashboardInstrument_Dial *) instrument )->SetOptionLabel( 30,
-                        DIAL_LABEL_ROTATED );
-                ( (DashboardInstrument_Dial *) instrument )->SetOptionExtraValue(
-                        OCPN_DBP_STC_STW, _T("STW\n%.2f"), DIAL_POSITION_BOTTOMLEFT );
-                break;
-            case ID_DBP_I_STW:
-                instrument = new DashboardInstrument_Single( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_STW, _T("%.2f") );
-                break;
-            case ID_DBP_I_HDG: //true heading
-                // TODO: Option True or Magnetic
-                instrument = new DashboardInstrument_Single( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_HDT, _T("%.0f") );
-                break;
-            case ID_DBP_I_HDM:  //magnetic heading
-                instrument = new DashboardInstrument_Single( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_HDM, _T("%.0f") );
-                break;
-            case ID_DBP_D_AW:
-                instrument = new DashboardInstrument_Wind( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_AWA );
-                ( (DashboardInstrument_Dial *) instrument )->SetOptionExtraValue(
-                        OCPN_DBP_STC_AWS, _T("%.1f"), DIAL_POSITION_INSIDE );
-                break;
-            case ID_DBP_D_AWA:
-                instrument = new DashboardInstrument_Wind( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_AWA );
-                break;
-            case ID_DBP_I_AWS:
-                instrument = new DashboardInstrument_Single( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_AWS, _T("%.2f") );
-                break;
-            case ID_DBP_D_AWS:
-                instrument = new DashboardInstrument_Speedometer( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_AWS, 0, 45 );
-                ( (DashboardInstrument_Dial *) instrument )->SetOptionLabel( 5,
-                        DIAL_LABEL_HORIZONTAL );
-                ( (DashboardInstrument_Dial *) instrument )->SetOptionMarker( 1,
-                        DIAL_MARKER_SIMPLE, 5 );
-                ( (DashboardInstrument_Dial *) instrument )->SetOptionMainValue( _T("A %.2f"),
-                        DIAL_POSITION_BOTTOMLEFT );
-                ( (DashboardInstrument_Dial *) instrument )->SetOptionExtraValue(
-                        OCPN_DBP_STC_TWS, _T("T %.1f"), DIAL_POSITION_BOTTOMRIGHT );
-                break;
-            case ID_DBP_D_TW:  //True Wind direction
-                instrument = new DashboardInstrument_WindCompass( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_MWD );
-                ( (DashboardInstrument_Dial *) instrument )->SetOptionMainValue( _T("%.0f"),
-                        DIAL_POSITION_BOTTOMLEFT );
-                ( (DashboardInstrument_Dial *) instrument )->SetOptionExtraValue(
-                        OCPN_DBP_STC_TWS, _T("%.1f"), DIAL_POSITION_INSIDE );
-                break;
-            case ID_DBP_D_TWA:	//True 	Wind angle +-180° on boat axis
-                instrument = new DashboardInstrument_TrueWindAngle( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_VWT );
-                ( (DashboardInstrument_Dial *) instrument )->SetOptionMainValue( _T("%.0f"),
-                        DIAL_POSITION_BOTTOMLEFT );
-                ( (DashboardInstrument_Dial *) instrument )->SetOptionExtraValue(
-                        OCPN_DBP_STC_TWS, _T("%.1f"), DIAL_POSITION_INSIDE );
-                break;
-            case ID_DBP_I_DPT:
-                instrument = new DashboardInstrument_Single( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_DPT, _T("%5.1f") );
-                break;
-            case ID_DBP_D_DPT:
-                instrument = new DashboardInstrument_Depth( this, wxID_ANY,
-                        getInstrumentCaption( id ) );
-                break;
-            case ID_DBP_I_TMP: //water temperature
-                instrument = new DashboardInstrument_Single( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_TMP, _T("%2.1f") );
-                break;
-            case ID_DBP_I_ATMP: //air temperature
-                instrument = new DashboardInstrument_Single( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_ATMP, _T("%2.1f") );
-                break;
-            case ID_DBP_I_TWA: //true wind angle
-                instrument = new DashboardInstrument_Single( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_VWT, _T("%5.0f") );
-                break;
-            case ID_DBP_I_TWD: //true wind direction
-                instrument = new DashboardInstrument_Single( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_MWD, _T("%5.0f") );
-                break;
-            case ID_DBP_I_TWS: // true wind speed
-                instrument = new DashboardInstrument_Single( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_TWS, _T("%2.2f") );
-                break;
-            case ID_DBP_I_AWA: //apparent wind speed
-                instrument = new DashboardInstrument_Single( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_AWA2, _T("%5.0f") );
-                break;
-            case ID_DBP_I_VMG:
-                instrument = new DashboardInstrument_Single( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_VMG, _T("%5.2f") );
-                break;
-            case ID_DBP_D_VMG:
-                instrument = new DashboardInstrument_Speedometer( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_VMG, 0, 12 );
-                ( (DashboardInstrument_Dial *) instrument )->SetOptionLabel( 1,
-                        DIAL_LABEL_HORIZONTAL );
-                ( (DashboardInstrument_Dial *) instrument )->SetOptionMarker( 0.5,
-                        DIAL_MARKER_SIMPLE, 2 );
-                ( (DashboardInstrument_Dial *) instrument )->SetOptionExtraValue(
-                        OCPN_DBP_STC_SOG, _T("SOG\n%.2f"), DIAL_POSITION_BOTTOMLEFT );
-                break;
-            case ID_DBP_I_RSA:
-                instrument = new DashboardInstrument_Single( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_RSA, _T("%5.0f") );
-                break;
-            case ID_DBP_D_RSA:
-                instrument = new DashboardInstrument_RudderAngle( this, wxID_ANY,
-                        getInstrumentCaption( id ) );
-                break;
-            case ID_DBP_I_SAT:
-                instrument = new DashboardInstrument_Single( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_SAT, _T("%5.0f") );
-                break;
-            case ID_DBP_D_GPS:
-                instrument = new DashboardInstrument_GPS( this, wxID_ANY,
-                        getInstrumentCaption( id ) );
-                break;
-            case ID_DBP_I_PTR:
-                instrument = new DashboardInstrument_Position( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_PLA, OCPN_DBP_STC_PLO );
-                break;
-            case ID_DBP_I_CLK:
-                instrument = new DashboardInstrument_Clock( this, wxID_ANY,
-                        getInstrumentCaption( id ) );
-                break;
-            case ID_DBP_I_SUN:
-                instrument = new DashboardInstrument_Sun( this, wxID_ANY,
-                        getInstrumentCaption( id ) );
-                break;
-            case ID_DBP_I_MON:
-                instrument = new DashboardInstrument_Moon( this, wxID_ANY,
-                        getInstrumentCaption( id ) );
-                break;
-        }
-        if( instrument ) {
-            instrument->instrumentTypeId = id;
-            m_ArrayOfInstrument.Add(
-                    new DashboardInstrumentContainer( id, instrument,
-                            instrument->GetCapacity() ) );
-            itemBoxSizer->Add( instrument, 0, wxEXPAND, 0 );
-            if( itemBoxSizer->GetOrientation() == wxHORIZONTAL ) {
-                itemBoxSizer->AddSpacer( 5 );
-            }
-        }
-    }
-    Fit();
-    Layout();
-    SetMinSize( itemBoxSizer->GetMinSize() );
-}
-
-void DashboardWindow::SendSentenceToAllInstruments( int st, double value, wxString unit )
-{
-    for( size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++ ) {
-        if( m_ArrayOfInstrument.Item( i )->m_cap_flag & st ) m_ArrayOfInstrument.Item( i )->m_pInstrument->SetData(
-                st, value, unit );
-    }
-}
-
-void DashboardWindow::SendSatInfoToAllInstruments( int cnt, int seq, SAT_INFO sats[4] )
-{
-    for( size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++ ) {
-        if( ( m_ArrayOfInstrument.Item( i )->m_cap_flag & OCPN_DBP_STC_GPS )
-                && m_ArrayOfInstrument.Item( i )->m_pInstrument->IsKindOf(
-                        CLASSINFO(DashboardInstrument_GPS)))
-                        ((DashboardInstrument_GPS*)m_ArrayOfInstrument.Item(i)->m_pInstrument)->SetSatInfo(cnt, seq, sats);
-                    }
-                }
-
-void DashboardWindow::SendUtcTimeToAllInstruments( int st, wxDateTime value )
-{
-    for( size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++ ) {
-        if( ( m_ArrayOfInstrument.Item( i )->m_cap_flag & OCPN_DBP_STC_MON )
-                && m_ArrayOfInstrument.Item( i )->m_pInstrument->IsKindOf(
-                        CLASSINFO(DashboardInstrument_Moon)))
-                        ((DashboardInstrument_Moon*)m_ArrayOfInstrument.Item(i)->m_pInstrument)->SetUtcTime(st, value);
-                        if ((m_ArrayOfInstrument.Item(i)->m_cap_flag & OCPN_DBP_STC_CLK) &&
-                                (m_ArrayOfInstrument.Item(i)->m_pInstrument->IsKindOf(CLASSINFO(DashboardInstrument_Clock)) || m_ArrayOfInstrument.Item(i)->m_pInstrument->IsKindOf(CLASSINFO(DashboardInstrument_Sun))))
-                        ((DashboardInstrument_Clock*)m_ArrayOfInstrument.Item(i)->m_pInstrument)->SetUtcTime(st, value);
-                    }
-                }
 

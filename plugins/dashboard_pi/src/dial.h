@@ -86,12 +86,12 @@ extern double deg2rad(double angle);
 class DashboardInstrument_Dial: public DashboardInstrument
 {
       public:
-            DashboardInstrument_Dial( wxWindow *parent, wxWindowID id, wxString title, int cap_flag,
+            DashboardInstrument_Dial( wxWindow *parent, wxWindowID id, int cap_flag,
                         int s_angle, int r_angle, int s_value, int e_value);
 
             ~DashboardInstrument_Dial(void){}
 
-            wxSize GetSize( int orient, wxSize hint );
+            wxSize GetSize( wxSize hint );
             void SetData(int, double, wxString);
             void SetOptionMarker(double step, DialMarkerOption option, int offset) { m_MarkerStep = step; m_MarkerOption = option; m_MarkerOffset = offset; }
             void SetOptionLabel(double step, DialLabelOption option, wxArrayString labels=wxArrayString()) { m_LabelStep = step; m_LabelOption = option; m_LabelArray = labels; }

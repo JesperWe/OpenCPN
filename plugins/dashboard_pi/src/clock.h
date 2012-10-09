@@ -48,11 +48,11 @@ int moon_phase(int y, int m, int d);
 class DashboardInstrument_Clock: public DashboardInstrument_Single
 {
       public:
-            DashboardInstrument_Clock( wxWindow *parent, wxWindowID id, wxString title);
+            DashboardInstrument_Clock( wxWindow *parent, wxWindowID id );
 
             ~DashboardInstrument_Clock(void){}
 
-            wxSize GetSize( int orient, wxSize hint );
+            wxSize GetSize( wxSize hint );
             void SetData(int, double, wxString) {};
             void SetUtcTime(int st, wxDateTime value);
 };
@@ -60,7 +60,7 @@ class DashboardInstrument_Clock: public DashboardInstrument_Single
 class DashboardInstrument_Moon : public DashboardInstrument_Single
 {
 public:
-      DashboardInstrument_Moon( wxWindow *parent, wxWindowID id, wxString title);
+      DashboardInstrument_Moon( wxWindow *parent, wxWindowID id );
       ~DashboardInstrument_Moon(){}
 
       void SetUtcTime(int st, wxDateTime value);
