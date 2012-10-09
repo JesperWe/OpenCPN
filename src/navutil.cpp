@@ -2828,7 +2828,6 @@ double Track::GetXTE( double fm1Lat, double fm1Lon, double fm2Lat, double fm2Lon
 {
 //      Get the XTE vector for prp, normal to segment between pWP_src and prpX
     vector2D va, vb, vn;
-
     double brg1, dist1, brg2, dist2;
     DistanceBearingMercator( toLat, toLon, fm1Lat, fm1Lon, &brg1, &dist1 );
     vb.x = dist1 * sin( brg1 * PI / 180. );
@@ -2839,8 +2838,8 @@ double Track::GetXTE( double fm1Lat, double fm1Lon, double fm2Lat, double fm2Lon
     va.y = dist2 * cos( brg2 * PI / 180. );
 
     double sdelta = vGetLengthOfNormal( &va, &vb, &vn );             // NM
-
-    return ( abs( sdelta ) );
+    sdelta = fabs( sdelta );
+    return sdelta;
 }
 
 double Track::GetXTE( RoutePoint *fm1, RoutePoint *fm2, RoutePoint *to )
@@ -2848,8 +2847,8 @@ double Track::GetXTE( RoutePoint *fm1, RoutePoint *fm2, RoutePoint *to )
     if( !fm1 || !fm2 || !to ) return 0.0;
     if( fm1 == to ) return 0.0;
     if( fm2 == to ) return 0.0;
-
     return GetXTE( fm1->m_lat, fm1->m_lon, fm2->m_lat, fm2->m_lon, to->m_lat, to->m_lon );
+;
 }
 
 //-----------------------------------------------------------------------------
