@@ -52,7 +52,7 @@ class DashboardInstrument_Clock: public DashboardInstrument_Single
 
             ~DashboardInstrument_Clock(void){}
 
-            wxSize GetSize();
+            wxSize GetSize( int orient, wxSize hint );
             void SetData(int, double, wxString) {};
             void SetUtcTime(int st, wxDateTime value);
 };

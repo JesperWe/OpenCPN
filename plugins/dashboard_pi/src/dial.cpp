@@ -74,17 +74,16 @@ DashboardInstrument_Dial::DashboardInstrument_Dial( wxWindow *parent, wxWindowID
       m_LabelOption = DIAL_LABEL_HORIZONTAL;
 }
 
-wxSize DashboardInstrument_Dial::GetSize()
+wxSize DashboardInstrument_Dial::GetSize( int orient, wxSize hint )
 {
       wxClientDC dc(this);
-      wxSize size = GetParent()->GetSize();
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-      if( ((wxBoxSizer *)(GetParent()->GetSizer()))->GetOrientation() == wxHORIZONTAL ) {
-          w = (size.y < DefaultWidth+m_TitleHeight ? DefaultWidth+m_TitleHeight : size.y);
+      if( orient == wxHORIZONTAL ) {
+          w = wxMax(hint.y, DefaultWidth+m_TitleHeight);
           return wxSize( w-m_TitleHeight, w );
       } else {
-          w = size.x;
+          w = wxMax(hint.x, DefaultWidth);
           return wxSize( w, m_TitleHeight+w );
       }
 }
@@ -131,7 +130,7 @@ void DashboardInstrument_Dial::DrawFrame( wxGCDC* dc )
     dc->SetTextForeground( cl );
     dc->SetBrush( *wxTRANSPARENT_BRUSH);
 
-    int penwidth = 1 + GetSize().x / 100;
+    int penwidth = 1 + size.x / 100;
     wxPen* pen = wxThePenList->FindOrCreatePen( cl, penwidth, wxSOLID );
 
     if( m_MarkerOption == DIAL_MARKER_REDGREENBAR ) {
@@ -173,7 +172,7 @@ void DashboardInstrument_Dial::DrawMarkers(wxGCDC* dc)
 
     wxColour cl;
     GetGlobalColor( _T("DASHF"), &cl );
-    int penwidth = GetSize().x / 100;
+    int penwidth = GetClientSize().x / 100;
     wxPen* pen = wxThePenList->FindOrCreatePen( cl, penwidth, wxSOLID );
     dc->SetPen( *pen );
 
@@ -327,7 +326,7 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value,
                   TextPoint.x = m_cx - (width / 2) - 1;
                   TextPoint.y = (size.y * .75) - height;
                   GetGlobalColor(_T("DASHL"), &cl);
-                  int penwidth = GetSize().x / 100;
+                  int penwidth = GetClientSize().x / 100;
                   wxPen* pen = wxThePenList->FindOrCreatePen( cl, penwidth, wxSOLID );
                   dc->SetPen( *pen );
                   GetGlobalColor(_T("DASHB"), &cl);

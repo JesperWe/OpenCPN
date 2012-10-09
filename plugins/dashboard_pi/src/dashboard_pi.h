@@ -69,13 +69,14 @@ class DashboardInstrumentContainer;
 class DashboardWindowContainer
 {
       public:
-            DashboardWindowContainer(DashboardWindow *dashboard_window, wxString caption, wxString orientation, wxArrayInt inst) {
-                  m_pDashboardWindow = dashboard_window; m_sCaption = caption; m_sOrientation = orientation; m_aInstrumentList = inst; m_bIsVisible = false; m_bIsDeleted = false; }
+            DashboardWindowContainer(DashboardWindow *dashboard_window, wxString name, wxString caption, wxString orientation, wxArrayInt inst) {
+                  m_pDashboardWindow = dashboard_window; m_sName = name; m_sCaption = caption; m_sOrientation = orientation; m_aInstrumentList = inst; m_bIsVisible = false; m_bIsDeleted = false; }
 
             ~DashboardWindowContainer(){}
             DashboardWindow              *m_pDashboardWindow;
             bool                          m_bIsVisible; // Only used for config
             bool                          m_bIsDeleted; // Only used for config
+            wxString                      m_sName;
             wxString                      m_sCaption;
             wxString                      m_sOrientation;
             wxArrayInt                    m_aInstrumentList;
@@ -239,7 +240,7 @@ class DashboardWindow : public wxWindow
 {
 public:
     DashboardWindow( wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr, dashboard_pi* plugin,
-             int orient, DashboardWindowContainer* mycont, int myIndex );
+             int orient, DashboardWindowContainer* mycont );
     ~DashboardWindow();
 
     void SetColorScheme( PI_ColorScheme cs );
@@ -248,14 +249,14 @@ public:
     void OnSize( wxSizeEvent& evt );
     void OnContextMenu( wxContextMenuEvent& evt );
     void OnContextMenuSelect( wxCommandEvent& evt );
+    bool isInstrumentListEqual( const wxArrayInt& list );
     void SetInstrumentList( wxArrayInt list );
     void SendSentenceToAllInstruments( int st, double value, wxString unit );
     void SendSatInfoToAllInstruments( int cnt, int seq, SAT_INFO sats[4] );
     void SendUtcTimeToAllInstruments( int st, wxDateTime value );
-    void ChangePaneOrientation( int orient );
+    void ChangePaneOrientation( int orient, bool updateAUImgr );
 /*TODO: OnKeyPress pass event to main window or disable focus*/
 
-    int                  m_dbIndex;
     DashboardWindowContainer* m_Container;
 
 private:

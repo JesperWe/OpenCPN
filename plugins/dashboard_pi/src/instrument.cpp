@@ -72,8 +72,14 @@ void DashboardInstrument::OnEraseBackground(wxEraseEvent& WXUNUSED(evt))
 void DashboardInstrument::OnSize(wxSizeEvent& evt)
 {
     evt.Skip();
-    SetMinSize( GetSize() );
-    GetParent()->Layout();
+int orient = ((wxBoxSizer *)(GetParent()->GetSizer()))->GetOrientation();
+wxSize esz = GetParent()->GetClientSize();
+wxSize sz = GetSize( orient, esz );
+wxLogMessage(wxString::Format(_T("GetSize %dx%d => %dx%d "), esz.x, esz.y, sz.x, sz.y)+m_title);
+//    Layout();
+    SetMinSize( sz );
+//    Fit();
+//    GetParent()->Layout();
     Refresh();
 }
 
@@ -127,17 +133,17 @@ DashboardInstrument_Single::DashboardInstrument_Single(wxWindow *pparent, wxWind
       m_data = _T("---");
 }
 
-wxSize DashboardInstrument_Single::GetSize()
+wxSize DashboardInstrument_Single::GetSize( int orient, wxSize hint )
 {
       wxClientDC dc(this);
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
       dc.GetTextExtent(_T("000"), &w, &m_DataHeight, 0, 0, g_pFontData);
 
-      if( ((wxBoxSizer *)(GetParent()->GetSizer()))->GetOrientation() == wxHORIZONTAL ) {
-          return wxSize( DefaultWidth, m_TitleHeight+m_DataHeight );
+      if( orient == wxHORIZONTAL ) {
+          return wxSize( DefaultWidth, wxMax(hint.y, m_TitleHeight+m_DataHeight) );
       } else {
-          return wxSize( GetParent()->GetSize().x, m_TitleHeight+m_DataHeight );
+          return wxSize( wxMax(hint.x, DefaultWidth), m_TitleHeight+m_DataHeight );
       }
 }
 
@@ -201,17 +207,17 @@ DashboardInstrument_Position::DashboardInstrument_Position(wxWindow *pparent, wx
       m_cap_flag2 = cap_flag2;
 }
 
-wxSize DashboardInstrument_Position::GetSize()
+wxSize DashboardInstrument_Position::GetSize( int orient, wxSize hint )
 {
       wxClientDC dc(this);
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
       dc.GetTextExtent(_T("000  00.0000 W"), &w, &m_DataHeight, 0, 0, g_pFontData);
 
-      if( ((wxBoxSizer *)(GetParent()->GetSizer()))->GetOrientation() == wxHORIZONTAL ) {
-          return wxSize( w+10, m_TitleHeight+m_DataHeight*2 );
+      if( orient == wxHORIZONTAL ) {
+          return wxSize( w+10, wxMax(hint.y, m_TitleHeight+m_DataHeight*2) );
       } else {
-          return wxSize( GetParent()->GetSize().x, m_TitleHeight+m_DataHeight*2 );
+          return wxSize( wxMax(hint.x, w+10), m_TitleHeight+m_DataHeight*2 );
       }
 }
 

@@ -60,17 +60,19 @@ DashboardInstrument_GPS::DashboardInstrument_GPS( wxWindow *parent, wxWindowID i
       }
 }
 
-wxSize DashboardInstrument_GPS::GetSize()
+wxSize DashboardInstrument_GPS::GetSize( int orient, wxSize hint )
 {
+wxLogMessage(_T("DashboardInstrument_GPS::GetSize"));
       wxClientDC dc(this);
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-      int width = GetParent()->GetSize().x;
-      m_cx = width/2;
-      if( ((wxBoxSizer *)(GetParent()->GetSizer()))->GetOrientation() == wxHORIZONTAL ) {
-          return wxSize( DefaultWidth, m_TitleHeight+140 );
+      if( orient == wxHORIZONTAL ) {
+          m_cx = DefaultWidth/2;
+          return wxSize( DefaultWidth, wxMax(hint.y, m_TitleHeight+140) );
       } else {
-          return wxSize( width, m_TitleHeight+140 );
+          w = wxMax(hint.x, DefaultWidth);
+          m_cx = w/2;
+          return wxSize( w, m_TitleHeight+140 );
       }
 }
 

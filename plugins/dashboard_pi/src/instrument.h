@@ -101,8 +101,8 @@ public:
       int GetCapacity();
       void OnEraseBackground(wxEraseEvent& WXUNUSED(evt));
       void OnSize(wxSizeEvent& evt);
-      virtual wxSize GetSize() = 0;
-      virtual void OnPaint(wxPaintEvent& WXUNUSED(event));
+      virtual wxSize GetSize( int orient, wxSize hint ) = 0;
+      void OnPaint(wxPaintEvent& WXUNUSED(event));
       virtual void SetData(int st, double data, wxString unit) = 0;
 
       int               instrumentTypeId;
@@ -121,7 +121,7 @@ public:
       DashboardInstrument_Single(wxWindow *pparent, wxWindowID id, wxString title, int cap, wxString format);
       ~DashboardInstrument_Single(){}
 
-      wxSize GetSize();
+      wxSize GetSize( int orient, wxSize hint );
       void SetData(int st, double data, wxString unit);
 
 protected:
@@ -138,7 +138,7 @@ public:
       DashboardInstrument_Position(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag1=OCPN_DBP_STC_LAT, int cap_flag2=OCPN_DBP_STC_LON);
       ~DashboardInstrument_Position(){}
 
-      wxSize GetSize();
+      wxSize GetSize( int orient, wxSize hint );
       void SetData(int st, double data, wxString unit);
 
 protected:

@@ -54,15 +54,16 @@ DashboardInstrument_RudderAngle::DashboardInstrument_RudderAngle( wxWindow *pare
 //      SetOptionExtraValue(_T("%02.0f"), DIAL_POSITION_INSIDE);
 }
 
-wxSize DashboardInstrument_RudderAngle::GetSize()
+wxSize DashboardInstrument_RudderAngle::GetSize( int orient, wxSize hint )
 {
       wxClientDC dc(this);
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-      w = GetParent()->GetSize().x;
-      if( ((wxBoxSizer *)(GetParent()->GetSizer()))->GetOrientation() == wxHORIZONTAL ) {
-          return wxSize( GetParent()->GetSize().y, GetParent()->GetSize().y );
+      if( orient == wxHORIZONTAL ) {
+          w = wxMax(hint.y, m_TitleHeight+DefaultWidth*.7);
+          return wxSize( w/.7-m_TitleHeight, w );
       } else {
+          w = wxMax(hint.x, DefaultWidth);
           return wxSize( w, m_TitleHeight+w*.7 );
       }
 }

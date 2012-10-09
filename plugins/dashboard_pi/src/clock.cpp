@@ -44,17 +44,17 @@ DashboardInstrument_Clock::DashboardInstrument_Clock( wxWindow *parent, wxWindow
 {
 }
 
-wxSize DashboardInstrument_Clock::GetSize()
+wxSize DashboardInstrument_Clock::GetSize( int orient, wxSize hint )
 {
       wxClientDC dc(this);
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
       dc.GetTextExtent(_T("00:00:00 UTC"), &w, &m_DataHeight, 0, 0, g_pFontData);
 
-      if( ((wxBoxSizer *)(GetParent()->GetSizer()))->GetOrientation() == wxHORIZONTAL ) {
-          return wxSize( wxMin(GetParent()->GetSize().y, 200), GetParent()->GetSize().y );
+      if( orient== wxHORIZONTAL ) {
+          return wxSize( DefaultWidth, wxMax(m_TitleHeight+m_DataHeight, hint.y) );
       } else {
-          return wxSize( GetParent()->GetSize().x, m_TitleHeight+m_DataHeight );
+          return wxSize( wxMax(hint.x, DefaultWidth), m_TitleHeight+m_DataHeight );
       }
 }
 
