@@ -102,6 +102,7 @@ protected:
       int               m_cap_flag;
       int               m_TitleHeight;
       wxString          m_title;
+      wxSize            m_size;
 
       virtual void Draw(wxGCDC* dc) = 0;
 };

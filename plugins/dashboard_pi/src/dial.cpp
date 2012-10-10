@@ -115,7 +115,7 @@ void DashboardInstrument_Dial::Draw(wxGCDC* bdc)
 
 void DashboardInstrument_Dial::DrawFrame( wxGCDC* dc )
 {
-    wxSize size = GetClientSize();
+    wxSize size = m_size;
     wxColour cl;
 
     m_cx = size.x / 2;

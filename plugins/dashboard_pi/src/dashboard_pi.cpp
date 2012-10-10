@@ -1646,7 +1646,11 @@ DashboardWindow::~DashboardWindow()
 void DashboardWindow::OnSize( wxSizeEvent& event )
 {
     event.Skip();
-    Layout();
+    for( unsigned int i=0; i<m_ArrayOfInstrument.size(); i++ ) {
+        DashboardInstrument* inst = m_ArrayOfInstrument.Item(i)->m_pInstrument;
+        inst->OnSize( event );
+    }
+    itemBoxSizer->Layout(  );
 }
 
 void DashboardWindow::OnContextMenu( wxContextMenuEvent& event )

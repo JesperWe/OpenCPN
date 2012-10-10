@@ -71,8 +71,9 @@ void DashboardInstrument::OnSize(wxSizeEvent& evt)
 {
     evt.Skip();
     int orient = ((wxBoxSizer *)(GetParent()->GetSizer()))->GetOrientation();
-    SetMinSize( GetSize( orient, GetParent()->GetClientSize() ) );
-    Refresh();
+    m_size = GetSize( orient, GetParent()->GetClientSize() );
+    SetSize( m_size );
+    SetMinSize( m_size );
 }
 
 void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
@@ -83,7 +84,8 @@ void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
     wxSize size = GetClientSize();
     if( size.x == 0 || size.y == 0 ) return;
 
-    wxBitmap bm( pdc.GetSize().x, pdc.GetSize().y, 32 );
+    SetClientSize( m_size.x, m_size.y );
+    wxBitmap bm( m_size.x, m_size.y, 32 );
     bm.UseAlpha();
     wxMemoryDC mdc( bm );
     wxGCDC dc( mdc );
@@ -101,7 +103,7 @@ void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
     pen.SetColour( cl );
     dc.SetPen( pen );
     dc.SetBrush( cl );
-    dc.DrawRoundedRectangle( 0, 0, size.x, m_TitleHeight, 3 );
+    dc.DrawRoundedRectangle( 0, 0, m_size.x, m_TitleHeight, 3 );
 
     dc.SetFont( *g_pFontTitle );
     GetGlobalColor( _T("DASHF"), &cl );
