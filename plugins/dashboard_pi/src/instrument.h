@@ -79,9 +79,8 @@ enum
     OCPN_DBP_STC_CLK = 1 << 21,
     OCPN_DBP_STC_MON = 1 << 22,
     OCPN_DBP_STC_ATMP = 1 << 23, //AirTemp
-	OCPN_DBP_STC_MWD = 1 << 24,  //True Wind direction & Speed
-	OCPN_DBP_STC_VWT = 1 << 25,  //True Wind angle & Speed
-	OCPN_DBP_STC_AWA2 = 1 << 26  //App Wind angle, sends unconverted Spd. value
+	OCPN_DBP_STC_VWT = 1 << 24,  //True Wind angle, relative
+	OCPN_DBP_STC_VWR = 1 << 25   //App Wind angle, relative
 };
 
 class DashboardInstrument : public wxControl

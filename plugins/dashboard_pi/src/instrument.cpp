@@ -70,14 +70,8 @@ void DashboardInstrument::OnEraseBackground(wxEraseEvent& WXUNUSED(evt))
 void DashboardInstrument::OnSize(wxSizeEvent& evt)
 {
     evt.Skip();
-int orient = ((wxBoxSizer *)(GetParent()->GetSizer()))->GetOrientation();
-wxSize esz = GetParent()->GetClientSize();
-wxSize sz = GetSize( orient, esz );
-wxLogMessage(wxString::Format(_T("GetSize %dx%d => %dx%d "), esz.x, esz.y, sz.x, sz.y)+m_title);
-//    Layout();
-    SetMinSize( sz );
-//    Fit();
-//    GetParent()->Layout();
+    int orient = ((wxBoxSizer *)(GetParent()->GetSizer()))->GetOrientation();
+    SetMinSize( GetSize( orient, GetParent()->GetClientSize() ) );
     Refresh();
 }
 

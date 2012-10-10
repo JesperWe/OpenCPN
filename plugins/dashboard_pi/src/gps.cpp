@@ -62,7 +62,6 @@ DashboardInstrument_GPS::DashboardInstrument_GPS( wxWindow *parent, wxWindowID i
 
 wxSize DashboardInstrument_GPS::GetSize( int orient, wxSize hint )
 {
-wxLogMessage(_T("DashboardInstrument_GPS::GetSize"));
       wxClientDC dc(this);
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);

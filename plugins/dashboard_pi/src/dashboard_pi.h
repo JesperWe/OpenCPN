@@ -141,6 +141,8 @@ public:
       void OnPaneClose( wxAuiManagerEvent& event );
       void UpdateAuiStatus(void);
       bool SaveConfig(void);
+      void PopulateContextMenu( wxMenu* menu );
+      void ShowDashboard( size_t id, bool visible );
 
 private:
       bool LoadConfig(void);

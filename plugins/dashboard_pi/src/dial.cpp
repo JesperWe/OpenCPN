@@ -326,7 +326,7 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value,
                   TextPoint.x = m_cx - (width / 2) - 1;
                   TextPoint.y = (size.y * .75) - height;
                   GetGlobalColor(_T("DASHL"), &cl);
-                  int penwidth = GetClientSize().x / 100;
+                  int penwidth = size.x / 100;
                   wxPen* pen = wxThePenList->FindOrCreatePen( cl, penwidth, wxSOLID );
                   dc->SetPen( *pen );
                   GetGlobalColor(_T("DASHB"), &cl);
