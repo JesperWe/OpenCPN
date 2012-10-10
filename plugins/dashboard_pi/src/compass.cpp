@@ -41,8 +41,8 @@
     #include <wx/wx.h>
 #endif
 
-DashboardInstrument_Compass::DashboardInstrument_Compass( wxWindow *parent, wxWindowID id, int cap_flag) :
-      DashboardInstrument_Dial( parent, id, cap_flag, 0, 360, 0, 360)
+DashboardInstrument_Compass::DashboardInstrument_Compass( wxWindow *parent, wxWindowID id, wxString title, int cap_flag) :
+      DashboardInstrument_Dial( parent, id, title, cap_flag, 0, 360, 0, 360)
 {
       SetOptionMarker(5, DIAL_MARKER_SIMPLE, 2);
       SetOptionLabel(20, DIAL_LABEL_ROTATED);

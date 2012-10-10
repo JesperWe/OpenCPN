@@ -43,10 +43,10 @@
 // Required deg2rad
 #include "dial.h"
 
-DashboardInstrument_GPS::DashboardInstrument_GPS( wxWindow *parent, wxWindowID id ) :
-      DashboardInstrument(parent, id, OCPN_DBP_STC_GPS)
+DashboardInstrument_GPS::DashboardInstrument_GPS( wxWindow *parent, wxWindowID id, wxString title) :
+      DashboardInstrument(parent, id, title, OCPN_DBP_STC_GPS)
 {
-      m_cx = DefaultWidth/2;
+      m_cx = 35;
       m_cy = 57;
       m_radius = 35;
 
@@ -60,9 +60,20 @@ DashboardInstrument_GPS::DashboardInstrument_GPS( wxWindow *parent, wxWindowID i
       }
 }
 
-wxSize DashboardInstrument_GPS::GetSize( wxSize hint )
+wxSize DashboardInstrument_GPS::GetSize( int orient, wxSize hint )
 {
-      return wxSize( DefaultWidth, 140 );
+wxLogMessage(_T("DashboardInstrument_GPS::GetSize"));
+      wxClientDC dc(this);
+      int w;
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
+      if( orient == wxHORIZONTAL ) {
+          m_cx = DefaultWidth/2;
+          return wxSize( DefaultWidth, wxMax(hint.y, m_TitleHeight+140) );
+      } else {
+          w = wxMax(hint.x, DefaultWidth);
+          m_cx = w/2;
+          return wxSize( w, m_TitleHeight+140 );
+      }
 }
 
 void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, SAT_INFO sats[4])
@@ -91,7 +102,7 @@ void DashboardInstrument_GPS::Draw(wxGCDC* dc)
 
 void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc)
 {
-      wxSize size = GetSize( GetClientSize() );
+      wxSize size = GetClientSize();
       wxColour cl;
 
       GetGlobalColor(_T("DASHB"), &cl);

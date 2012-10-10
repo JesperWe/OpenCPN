@@ -40,8 +40,8 @@
     #include <wx/wx.h>
 #endif
 
-DashboardInstrument_RudderAngle::DashboardInstrument_RudderAngle( wxWindow *parent, wxWindowID id ) :
-      DashboardInstrument_Dial( parent, id, OCPN_DBP_STC_RSA, 100, 160, -40, +40)
+DashboardInstrument_RudderAngle::DashboardInstrument_RudderAngle( wxWindow *parent, wxWindowID id, wxString title) :
+      DashboardInstrument_Dial( parent, id, title, OCPN_DBP_STC_RSA, 100, 160, -40, +40)
 {
       // Default Rudder position is centered
       m_MainValue = 0;
@@ -54,10 +54,18 @@ DashboardInstrument_RudderAngle::DashboardInstrument_RudderAngle( wxWindow *pare
 //      SetOptionExtraValue(_T("%02.0f"), DIAL_POSITION_INSIDE);
 }
 
-wxSize DashboardInstrument_RudderAngle::GetSize( wxSize hint )
+wxSize DashboardInstrument_RudderAngle::GetSize( int orient, wxSize hint )
 {
-      int w = wxMax( wxMin( hint.x, hint.y/.7 ), DefaultWidth );
-      return wxSize( w, w*.7 );
+      wxClientDC dc(this);
+      int w;
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
+      if( orient == wxHORIZONTAL ) {
+          w = wxMax(hint.y, m_TitleHeight+DefaultWidth*.7);
+          return wxSize( w/.7-m_TitleHeight, w );
+      } else {
+          w = wxMax(hint.x, DefaultWidth);
+          return wxSize( w, m_TitleHeight+w*.7 );
+      }
 }
 
 void DashboardInstrument_RudderAngle::SetData(int st, double data, wxString unit)
@@ -85,12 +93,12 @@ void DashboardInstrument_RudderAngle::DrawFrame(wxGCDC* dc)
 {
       // We don't need the upper part
       // Move center up
-      wxSize size = GetSize( GetClientSize() );
+      wxSize size = GetClientSize();
       wxColour cl;
 
       m_cx = size.x / 2;
-      m_cy = size.y * 0.38;
-      m_radius = size.y*.6;
+      m_cy = m_TitleHeight + (size.y - m_TitleHeight) * 0.38;
+      m_radius = (size.y - m_TitleHeight)*.6;
 
       dc->SetBrush(*wxTRANSPARENT_BRUSH);
 

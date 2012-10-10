@@ -41,12 +41,25 @@
 const wxString DEGREE_SIGN = wxString::Format(_T("%c"), 0x00B0); // This is the degree sign in UTF8. It should be correctly handled on both Win & Unix
 #define DefaultWidth 150
 
+// Zeniths for sunset/sunrise calculation
+#define ZENITH_OFFICIAL (90.0 + 50.0 / 60.0)
+#define ZENITH_CIVIL 96.0
+#define ZENITH_NAUTICAL 102.0
+#define ZENITH_ASTRONOMICAL 108.0
+
+
+extern wxFont *g_pFontTitle;
 extern wxFont *g_pFontData;
 extern wxFont *g_pFontLabel;
 extern wxFont *g_pFontSmall;
 
-class DashboardInstrument;
 wxString toSDMM ( int NEflag, double a );
+void calculateSun(double latit, double longit, wxDateTime &sunrise, wxDateTime &sunset);
+
+class DashboardInstrument;
+class DashboardInstrument_Single;
+class DashboardInstrument_Position;
+class DashboardInstrument_Sun;
 
 enum
 {
@@ -79,43 +92,36 @@ enum
 	OCPN_DBP_STC_AWA2 = 1 << 26  //App Wind angle, sends unconverted Spd. value
 };
 
-enum
-{
-      ID_DASH_PREFS = 999,
-      ID_DASH_VERTICAL,
-      ID_DASH_HORIZONTAL
-};
-
-class DashboardInstrument : public wxWindow
+class DashboardInstrument : public wxControl
 {
 public:
-      DashboardInstrument( wxWindow *parent, wxWindowID id, int cap_flag );
-      ~DashboardInstrument();
+      DashboardInstrument(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag);
+      ~DashboardInstrument(){}
 
       int GetCapacity();
       void OnEraseBackground(wxEraseEvent& WXUNUSED(evt));
       void OnSize(wxSizeEvent& evt);
-      virtual wxSize GetSize( wxSize hint ) = 0;
+      virtual wxSize GetSize( int orient, wxSize hint ) = 0;
       void OnPaint(wxPaintEvent& WXUNUSED(event));
       virtual void SetData(int st, double data, wxString unit) = 0;
-/*TODO: OnKeyPress pass event to main window or disable focus*/
+
+      int               instrumentTypeId;
 
 protected:
       int               m_cap_flag;
+      int               m_TitleHeight;
+      wxString          m_title;
 
       virtual void Draw(wxGCDC* dc) = 0;
-
-private:
-    void OnContextMenu( wxContextMenuEvent& evt );
 };
 
 class DashboardInstrument_Single : public DashboardInstrument
 {
 public:
-      DashboardInstrument_Single(wxWindow *pparent, wxWindowID id, int cap, wxString format);
+      DashboardInstrument_Single(wxWindow *pparent, wxWindowID id, wxString title, int cap, wxString format);
       ~DashboardInstrument_Single(){}
 
-      wxSize GetSize( wxSize hint );
+      wxSize GetSize( int orient, wxSize hint );
       void SetData(int st, double data, wxString unit);
 
 protected:
@@ -129,10 +135,10 @@ protected:
 class DashboardInstrument_Position : public DashboardInstrument
 {
 public:
-      DashboardInstrument_Position(wxWindow *pparent, wxWindowID id, int cap_flag1=OCPN_DBP_STC_LAT, int cap_flag2=OCPN_DBP_STC_LON);
+      DashboardInstrument_Position(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag1=OCPN_DBP_STC_LAT, int cap_flag2=OCPN_DBP_STC_LON);
       ~DashboardInstrument_Position(){}
 
-      wxSize GetSize( wxSize hint );
+      wxSize GetSize( int orient, wxSize hint );
       void SetData(int st, double data, wxString unit);
 
 protected:
@@ -145,28 +151,22 @@ protected:
       void Draw(wxGCDC* dc);
 };
 
-class DashboardInstrumentContainer
+class DashboardInstrument_Sun : public DashboardInstrument_Position
 {
-      public:
-            DashboardInstrumentContainer( int id, DashboardInstrument *instrument, int capa, wxString name, wxString caption ) {
-                  m_ID = id; m_pInstrument = instrument; m_cap_flag = capa;
-                  m_sName = name; m_sCaption = caption; m_bIsVisible = false; m_bIsDeleted = false; }
-            ~DashboardInstrumentContainer(){}
+public:
+      DashboardInstrument_Sun(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag1=OCPN_DBP_STC_LAT, int cap_flag2 = OCPN_DBP_STC_LON, int cap_flag= OCPN_DBP_STC_CLK) : DashboardInstrument_Position(pparent, id, title, cap_flag1, cap_flag2) { m_lat = m_lon = 999.9; m_dt = wxDateTime::Now().ToUTC(); m_cap_flag = m_cap_flag | cap_flag; }
+      ~DashboardInstrument_Sun(){}
 
-            DashboardInstrument    *m_pInstrument;
-            int                     m_ID;
-            int                     m_cap_flag;
-            bool                    m_bIsVisible; // Only used for config
-            bool                    m_bIsDeleted; // Only used for config
-            wxString                m_sName;
-            wxString                m_sCaption;
+      void SetData(int st, double data, wxString unit);
+      void SetUtcTime(int st, wxDateTime value);
+
+protected:
+      double m_lat;
+      double m_lon;
+      wxDateTime m_dt;
+
+private:
+      void calculateSun(double latit, double longit, wxDateTime &sunrise, wxDateTime &sunset);
 };
-
-//    Dynamic arrays of pointers need explicit macros in wx261
-#ifdef __WX261
-WX_DEFINE_ARRAY_PTR(DashboardInstrumentContainer *, wxArrayOfInstrument);
-#else
-WX_DEFINE_ARRAY(DashboardInstrumentContainer *, wxArrayOfInstrument);
-#endif
 
 #endif

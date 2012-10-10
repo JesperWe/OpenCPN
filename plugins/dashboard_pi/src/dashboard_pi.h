@@ -59,9 +59,49 @@
 #include "gps.h"
 #include "depth.h"
 #include "clock.h"
-#include "celestial.h"
+
+class DashboardWindow;
+class DashboardWindowContainer;
+class DashboardInstrumentContainer;
 
 #define DASHBOARD_TOOL_POSITION -1          // Request default positioning of toolbar tool
+
+class DashboardWindowContainer
+{
+      public:
+            DashboardWindowContainer(DashboardWindow *dashboard_window, wxString name, wxString caption, wxString orientation, wxArrayInt inst) {
+                  m_pDashboardWindow = dashboard_window; m_sName = name; m_sCaption = caption; m_sOrientation = orientation; m_aInstrumentList = inst; m_bIsVisible = false; m_bIsDeleted = false; }
+
+            ~DashboardWindowContainer(){}
+            DashboardWindow              *m_pDashboardWindow;
+            bool                          m_bIsVisible; // Only used for config
+            bool                          m_bIsDeleted; // Only used for config
+            wxString                      m_sName;
+            wxString                      m_sCaption;
+            wxString                      m_sOrientation;
+            wxArrayInt                    m_aInstrumentList;
+};
+
+class DashboardInstrumentContainer
+{
+      public:
+            DashboardInstrumentContainer(int id, DashboardInstrument *instrument, int capa){
+                  m_ID = id; m_pInstrument = instrument; m_cap_flag = capa; }
+            ~DashboardInstrumentContainer(){ delete m_pInstrument; }
+
+            DashboardInstrument    *m_pInstrument;
+            int                     m_ID;
+            int                     m_cap_flag;
+};
+
+//    Dynamic arrays of pointers need explicit macros in wx261
+#ifdef __WX261
+WX_DEFINE_ARRAY_PTR(DashboardWindowContainer *, wxArrayOfDashboard);
+WX_DEFINE_ARRAY_PTR(DashboardInstrumentContainer *, wxArrayOfInstrument);
+#else
+WX_DEFINE_ARRAY(DashboardWindowContainer *, wxArrayOfDashboard);
+WX_DEFINE_ARRAY(DashboardInstrumentContainer *, wxArrayOfInstrument);
+#endif
 
 //----------------------------------------------------------------------------------------------------------
 //    The PlugIn Class Definition
@@ -107,15 +147,13 @@ private:
       void SendSentenceToAllInstruments(int st, double value, wxString unit);
       void SendSatInfoToAllInstruments(int cnt, int seq, SAT_INFO sats[4]);
       void SendUtcTimeToAllInstruments(int st, wxDateTime value);
-      int GetInstrumentShownCount();
-      DashboardInstrument *GetInstrument( int id, wxWindow *parent );
-      void OnContextMenuSelect( wxCommandEvent& evt );
+      int GetDashboardWindowShownCount();
 
       wxFileConfig     *m_pconfig;
       wxAuiManager     *m_pauimgr;
       int              m_toolbar_item_id;
 
-      wxArrayOfInstrument       m_ArrayOfInstrument;
+      wxArrayOfDashboard       m_ArrayOfDashboardWindow;
       int               m_show_id;
       int               m_hide_id;
 
@@ -134,7 +172,7 @@ private:
 class DashboardPreferencesDialog : public wxDialog
 {
 public:
-      DashboardPreferencesDialog( wxWindow *pparent, wxWindowID id, wxArrayOfInstrument config );
+      DashboardPreferencesDialog( wxWindow *pparent, wxWindowID id, wxArrayOfDashboard config );
       ~DashboardPreferencesDialog() {}
 
       void OnCloseDialog(wxCloseEvent& event);
@@ -149,7 +187,8 @@ public:
       void OnInstrumentDown(wxCommandEvent& event);
       void SaveDashboardConfig();
 
-      wxArrayOfInstrument            m_Config;
+      wxArrayOfDashboard            m_Config;
+      wxFontPickerCtrl             *m_pFontPickerTitle;
       wxFontPickerCtrl             *m_pFontPickerData;
       wxFontPickerCtrl             *m_pFontPickerLabel;
       wxFontPickerCtrl             *m_pFontPickerSmall;
@@ -164,6 +203,7 @@ private:
       wxPanel                      *m_pPanelDashboard;
       wxTextCtrl                   *m_pTextCtrlCaption;
       wxCheckBox                   *m_pCheckBoxIsVisible;
+      wxChoice                     *m_pChoiceOrientation;
       wxListCtrl                   *m_pListCtrlInstruments;
       wxButton                     *m_pButtonAdd;
       wxButton                     *m_pButtonEdit;
@@ -187,6 +227,45 @@ private:
 enum
 {
       ID_DASHBOARD_WINDOW
+};
+
+enum
+{
+      ID_DASH_PREFS = 999,
+      ID_DASH_VERTICAL,
+      ID_DASH_HORIZONTAL
+};
+
+class DashboardWindow : public wxWindow
+{
+public:
+    DashboardWindow( wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr, dashboard_pi* plugin,
+             int orient, DashboardWindowContainer* mycont );
+    ~DashboardWindow();
+
+    void SetColorScheme( PI_ColorScheme cs );
+    void SetSizerOrientation( int orient );
+    int GetSizerOrientation();
+    void OnSize( wxSizeEvent& evt );
+    void OnContextMenu( wxContextMenuEvent& evt );
+    void OnContextMenuSelect( wxCommandEvent& evt );
+    bool isInstrumentListEqual( const wxArrayInt& list );
+    void SetInstrumentList( wxArrayInt list );
+    void SendSentenceToAllInstruments( int st, double value, wxString unit );
+    void SendSatInfoToAllInstruments( int cnt, int seq, SAT_INFO sats[4] );
+    void SendUtcTimeToAllInstruments( int st, wxDateTime value );
+    void ChangePaneOrientation( int orient, bool updateAUImgr );
+/*TODO: OnKeyPress pass event to main window or disable focus*/
+
+    DashboardWindowContainer* m_Container;
+
+private:
+      wxAuiManager         *m_pauimgr;
+      dashboard_pi*         m_plugin;
+
+//wx2.9      wxWrapSizer*          itemBoxSizer;
+      wxBoxSizer*          itemBoxSizer;
+      wxArrayOfInstrument  m_ArrayOfInstrument;
 };
 
 #endif

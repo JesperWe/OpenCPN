@@ -43,8 +43,8 @@
 // Display the arrow for MainValue (wind angle)
 // We also want the extra value (wind speed) displayed inside the dial
 
-DashboardInstrument_Wind::DashboardInstrument_Wind( wxWindow *parent, wxWindowID id, int cap_flag) :
-      DashboardInstrument_Dial( parent, id, cap_flag, 0, 360, 0, 360)
+DashboardInstrument_Wind::DashboardInstrument_Wind( wxWindow *parent, wxWindowID id, wxString title, int cap_flag) :
+      DashboardInstrument_Dial( parent, id, title, cap_flag, 0, 360, 0, 360)
 {
       SetOptionMarker(10, DIAL_MARKER_REDGREENBAR, 3);
       // Labels are set static because we've no logic to display them this way
@@ -57,8 +57,8 @@ void DashboardInstrument_Wind::DrawBackground(wxGCDC* dc)
     DrawBoat( dc, m_cx, m_cy, m_radius );
 }
 
-DashboardInstrument_WindCompass::DashboardInstrument_WindCompass( wxWindow *parent, wxWindowID id, int cap_flag ) :
-      DashboardInstrument_Dial( parent, id, cap_flag, 0, 360, 0, 360 )
+DashboardInstrument_WindCompass::DashboardInstrument_WindCompass( wxWindow *parent, wxWindowID id, wxString title, int cap_flag ) :
+      DashboardInstrument_Dial( parent, id, title, cap_flag, 0, 360, 0, 360 )
 {
       SetOptionMarker(5, DIAL_MARKER_SIMPLE, 2);
       wxString labels[] = {_("N"), _("NE"), _("E"), _("SE"), _("S"), _("SW"), _("W"), _("NW")};
@@ -73,8 +73,8 @@ void DashboardInstrument_WindCompass::DrawBackground(wxGCDC* dc)
 // Display the arrow for MainValue (wind angle)
 // We also want the extra value (wind speed) displayed inside the dial
 
-DashboardInstrument_TrueWindAngle::DashboardInstrument_TrueWindAngle( wxWindow *parent, wxWindowID id, int cap_flag) :
-      DashboardInstrument_Dial( parent, id, cap_flag, 0, 360, 0, 360)
+DashboardInstrument_TrueWindAngle::DashboardInstrument_TrueWindAngle( wxWindow *parent, wxWindowID id, wxString title, int cap_flag) :
+      DashboardInstrument_Dial( parent, id, title, cap_flag, 0, 360, 0, 360)
 {
       SetOptionMarker(10, DIAL_MARKER_REDGREENBAR, 3);
       // Labels are set static because we've no logic to display them this way
