@@ -74,6 +74,7 @@ void DashboardInstrument::OnSize(wxSizeEvent& evt)
     m_size = GetSize( orient, GetParent()->GetClientSize() );
     SetSize( m_size );
     SetMinSize( m_size );
+    Refresh();
 }
 
 void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
@@ -84,7 +85,6 @@ void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
     wxSize size = GetClientSize();
     if( size.x == 0 || size.y == 0 ) return;
 
-    SetClientSize( m_size.x, m_size.y );
     wxBitmap bm( m_size.x, m_size.y, 32 );
     bm.UseAlpha();
     wxMemoryDC mdc( bm );
