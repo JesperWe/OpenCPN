@@ -45,7 +45,8 @@
 class DashboardInstrument_Sun : public DashboardInstrument_Position
 {
 public:
-      DashboardInstrument_Sun(wxWindow *pparent, wxWindowID id, int cap_flag1=OCPN_DBP_STC_LAT, int cap_flag2 = OCPN_DBP_STC_LON, int cap_flag= OCPN_DBP_STC_CLK) : DashboardInstrument_Position(pparent, id, cap_flag1, cap_flag2) { m_lat = m_lon = 999.9; m_dt = wxDateTime::Now().ToUTC(); m_cap_flag = m_cap_flag | cap_flag; }
+      DashboardInstrument_Sun(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag1=OCPN_DBP_STC_LAT, int cap_flag2 = OCPN_DBP_STC_LON, int cap_flag= OCPN_DBP_STC_CLK) : DashboardInstrument_Position(pparent, id, title, cap_flag1, cap_flag2) { m_lat = m_lon = 999.9; m_dt = wxDateTime::Now().ToUTC(); m_cap_flag = m_cap_flag | cap_flag; }
+
       ~DashboardInstrument_Sun(){}
 
       void SetData(int st, double data, wxString unit);

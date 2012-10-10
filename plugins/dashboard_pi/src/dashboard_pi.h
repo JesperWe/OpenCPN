@@ -59,6 +59,7 @@
 #include "gps.h"
 #include "depth.h"
 #include "clock.h"
+#include "celestial.h"
 
 class DashboardWindow;
 class DashboardWindowContainer;

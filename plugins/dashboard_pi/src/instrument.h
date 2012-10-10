@@ -41,20 +41,12 @@
 const wxString DEGREE_SIGN = wxString::Format(_T("%c"), 0x00B0); // This is the degree sign in UTF8. It should be correctly handled on both Win & Unix
 #define DefaultWidth 150
 
-// Zeniths for sunset/sunrise calculation
-#define ZENITH_OFFICIAL (90.0 + 50.0 / 60.0)
-#define ZENITH_CIVIL 96.0
-#define ZENITH_NAUTICAL 102.0
-#define ZENITH_ASTRONOMICAL 108.0
-
-
 extern wxFont *g_pFontTitle;
 extern wxFont *g_pFontData;
 extern wxFont *g_pFontLabel;
 extern wxFont *g_pFontSmall;
 
 wxString toSDMM ( int NEflag, double a );
-void calculateSun(double latit, double longit, wxDateTime &sunrise, wxDateTime &sunset);
 
 class DashboardInstrument;
 class DashboardInstrument_Single;
@@ -149,24 +141,6 @@ protected:
       int               m_DataHeight;
 
       void Draw(wxGCDC* dc);
-};
-
-class DashboardInstrument_Sun : public DashboardInstrument_Position
-{
-public:
-      DashboardInstrument_Sun(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag1=OCPN_DBP_STC_LAT, int cap_flag2 = OCPN_DBP_STC_LON, int cap_flag= OCPN_DBP_STC_CLK) : DashboardInstrument_Position(pparent, id, title, cap_flag1, cap_flag2) { m_lat = m_lon = 999.9; m_dt = wxDateTime::Now().ToUTC(); m_cap_flag = m_cap_flag | cap_flag; }
-      ~DashboardInstrument_Sun(){}
-
-      void SetData(int st, double data, wxString unit);
-      void SetUtcTime(int st, wxDateTime value);
-
-protected:
-      double m_lat;
-      double m_lon;
-      wxDateTime m_dt;
-
-private:
-      void calculateSun(double latit, double longit, wxDateTime &sunrise, wxDateTime &sunset);
 };
 
 #endif
