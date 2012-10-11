@@ -514,7 +514,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     if( mPriDateTime >= 5 ) {
                         // Not in use, we need the date too.
                         //mPriDateTime = 5;
-                        //imUTCDateTime.ParseFormat( m_NMEA0183.Gll.UTCTime.c_str(), _T("%H%M%S") );
+                        //mUTCDateTime.ParseFormat( m_NMEA0183.Gll.UTCTime.c_str(), _T("%H%M%S") );
                     }
                 }
             }

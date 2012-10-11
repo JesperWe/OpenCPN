@@ -76,6 +76,7 @@ DashboardInstrument_Moon::DashboardInstrument_Moon( wxWindow *parent, wxWindowID
       DashboardInstrument_Clock( parent, id, title, OCPN_DBP_STC_CLK, _T("%i/4 %c") )
 {
     m_phase = -1;
+    m_radius = 16;
 }
 
 wxSize DashboardInstrument_Moon::GetSize( int orient, wxSize hint )
@@ -85,9 +86,9 @@ wxSize DashboardInstrument_Moon::GetSize( int orient, wxSize hint )
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
 
       if( orient== wxHORIZONTAL ) {
-          return wxSize( DefaultWidth, wxMax(m_TitleHeight+30, hint.y) );
+          return wxSize( DefaultWidth, wxMax(m_TitleHeight+10+m_radius*2, hint.y) );
       } else {
-          return wxSize( wxMax(hint.x, DefaultWidth), m_TitleHeight+30 );
+          return wxSize( wxMax(hint.x, DefaultWidth), m_TitleHeight+10+m_radius*2 );
       }
 }
 
@@ -96,70 +97,69 @@ void DashboardInstrument_Moon::Draw(wxGCDC* dc)
     if ( m_phase == -1 ) return;
 
     wxSize sz = GetClientSize();
-    int x = 12+(sz.x-12)/8*m_phase;
     wxColour cl0, cl1, cl2;
+
+    dc->SetPen( *wxTRANSPARENT_PEN );
+    GetGlobalColor(_T("DASHL"), &cl0);
+    dc->SetBrush(cl0);
+    wxPoint points[3];
+    points[0].x = 5;
+    points[0].y = m_TitleHeight+m_radius*2+6;
+    points[1].x = sz.x/2;
+    points[1].y = m_TitleHeight+15;
+    points[2].x = sz.x-5;
+    points[2].y = m_TitleHeight+m_radius*2+6;
+    dc->DrawPolygon(3, points, 0, 0);
+
+    int x = 2+m_radius+(sz.x-m_radius-2)/8*m_phase;
+    int y = m_TitleHeight+m_radius+5;
 
     GetGlobalColor(_T("DASHB"), &cl0);
     GetGlobalColor(_T("DASH1"), &cl1);
-    GetGlobalColor(_T("DASH2"), &cl2);
-    int m_radius = 20;
-    dc->SetPen( *wxTRANSPARENT_PEN );
+    GetGlobalColor(_T("DASHF"), &cl2);
+
+    dc->SetBrush(cl0);
+    dc->DrawCircle( x, y, m_radius );
     dc->SetBrush(cl1);
 
     switch ( m_phase ) {
     case 0:
         dc->SetPen( cl2 );
         dc->SetBrush( *wxTRANSPARENT_BRUSH );
-        dc->DrawCircle( x, m_TitleHeight+15, 10 );
+        dc->DrawCircle( x, y, m_radius );
     break;
     case 1:
-        dc->DrawEllipticArc( x-10, m_TitleHeight+5, m_radius, m_radius, -90, 90 );
+        dc->DrawEllipticArc( x-m_radius, m_TitleHeight+5, m_radius*2, m_radius*2, -90, 90 );
         dc->SetBrush( cl0 );
-        dc->DrawEllipticArc( x-5, m_TitleHeight+5, m_radius * 0.5, m_radius, -90, 90 );
-        dc->SetPen( cl2 );
-        dc->SetBrush( *wxTRANSPARENT_BRUSH );
-        dc->DrawCircle( x, m_TitleHeight+15, 10 );
+        dc->DrawEllipticArc( x-m_radius/2, m_TitleHeight+5, m_radius, m_radius*2, -90, 90 );
     break;
     case 2:
         dc->SetBrush( cl1 );
-        dc->DrawEllipticArc( x-10, m_TitleHeight+5, m_radius, m_radius, -90, 90 );
-        dc->SetPen( cl2 );
-        dc->SetBrush( *wxTRANSPARENT_BRUSH );
-        dc->DrawCircle( x, m_TitleHeight+15, 10 );
+        dc->DrawEllipticArc( x-m_radius, m_TitleHeight+5, m_radius*2, m_radius*2, -90, 90 );
     break;
     case 3:
-        dc->DrawEllipticArc( x-5, m_TitleHeight+5, m_radius * 0.5, m_radius, 90, 270 );
-        dc->DrawEllipticArc( x-10, m_TitleHeight+5, m_radius, m_radius, -90, 90 );
-        dc->SetPen( cl2 );
-        dc->SetBrush( *wxTRANSPARENT_BRUSH );
-        dc->DrawCircle( x, m_TitleHeight+15, 10 );
+        dc->DrawEllipticArc( x-m_radius/2, m_TitleHeight+5, m_radius, m_radius*2, 90, 270 );
+        dc->DrawEllipticArc( x-m_radius, m_TitleHeight+5, m_radius*2, m_radius*2, -90, 90 );
     break;
     case 4:
-        dc->SetPen( cl2 );
-        dc->DrawCircle( x, m_TitleHeight+15, 10 );
+        dc->DrawCircle( x, y, m_radius );
     break;
     case 5:
-        dc->DrawEllipticArc( x-10, m_TitleHeight+5, m_radius, m_radius, 90, 270 );
-        dc->DrawEllipticArc( x-5, m_TitleHeight+5, m_radius * 0.5, m_radius, -90, 90 );
-        dc->SetPen( cl2 );
-        dc->SetBrush( *wxTRANSPARENT_BRUSH );
-        dc->DrawCircle( x, m_TitleHeight+15, 10 );
+        dc->DrawEllipticArc( x-m_radius, m_TitleHeight+5, m_radius*2, m_radius*2, 90, 270 );
+        dc->DrawEllipticArc( x-m_radius/2, m_TitleHeight+5, m_radius, m_radius*2, -90, 90 );
     break;
     case 6:
-        dc->DrawEllipticArc(x-10, m_TitleHeight+5, m_radius, m_radius, 90, 270);
-        dc->SetPen( cl2 );
-        dc->SetBrush( *wxTRANSPARENT_BRUSH );
-        dc->DrawCircle( x, m_TitleHeight+15, 10 );
+        dc->DrawEllipticArc(x-m_radius, m_TitleHeight+5, m_radius*2, m_radius*2, 90, 270);
     break;
     case 7:
-        dc->DrawEllipticArc( x-10, m_TitleHeight+5, m_radius, m_radius, 90, 270 );
+        dc->DrawEllipticArc( x-m_radius, m_TitleHeight+5, m_radius*2, m_radius*2, 90, 270 );
         dc->SetBrush( cl0 );
-        dc->DrawEllipticArc( x-5, m_TitleHeight+5, m_radius * 0.5, m_radius, 90, 270 );
-        dc->SetPen( cl2 );
-        dc->SetBrush( *wxTRANSPARENT_BRUSH );
-        dc->DrawCircle( x, m_TitleHeight+15, 10 );
+        dc->DrawEllipticArc( x-m_radius/2, m_TitleHeight+5, m_radius, m_radius*2, 90, 270 );
     break;
     }
+    dc->SetPen( cl2 );
+    dc->SetBrush( *wxTRANSPARENT_BRUSH );
+    dc->DrawCircle( x, y, m_radius );
 }
 
 void DashboardInstrument_Moon::SetUtcTime( wxDateTime data )

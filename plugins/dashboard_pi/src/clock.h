@@ -68,6 +68,7 @@ public:
 private:
     int moon_phase(int y, int m, int d);
     int m_phase;
+    int m_radius;
 };
 
 class DashboardInstrument_Sun : public DashboardInstrument_Clock
