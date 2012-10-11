@@ -56,37 +56,16 @@ extern "C" DECL_EXP void destroy_pi( opencpn_plugin* p )
 //    Dashboard PlugIn Implementation
 //
 //---------------------------------------------------------------------------------------------------------
+// !!! WARNING !!!
 // do not change the order, add new instruments at the end, before ID_DBP_LAST_ENTRY!
 // otherwise, for users with an existing opencpn.ini file, their instruments are changing !
 enum {
-    ID_DBP_I_POS, ID_DBP_I_SOG, ID_DBP_D_SOG, ID_DBP_I_COG, ID_DBP_D_COG, ID_DBP_I_STW, //speed through water
-    ID_DBP_I_HDG,  //heading (true)
-    ID_DBP_D_AW,
-    ID_DBP_D_AWA,
-    ID_DBP_I_AWS,
-    ID_DBP_D_AWS,
-    ID_DBP_D_TW,    // True Wind
-    ID_DBP_I_DPT,
-    ID_DBP_D_DPT,
-    ID_DBP_I_TMP,
-    ID_DBP_I_VMG,
-    ID_DBP_D_VMG,
-    ID_DBP_I_RSA,
-    ID_DBP_D_RSA,
-    ID_DBP_I_SAT,
-    ID_DBP_D_GPS,
-    ID_DBP_I_PTR,
-    ID_DBP_I_CLK,
-    ID_DBP_I_SUN,
-    ID_DBP_I_MON,
-    ID_DBP_I_ATMP,  //Airtemp., text display
-    ID_DBP_I_AWA,   //app. Wind Angle +-180° on boat axis, text display
-    ID_DBP_I_TWA,   //True Wind Angle +-180° on boat axis, text display
-    ID_DBP_I_TWD,   //True Wind direction, text display
-    ID_DBP_I_TWS,   //True Wind speed, text display
-    ID_DBP_D_TWA,   //True Wind Angle +-180° on boat axis, graphical
-    ID_DBP_I_HDM,   //heading (magnetic)
-    ID_DBP_D_HDT,   //compass
+    ID_DBP_I_POS, ID_DBP_I_SOG, ID_DBP_D_SOG, ID_DBP_I_COG, ID_DBP_D_COG, ID_DBP_I_STW,
+    ID_DBP_I_HDT, ID_DBP_D_AW, ID_DBP_D_AWA, ID_DBP_I_AWS, ID_DBP_D_AWS, ID_DBP_D_TW,
+    ID_DBP_I_DPT, ID_DBP_D_DPT, ID_DBP_I_TMP, ID_DBP_I_VMG, ID_DBP_D_VMG, ID_DBP_I_RSA,
+    ID_DBP_D_RSA, ID_DBP_I_SAT, ID_DBP_D_GPS, ID_DBP_I_PTR, ID_DBP_I_CLK, ID_DBP_I_SUN,
+    ID_DBP_D_MON, ID_DBP_I_ATMP, ID_DBP_I_AWA, ID_DBP_I_TWA, ID_DBP_I_TWD, ID_DBP_I_TWS,
+    ID_DBP_D_TWA, ID_DBP_I_HDM, ID_DBP_D_HDT, ID_DBP_I_AWD,
     ID_DBP_LAST_ENTRY //this has a reference in one of the routines; defining a "LAST_ENTRY" and setting the reference to it, is one codeline less to change (and find) when adding new instruments :-)
 };
 
@@ -107,18 +86,18 @@ wxString getInstrumentCaption( unsigned int id )
             return _("Compass");
         case ID_DBP_I_STW:
             return _("STW");
-        case ID_DBP_I_HDG:
+        case ID_DBP_I_HDT:
             return _("True HDG");
         case ID_DBP_I_HDM:
             return _("Mag HDG");
         case ID_DBP_D_AW:
             return _("App. Wind Angle & Speed");
         case ID_DBP_D_AWA:
-            return _("Wind Angle");
+            return _("App. Wind Angle");
         case ID_DBP_I_AWS:
-            return _("Wind Speed");
+            return _("App. Wind Speed");
         case ID_DBP_D_AWS:
-            return _("Wind Speed");
+            return _("App. Wind Speed");
         case ID_DBP_D_TW:
             return _("True Wind Angle & Speed");
         case ID_DBP_I_DPT:
@@ -126,11 +105,13 @@ wxString getInstrumentCaption( unsigned int id )
         case ID_DBP_D_DPT:
             return _("Depth");
         case ID_DBP_I_TMP:
-            return _("Watertemp");
+            return _("Water Temp.");
         case ID_DBP_I_ATMP:
-            return _("Airtemp");
+            return _("Air Temp.");
         case ID_DBP_I_AWA:
             return _("App. Wind Angle");
+        case ID_DBP_I_AWD:
+            return _("App. Wind Direction");
         case ID_DBP_I_TWA:
             return _("True Wind Angle");
         case ID_DBP_I_TWD:
@@ -157,7 +138,7 @@ wxString getInstrumentCaption( unsigned int id )
             return _("Clock");
         case ID_DBP_I_SUN:
             return _("Sunrise/Sunset");
-        case ID_DBP_I_MON:
+        case ID_DBP_D_MON:
             return _("Moon phase");
     }
     return _T("");
@@ -172,23 +153,23 @@ void getListItemForInstrument( wxListItem &item, unsigned int id )
         case ID_DBP_I_SOG:
         case ID_DBP_I_COG:
         case ID_DBP_I_STW:
-        case ID_DBP_I_HDG:   //true heading
-        case ID_DBP_I_HDM:   //magnetic heading
+        case ID_DBP_I_HDT:
+        case ID_DBP_I_HDM:
         case ID_DBP_I_AWS:
         case ID_DBP_I_DPT:
         case ID_DBP_I_TMP:
-        case ID_DBP_I_ATMP:  //Air temp.
-        case ID_DBP_I_TWA:   //True wind angle
-        case ID_DBP_I_TWD:   //True wind direction
-        case ID_DBP_I_TWS:   //True wind Speed
-        case ID_DBP_I_AWA:   //App. wind angle
+        case ID_DBP_I_ATMP:
+        case ID_DBP_I_TWA:
+        case ID_DBP_I_TWD:
+        case ID_DBP_I_TWS:
+        case ID_DBP_I_AWA:
+        case ID_DBP_I_AWD:
         case ID_DBP_I_VMG:
         case ID_DBP_I_RSA:
         case ID_DBP_I_SAT:
         case ID_DBP_I_PTR:
         case ID_DBP_I_CLK:
         case ID_DBP_I_SUN:
-        case ID_DBP_I_MON:
             item.SetImage( 0 );
             break;
         case ID_DBP_D_SOG:
@@ -197,12 +178,13 @@ void getListItemForInstrument( wxListItem &item, unsigned int id )
         case ID_DBP_D_AWA:
         case ID_DBP_D_AWS:
         case ID_DBP_D_TW:
-        case ID_DBP_D_TWA:   //True wind angle & speed
+        case ID_DBP_D_TWA:
         case ID_DBP_D_DPT:
         case ID_DBP_D_VMG:
         case ID_DBP_D_RSA:
         case ID_DBP_D_GPS:
         case ID_DBP_D_HDT:
+        case ID_DBP_D_MON:
             item.SetImage( 1 );
             break;
     }
@@ -354,7 +336,7 @@ bool dashboard_pi::DeInit( void )
 
 void dashboard_pi::Notify()
 {
-    SendUtcTimeToAllInstruments( OCPN_DBP_STC_CLK | OCPN_DBP_STC_MON, mUTCDateTime );
+    SendUtcTimeToAllInstruments( mUTCDateTime );
     for( size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++ ) {
         DashboardWindow *dashboard_window = m_ArrayOfDashboardWindow.Item( i )->m_pDashboardWindow;
         if( dashboard_window ) dashboard_window->Refresh();
@@ -411,11 +393,11 @@ void dashboard_pi::SendSentenceToAllInstruments( int st, double value, wxString 
     }
 }
 
-void dashboard_pi::SendUtcTimeToAllInstruments( int st, wxDateTime value )
+void dashboard_pi::SendUtcTimeToAllInstruments( wxDateTime value )
 {
     for( size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++ ) {
         DashboardWindow *dashboard_window = m_ArrayOfDashboardWindow.Item( i )->m_pDashboardWindow;
-        if( dashboard_window ) dashboard_window->SendUtcTimeToAllInstruments( st, value );
+        if( dashboard_window ) dashboard_window->SendUtcTimeToAllInstruments( value );
     }
 }
 
@@ -492,8 +474,9 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     }
 
                     if( mPriDateTime >= 4 ) {
-                        mPriDateTime = 4;
-                        mUTCDateTime.ParseFormat( m_NMEA0183.Gga.UTCTime.c_str(), _T("%H%M%S") );
+                        // Not in use, we need the date too.
+                        //mPriDateTime = 4;
+                        //mUTCDateTime.ParseFormat( m_NMEA0183.Gga.UTCTime.c_str(), _T("%H%M%S") );
                     }
 
                     mSatsInView = m_NMEA0183.Gga.NumberOfSatellitesInUse;
@@ -525,8 +508,9 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     }
 
                     if( mPriDateTime >= 5 ) {
-                        mPriDateTime = 5;
-                        mUTCDateTime.ParseFormat( m_NMEA0183.Gll.UTCTime.c_str(), _T("%H%M%S") );
+                        // Not in use, we need the date too.
+                        //mPriDateTime = 5;
+                        //imUTCDateTime.ParseFormat( m_NMEA0183.Gll.UTCTime.c_str(), _T("%H%M%S") );
                     }
                 }
             }
@@ -706,8 +690,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
 
                     if( mPriDateTime >= 3 ) {
                         mPriDateTime = 3;
-                        wxString dt = m_NMEA0183.Rmc.Date;
-                        dt.Append( m_NMEA0183.Rmc.UTCTime );
+                        wxString dt = m_NMEA0183.Rmc.Date + m_NMEA0183.Rmc.UTCTime;
                         mUTCDateTime.ParseFormat( dt.c_str(), _T("%d%m%y%H%M%S") );
                     }
                 }
@@ -862,8 +845,7 @@ void dashboard_pi::SetPositionFix( PlugIn_Position_Fix &pfix )
         mVar = pfix.Var;
         SendSentenceToAllInstruments( OCPN_DBP_STC_HMV, pfix.Var, _T("Deg") );
     }
-    if( mPriDateTime >= 6 ) //We prefer the GPS datetime
-            {
+    if( mPriDateTime >= 6 ) { //We prefer the GPS datetime
         mPriDateTime = 6;
         mUTCDateTime.Set( pfix.FixTime );
         mUTCDateTime = mUTCDateTime.ToUTC();
@@ -1819,7 +1801,7 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
                 instrument = new DashboardInstrument_Single( this, wxID_ANY,
                         getInstrumentCaption( id ), OCPN_DBP_STC_STW, _T("%.2f") );
                 break;
-            case ID_DBP_I_HDG: //true heading
+            case ID_DBP_I_HDT: //true heading
                 // TODO: Option True or Magnetic
                 instrument = new DashboardInstrument_Single( this, wxID_ANY,
                         getInstrumentCaption( id ), OCPN_DBP_STC_HDT, _T("%.0f") );
@@ -1898,7 +1880,11 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
                 instrument = new DashboardInstrument_Single( this, wxID_ANY,
                         getInstrumentCaption( id ), OCPN_DBP_STC_TWS, _T("%2.2f") );
                 break;
-            case ID_DBP_I_AWA: //apparent wind angle, relative
+            case ID_DBP_I_AWA: //apparent wind angle
+                instrument = new DashboardInstrument_Single( this, wxID_ANY,
+                        getInstrumentCaption( id ), OCPN_DBP_STC_AWA, _T("%5.0f") );
+                break;
+            case ID_DBP_I_AWD: //apparent wind direction
                 instrument = new DashboardInstrument_Single( this, wxID_ANY,
                         getInstrumentCaption( id ), OCPN_DBP_STC_VWR, _T("%5.0f") );
                 break;
@@ -1944,7 +1930,7 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
                 instrument = new DashboardInstrument_Sun( this, wxID_ANY,
                         getInstrumentCaption( id ) );
                 break;
-            case ID_DBP_I_MON:
+            case ID_DBP_D_MON:
                 instrument = new DashboardInstrument_Moon( this, wxID_ANY,
                         getInstrumentCaption( id ) );
                 break;
@@ -1983,16 +1969,14 @@ void DashboardWindow::SendSatInfoToAllInstruments( int cnt, int seq, SAT_INFO sa
                     }
                 }
 
-void DashboardWindow::SendUtcTimeToAllInstruments( int st, wxDateTime value )
+void DashboardWindow::SendUtcTimeToAllInstruments( wxDateTime value )
 {
     for( size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++ ) {
-        if( ( m_ArrayOfInstrument.Item( i )->m_cap_flag & OCPN_DBP_STC_MON )
-                && m_ArrayOfInstrument.Item( i )->m_pInstrument->IsKindOf(
-                        CLASSINFO(DashboardInstrument_Moon)))
-                        ((DashboardInstrument_Moon*)m_ArrayOfInstrument.Item(i)->m_pInstrument)->SetUtcTime(st, value);
-                        if ((m_ArrayOfInstrument.Item(i)->m_cap_flag & OCPN_DBP_STC_CLK) &&
-                                (m_ArrayOfInstrument.Item(i)->m_pInstrument->IsKindOf(CLASSINFO(DashboardInstrument_Clock)) || m_ArrayOfInstrument.Item(i)->m_pInstrument->IsKindOf(CLASSINFO(DashboardInstrument_Sun))))
-                        ((DashboardInstrument_Clock*)m_ArrayOfInstrument.Item(i)->m_pInstrument)->SetUtcTime(st, value);
-                    }
-                }
+        if( ( m_ArrayOfInstrument.Item( i )->m_cap_flag & OCPN_DBP_STC_CLK )
+                && m_ArrayOfInstrument.Item( i )->m_pInstrument->IsKindOf( CLASSINFO( DashboardInstrument_Clock ) ) )
+//                  || m_ArrayOfInstrument.Item( i )->m_pInstrument->IsKindOf( CLASSINFO( DashboardInstrument_Sun ) )
+//                  || m_ArrayOfInstrument.Item( i )->m_pInstrument->IsKindOf( CLASSINFO( DashboardInstrument_Moon ) ) ) )
+            ((DashboardInstrument_Clock*)m_ArrayOfInstrument.Item(i)->m_pInstrument)->SetUtcTime( value );
+    }
+}
 

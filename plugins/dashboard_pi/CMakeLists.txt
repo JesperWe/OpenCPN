@@ -98,8 +98,6 @@ SET(SRC_DASHBOARD
             src/depth.h
 	    src/clock.cpp
             src/clock.h
-        src/celestial.cpp
-        src/celestial.h
             src/icons.cpp
             src/icons.h
  	)
