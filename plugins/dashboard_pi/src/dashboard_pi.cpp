@@ -71,7 +71,7 @@ enum {
 
 bool IsObsolete( int id ) {
     switch( id ) {
-        case ID_DBP_D_AW: return true;
+        case ID_DBP_D_AWA: return true;
         default: return false;
     }
 }
@@ -99,7 +99,7 @@ wxString getInstrumentCaption( unsigned int id )
             return _("Mag HDG");
         case ID_DBP_D_AW:
         case ID_DBP_D_AWA:
-            return _("App. Wind Angle");
+            return _("App. Wind Angle & Speed");
         case ID_DBP_I_AWS:
             return _("App. Wind Speed");
         case ID_DBP_D_AWS:
