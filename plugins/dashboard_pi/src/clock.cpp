@@ -76,7 +76,7 @@ DashboardInstrument_Moon::DashboardInstrument_Moon( wxWindow *parent, wxWindowID
       DashboardInstrument_Clock( parent, id, title, OCPN_DBP_STC_CLK, _T("%i/4 %c") )
 {
     m_phase = -1;
-    m_radius = 16;
+    m_radius = 14;
 }
 
 wxSize DashboardInstrument_Moon::GetSize( int orient, wxSize hint )
@@ -115,7 +115,7 @@ void DashboardInstrument_Moon::Draw(wxGCDC* dc)
     int y = m_TitleHeight+m_radius+5;
 
     GetGlobalColor(_T("DASHB"), &cl0);
-    GetGlobalColor(_T("DASH1"), &cl1);
+    GetGlobalColor(_T("DASH2"), &cl1);
     GetGlobalColor(_T("DASHF"), &cl2);
 
     dc->SetBrush(cl0);
