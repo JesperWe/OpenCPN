@@ -52,7 +52,6 @@ DashboardInstrument::DashboardInstrument(wxWindow *pparent, wxWindowID id, wxStr
       int width;
       dc.GetTextExtent(m_title, &width, &m_TitleHeight, 0, 0, g_pFontTitle);
 
-      Connect(wxEVT_SIZE, wxSizeEventHandler(DashboardInstrument::OnSize));
       Connect(wxEVT_ERASE_BACKGROUND, wxEraseEventHandler(DashboardInstrument::OnEraseBackground));
       Connect(wxEVT_PAINT, wxPaintEventHandler(DashboardInstrument::OnPaint));
 }
@@ -67,16 +66,6 @@ void DashboardInstrument::OnEraseBackground(wxEraseEvent& WXUNUSED(evt))
         // intentionally empty
 }
 
-void DashboardInstrument::OnSize(wxSizeEvent& evt)
-{
-    evt.Skip();
-    int orient = ((wxBoxSizer *)(GetParent()->GetSizer()))->GetOrientation();
-    m_size = GetSize( orient, GetParent()->GetClientSize() );
-    SetSize( m_size );
-    SetMinSize( m_size );
-    Refresh();
-}
-
 void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
 {
     wxBufferedPaintDC pdc( this );
@@ -85,7 +74,7 @@ void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
     wxSize size = GetClientSize();
     if( size.x == 0 || size.y == 0 ) return;
 
-    wxBitmap bm( m_size.x, m_size.y, 32 );
+    wxBitmap bm( size.x, size.y, 32 );
     bm.UseAlpha();
     wxMemoryDC mdc( bm );
     wxGCDC dc( mdc );
@@ -103,7 +92,7 @@ void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
     pen.SetColour( cl );
     dc.SetPen( pen );
     dc.SetBrush( cl );
-    dc.DrawRoundedRectangle( 0, 0, m_size.x, m_TitleHeight, 3 );
+    dc.DrawRoundedRectangle( 0, 0, size.x, m_TitleHeight, 3 );
 
     dc.SetFont( *g_pFontTitle );
     GetGlobalColor( _T("DASHF"), &cl );

@@ -91,7 +91,6 @@ public:
 
       int GetCapacity();
       void OnEraseBackground(wxEraseEvent& WXUNUSED(evt));
-      void OnSize(wxSizeEvent& evt);
       virtual wxSize GetSize( int orient, wxSize hint ) = 0;
       void OnPaint(wxPaintEvent& WXUNUSED(event));
       virtual void SetData(int st, double data, wxString unit) = 0;
@@ -102,7 +101,6 @@ protected:
       int               m_cap_flag;
       int               m_TitleHeight;
       wxString          m_title;
-      wxSize            m_size;
 
       virtual void Draw(wxGCDC* dc) = 0;
 };
