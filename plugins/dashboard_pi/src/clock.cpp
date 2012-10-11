@@ -106,7 +106,7 @@ void DashboardInstrument_Moon::Draw(wxGCDC* dc)
     points[0].x = 5;
     points[0].y = m_TitleHeight+m_radius*2+6;
     points[1].x = sz.x/2;
-    points[1].y = m_TitleHeight+15;
+    points[1].y = m_TitleHeight+10;
     points[2].x = sz.x-5;
     points[2].y = m_TitleHeight+m_radius*2+6;
     dc->DrawPolygon(3, points, 0, 0);
@@ -114,8 +114,8 @@ void DashboardInstrument_Moon::Draw(wxGCDC* dc)
     int x = 2+m_radius+(sz.x-m_radius-2)/8*m_phase;
     int y = m_TitleHeight+m_radius+5;
 
-    GetGlobalColor(_T("DASHB"), &cl0);
-    GetGlobalColor(_T("DASH2"), &cl1);
+    GetGlobalColor(_T("DASH2"), &cl0);
+    GetGlobalColor(_T("DASH1"), &cl1);
     GetGlobalColor(_T("DASHF"), &cl2);
 
     dc->SetBrush(cl0);
