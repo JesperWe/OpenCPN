@@ -69,6 +69,13 @@ enum {
     ID_DBP_LAST_ENTRY //this has a reference in one of the routines; defining a "LAST_ENTRY" and setting the reference to it, is one codeline less to change (and find) when adding new instruments :-)
 };
 
+bool IsObsolete( int id ) {
+    switch( id ) {
+        case ID_DBP_D_AW: return true;
+        default: return false;
+    }
+}
+
 wxString getInstrumentCaption( unsigned int id )
 {
     switch( id ){
@@ -91,7 +98,6 @@ wxString getInstrumentCaption( unsigned int id )
         case ID_DBP_I_HDM:
             return _("Mag HDG");
         case ID_DBP_D_AW:
-            return _("App. Wind Angle & Speed");
         case ID_DBP_D_AWA:
             return _("App. Wind Angle");
         case ID_DBP_I_AWS:
@@ -250,7 +256,6 @@ dashboard_pi::dashboard_pi( void *ppimgr ) :
 {
     // Create the PlugIn icons
     initialize_images();
-
 }
 
 dashboard_pi::~dashboard_pi( void )
@@ -261,7 +266,6 @@ dashboard_pi::~dashboard_pi( void )
     delete _img_instrument;
     delete _img_minus;
     delete _img_plus;
-
 }
 
 int dashboard_pi::Init( void )
@@ -1573,6 +1577,7 @@ AddInstrumentDlg::AddInstrumentDlg( wxWindow *pparent, wxWindowID id ) :
 
     for( unsigned int i = ID_DBP_I_POS; i < ID_DBP_LAST_ENTRY; i++ ) { //do not reference an instrument, but the last dummy entry in the list
         wxListItem item;
+        if( IsObsolete( i ) ) continue;
         getListItemForInstrument( item, i );
         item.SetId( i );
         m_pListCtrlInstruments->InsertItem( item );
@@ -1811,16 +1816,13 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
                         getInstrumentCaption( id ), OCPN_DBP_STC_HDM, _T("%.0f") );
                 break;
             case ID_DBP_D_AW:
+            case ID_DBP_D_AWA:
                 instrument = new DashboardInstrument_Wind( this, wxID_ANY,
                         getInstrumentCaption( id ), OCPN_DBP_STC_AWA );
                 ( (DashboardInstrument_Dial *) instrument )->SetOptionMainValue( _T("%.0f"),
                         DIAL_POSITION_BOTTOMLEFT );
                 ( (DashboardInstrument_Dial *) instrument )->SetOptionExtraValue(
                         OCPN_DBP_STC_AWS, _T("%.1f"), DIAL_POSITION_INSIDE );
-                break;
-            case ID_DBP_D_AWA:
-                instrument = new DashboardInstrument_Wind( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_AWA );
                 break;
             case ID_DBP_I_AWS:
                 instrument = new DashboardInstrument_Single( this, wxID_ANY,
